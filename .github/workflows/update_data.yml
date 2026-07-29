@@ -1,42 +1,60 @@
-name: Update Stock Data
+name: AI Stock V3 Daily Automator
 
+# 設定機器人什麼時候要起床工作
 on:
   schedule:
-    # 台灣時間 14:00 (UTC 06:00),收盤後第一次更新
-    - cron: "0 6 * * 1-5"
-    # 台灣時間 22:00 (UTC 14:00),第二次更新(可以補到當天較晚公布的新聞/籌碼資料)
-    - cron: "0 14 * * 1-5"
-    # 台灣時間 23:00 (UTC 15:00),第三次更新
-    - cron: "0 15 * * 1-5"
-  workflow_dispatch: {}   # 允許手動在GitHub網頁上點按鈕觸發
-
-permissions:
-  contents: write
+    # 每天台灣時間下午 15:00 (UTC 07:00) 自動執行
+    - cron: '0 7 * * 1-5' # 1-5 代表週一到週五執行
+  workflow_dispatch:      # 允許我們在網頁上點擊按鈕「手動立刻執行」
 
 jobs:
-  update-data:
+  build-and-predict:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: 📥 步驟一：下載最新版程式碼
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: 🐍 步驟二：安裝 Python 3.10 環境
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: '3.10'
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Fetch data and build JSON
-        env:
-          FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
-        run: python scripts/build_data.py
-
-      - name: Commit and push updated data
+      - name: 📦 步驟三：安裝專案所需套件
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data
-          git diff --staged --quiet && echo "無資料變動" || git commit -m "自動更新股票資料 $(date -u +'%Y-%m-%d %H:%M UTC')"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🤖 步驟四：執行 V3 全套量化與 AI 產線
+        env:
+          # 👇 這裡改為讀取 Telegram 的保險箱金鑰
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          echo "1. 抓取外部產業與籌碼資料..."
+          python scripts/fetch_dram.py
+          python scripts/fetch_whales.py
+          
+          echo "2. 訓練與更新 XGBoost AI 大腦..."
+          python scripts/train_xgb_v3.py
+          
+          echo "3. 呼叫 OpenAI 進行新聞與網格分析..."
+          python scripts/news_sentiment_ai_v3.py
+          python scripts/strategy_grid_ai_v3.py
+          python scripts/ai_analyst_v3.py
+          
+          echo "4. 進行數據大一統打包 (給前端網頁用)..."
+          python scripts/build_data.py 2408
+          
+          echo "5. 啟動黑天鵝防禦與 Discord 推播..."
+          python scripts/alert_system_v3.py
+
+      - name: 💾 步驟五：將最新數據存回 GitHub 雲端
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          # 只把資料庫與產出的 JSON 報告存進去
+          git add data_db/ docs/data/
+          git commit -m "🤖 Auto-update V3 Data & AI Reports" || echo "No changes to commit"
           git push
