@@ -489,6 +489,12 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
             df_whales = df_whales.sort_values("date")
             v3_data["whales_series"] = _series_from_df(df_whales, ["whale_pct", "retail_pct"])
 
+        # 👇 【Lesson 16 新增】5. 讀取 V4 終極投資長判決
+        judge_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}_ultimate_judge.json")
+        if os.path.exists(judge_path):
+            with open(judge_path, "r", encoding="utf-8") as f:
+                v3_data["ultimate_judge"] = json.load(f)
+
     except Exception as e:
         print(f"  [V3 整合] 讀取進階資料失敗({stock_id}): {e}")
 

@@ -1,0 +1,5 @@
+{
+  "ultimate_up_probability": 30.0,
+  "ultimate_down_probability": 70.0,
+  "adjustment_logic": "基於44.9%基準，因新聞情緒負面下調，雖然進入防線上調，但黑天鵝警報強制壓低至30%。"
+}

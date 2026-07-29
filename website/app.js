@@ -879,6 +879,8 @@ async function loadStock(stockId) {
   renderSentimentHistory(data.news);
   renderOverview(data);
   renderV3Features(data);
+  renderUltimateJudge(data);
+
 
   priceChart.timeScale().fitContent();
   kdChart.timeScale().fitContent(); // 新增: KD圖表自適應
@@ -996,4 +998,47 @@ function renderV3Features(data) {
   }
 }
 
+// 👇 V4 新增：同時渲染 V4 專屬卡片，並覆寫舊版 UI 的預測 % 數
+function renderUltimateJudge(data) {
+  const judgeData = data.v3_features?.ultimate_judge;
+  const judgeCard = document.getElementById("v4-ultimate-judge-card");
+
+  if (!judgeData) {
+    if (judgeCard) judgeCard.style.display = "none";
+    return;
+  }
+
+  // 1. 啟動並更新您在 index.html 新增的 V4 終極判決卡片
+  if (judgeCard) {
+    judgeCard.style.display = "block";
+    const upProb = parseFloat(judgeData.ultimate_up_probability).toFixed(1);
+    const downProb = parseFloat(judgeData.ultimate_down_probability).toFixed(1);
+
+    const v4UpText = document.getElementById("v4-ultimate-up-text");
+    const v4DownText = document.getElementById("v4-ultimate-down-text");
+    const v4BarUp = document.getElementById("v4-ultimate-bar-up");
+    const v4Logic = document.getElementById("v4-ultimate-logic");
+
+    if (v4UpText) v4UpText.innerText = "上漲 " + upProb + "%";
+    if (v4DownText) v4DownText.innerText = "下跌 " + downProb + "%";
+    if (v4BarUp) v4BarUp.style.width = upProb + "%";
+    if (v4Logic) v4Logic.innerText = judgeData.adjustment_logic;
+  }
+
+  // 2. 覆寫舊版「機器學習模型」區塊的 % 數與進度條長度
+  const mlUpPct = document.getElementById("ml-up-pct");
+  const mlDownPct = document.getElementById("ml-down-pct");
+  const mlBarUp = document.getElementById("ml-bar-up");
+  const mlBarDown = document.getElementById("ml-bar-down"); // 👈 關鍵修正：抓取下跌進度條
+
+  if (mlUpPct && mlDownPct && mlBarUp && mlBarDown) {
+    const upProb = parseFloat(judgeData.ultimate_up_probability).toFixed(1);
+    const downProb = parseFloat(judgeData.ultimate_down_probability).toFixed(1);
+    
+    mlUpPct.innerText = upProb;
+    mlDownPct.innerText = downProb;
+    mlBarUp.style.width = upProb + "%";
+    mlBarDown.style.width = downProb + "%"; // 👈 關鍵修正：同步覆寫下跌的寬度，填滿 100%
+  }
+}
 loadManifestAndInit();
