@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Stock</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>AI Stock</h1>
+    <div class="controls">
+      <label for="stock-select">股票:</label>
+      <select id="stock-select"></select>
+      <label for="page-select">頁面:</label>
+      <select id="page-select">
+        <option value="overview">總覽</option>
+        <option value="compare">多股比較</option>
+        <option value="price">K線</option>
+        <option value="trend">走向分析</option>
+        <option value="indicators">技術籌碼指標</option>
+        <option value="fundamentals">基本面統計</option>
+        <option value="news">財經新聞</option>
+      </select>
+      <span id="updated-at" class="updated-at"></span>
+      <!-- 新增: 下載整合好 CSV 的按鈕 -->
+      <a id="download-csv" class="download-btn" href="#" target="_blank" style="display:none;" download>📥 下載整合CSV</a>
+      <button id="theme-toggle" class="download-btn" style="cursor: pointer;">🌙 深色模式</button>
+    </div>
+  </header>
+
+  <div id="stale-warning" class="stale-warning" style="display:none"></div>
+
+  <main>
+    <div id="v3-alert-banner" style="display: none;"></div>
+    <!-- ===== 頁面0: 總覽 ===== -->
+    <div class="page-group" data-page="overview">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span id="overview-stock-title">總覽</span>
+          <span id="overview-updated" class="news-total"></span>
+        </div>
+
+        <div id="v3-ai-report-card" class="v3-ai-card" style="display: none;"></div>
+        <div class="overview-grid">
+          <div class="overview-card overview-card-price">
+            <div class="overview-label">現價</div>
+            <div id="overview-close" class="overview-value overview-value-lg">-</div>
+            <div id="overview-change" class="overview-change"></div>
+          </div>
+
+          <!-- 新增: 新手投資建議卡片 -->
+          <div class="overview-card">
+            <div class="overview-label">新手投資建議</div>
+            <div id="overview-newbie-advice" class="overview-value overview-value-sm">-</div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">本益比 PER</div>
+            <div id="overview-per" class="overview-value">-</div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">淨值比 PBR</div>
+            <div id="overview-pbr" class="overview-value">-</div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">RSI14</div>
+            <div id="overview-rsi" class="overview-value">-</div>
+            <div id="overview-rsi-state" class="overview-sub"></div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">均線排列</div>
+            <div id="overview-ma-state" class="overview-value overview-value-sm">-</div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">今日三大法人(張)</div>
+            <div id="overview-institutional" class="overview-inst-list"></div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">隔日漲跌機率</div>
+            <div id="overview-next-day" class="overview-value overview-value-sm">-</div>
+          </div>
+
+          <div class="overview-card">
+            <div class="overview-label">新聞氣氛(近14天)</div>
+            <div id="overview-news" class="overview-value overview-value-sm">-</div>
+          </div>
+        </div>
+
+        <div id="overview-anomaly-banner" class="overview-anomaly-banner"></div>
+
+        <p class="overview-note">
+          這個頁面彙整其他分頁裡最新的關鍵數字,方便快速掃過重點;細節數據與圖表請切到對應分頁查看。
+        </p>
+      </section>
+    </div>
+
+    <!-- ===== 頁面0.5: 多股比較 ===== -->
+    <div class="page-group" data-page="compare">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>多股比較總表</span>
+          <span id="compare-count" class="news-total"></span>
+        </div>
+        <div class="compare-table-wrap">
+          <table class="compare-table" id="compare-table">
+            <!-- 將原本的 <thead> 替換為以下內容 -->
+            <thead>
+              <tr>
+                <th style="cursor: pointer;" id="sort-id" title="點擊排序">股票 ↕</th>
+                <th style="cursor: pointer;" id="sort-price" title="點擊排序">現價 ↕</th>
+                <th style="cursor: pointer;" id="sort-change" title="點擊排序">漲跌% ↕</th>
+                <th>投資建議</th>
+                <th style="cursor: pointer;" id="sort-per" title="點擊排序">PER ↕</th>
+                <th style="cursor: pointer;" id="sort-pbr" title="點擊排序">PBR ↕</th>
+                <th style="cursor: pointer;" id="sort-rsi" title="點擊排序">RSI14 ↕</th>
+                <th>均線</th>
+                <th>隔日漲跌機率</th>
+                <th>新聞氣氛</th>
+                <th class="col-center">異常</th>
+              </tr>
+            </thead>
+            <tbody id="compare-table-body">
+              <tr>
+                <td colspan="11">載入中...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="overview-note">點任一列可以切換到該股票的總覽頁查看詳細內容。</p>
+      </section>
+    </div>
+
+    <!-- ===== 頁面1: K線 ===== -->
+    <div class="page-group" data-page="price">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>K線 / 均線</span>
+          <div class="ma-legend" id="ma-legend"></div>
+        </div>
+        <div class="price-chart-wrap">
+          <div id="stock-label" class="stock-label"></div>
+          <div id="price-chart" class="chart-box price-chart"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== 頁面1.5: 走向分析(統計法 + ML模型,各自獨立追蹤命中率) ===== -->
+    <!-- (這區段保持原樣，因為這邊主要顯示歷史回測機率) -->
+    <div class="page-group" data-page="trend">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>近期走向分析</span>
+        </div>
+        <p id="trend-narrative" class="trend-narrative"></p>
+        <div id="v3-grid-strategy-card" class="v3-ai-card" style="display: none;"></div>
+
+        <div class="prob-block">
+          <div class="prob-header">
+            <span>隔日漲跌機率(歷史統計)</span>
+            <span id="prob-state-label" class="prob-state-label"></span>
+          </div>
+          <div class="prob-bar-wrap">
+            <div class="prob-bar">
+              <div id="prob-bar-up" class="prob-bar-up"></div>
+              <div id="prob-bar-down" class="prob-bar-down"></div>
+            </div>
+          </div>
+          <div class="prob-legend">
+            <span class="prob-up-text">上漲 <b id="prob-up-pct">-</b>%</span>
+            <span class="prob-down-text">下跌 <b id="prob-down-pct">-</b>%</span>
+            <span id="prob-sample-size" class="prob-sample"></span>
+          </div>
+          <p class="prob-disclaimer">
+            此機率是統計「過去歷史上,技術指標處於相同狀態時隔日實際漲跌的比例」,
+            純粹是歷史迴顧統計,不是機器學習預測,也不保證未來會重演,僅供參考,不構成投資建議。
+          </p>
+
+          <div class="track-record-block">
+            <div class="track-record-header">
+              <span>這個機率過去猜得準不準?(自動追蹤驗證)</span>
+            </div>
+
+            <div class="track-summary-card">
+              <div class="track-summary-item">
+                <div class="track-summary-label">累積次數</div>
+                <div id="track-summary-total" class="track-summary-value">-</div>
+              </div>
+              <div class="track-summary-item">
+                <div class="track-summary-label">命中次數</div>
+                <div id="track-summary-correct" class="track-summary-value">-</div>
+              </div>
+              <div class="track-summary-item track-summary-item-highlight">
+                <div class="track-summary-label">命中率</div>
+                <div id="track-summary-rate" class="track-summary-value track-summary-value-lg">-</div>
+              </div>
+            </div>
+
+            <div class="track-lookup">
+              <label>查詢某一天的預測結果:</label>
+              <details id="track-calendar-details" class="track-calendar-details">
+                <summary id="track-calendar-summary">請選擇日期</summary>
+                <div class="track-calendar">
+                  <div class="track-calendar-header">
+                    <button type="button" id="track-cal-prev" class="track-calendar-nav">‹</button>
+                    <span id="track-cal-month-label" class="track-calendar-month-label"></span>
+                    <button type="button" id="track-cal-next" class="track-calendar-nav">›</button>
+                  </div>
+                  <div class="track-calendar-weekdays">
+                    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                  </div>
+                  <div id="track-cal-grid" class="track-calendar-grid"></div>
+                </div>
+              </details>
+            </div>
+            <div id="track-date-result" class="track-date-result"></div>
+
+            <details class="error-analysis-block">
+              <summary>猜錯的預測有沒有共同特徵?(誤判分析)</summary>
+              <div class="error-analysis-content">
+                <div class="error-analysis-group">
+                  <div class="error-analysis-group-title">依信心程度分組</div>
+                  <div id="track-confidence-breakdown" class="error-breakdown-list"></div>
+                </div>
+                <div class="error-analysis-group">
+                  <div class="error-analysis-group-title">依技術狀態匹配嚴格程度分組</div>
+                  <div id="track-match-breakdown" class="error-breakdown-list"></div>
+                </div>
+                <div class="error-analysis-group">
+                  <div class="error-analysis-group-title">當天新聞情緒是否極端</div>
+                  <div id="track-news-breakdown" class="error-breakdown-list"></div>
+                </div>
+                <p class="error-analysis-note">
+                  這是統計「猜錯的預測有沒有共同特徵」,不是去猜測某一天為什麼猜錯(那種原因無法驗證)。
+                  每組樣本數不多時,命中率差異可能只是巧合,需要更多資料才有參考價值。
+                </p>
+              </div>
+            </details>
+
+            <p class="track-record-note">
+              每個交易日網站會自動記錄當天做出的漲跌預測,隔天知道實際結果後自動回頭核對。
+              樣本數還很少的時候,命中率參考價值有限,需要累積較長時間才有統計意義。
+            </p>
+          </div>
+        </div>
+
+        <div class="prob-block">
+          <div class="prob-header">
+            <span>隔日漲跌機率(機器學習模型 · 實驗性)</span>
+            <span id="ml-state-label" class="prob-state-label"></span>
+          </div>
+          <div class="prob-bar-wrap">
+            <div class="prob-bar">
+              <div id="ml-bar-up" class="prob-bar-up"></div>
+              <div id="ml-bar-down" class="prob-bar-down"></div>
+            </div>
+          </div>
+          <div class="prob-legend">
+            <span class="prob-up-text">上漲 <b id="ml-up-pct">-</b>%</span>
+            <span class="prob-down-text">下跌 <b id="ml-down-pct">-</b>%</span>
+          </div>
+          <p class="prob-disclaimer">
+            這是用近5年的股價/技術指標訓練的邏輯迴歸模型,跟上面的歷史統計法是兩種獨立的方法,
+            兩邊各自累積實際命中率,可以互相比較誰比較準。股價短期漲跌非常接近隨機,
+            任何方法的長期準確率通常都在50%上下,此為實驗性功能,僅供參考,不構成投資建議。
+          </p>
+
+          <div class="track-record-block">
+            <div class="track-record-header">
+              <span>這個模型過去猜得準不準?(自動追蹤驗證)</span>
+            </div>
+
+            <div class="track-summary-card">
+              <div class="track-summary-item">
+                <div class="track-summary-label">累積次數</div>
+                <div id="ml-track-summary-total" class="track-summary-value">-</div>
+              </div>
+              <div class="track-summary-item">
+                <div class="track-summary-label">命中次數</div>
+                <div id="ml-track-summary-correct" class="track-summary-value">-</div>
+              </div>
+              <div class="track-summary-item track-summary-item-highlight">
+                <div class="track-summary-label">命中率</div>
+                <div id="ml-track-summary-rate" class="track-summary-value track-summary-value-lg">-</div>
+              </div>
+            </div>
+
+            <div class="track-lookup">
+              <label>查詢某一天的預測結果:</label>
+              <details id="ml-track-calendar-details" class="track-calendar-details">
+                <summary id="ml-track-calendar-summary">請選擇日期</summary>
+                <div class="track-calendar">
+                  <div class="track-calendar-header">
+                    <button type="button" id="ml-track-cal-prev" class="track-calendar-nav">‹</button>
+                    <span id="ml-track-cal-month-label" class="track-calendar-month-label"></span>
+                    <button type="button" id="ml-track-cal-next" class="track-calendar-nav">›</button>
+                  </div>
+                  <div class="track-calendar-weekdays">
+                    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                  </div>
+                  <div id="ml-track-cal-grid" class="track-calendar-grid"></div>
+                </div>
+              </details>
+            </div>
+            <div id="ml-track-date-result" class="track-date-result"></div>
+
+            <details class="error-analysis-block">
+              <summary>猜錯的預測有沒有共同特徵?(誤判分析)</summary>
+              <div class="error-analysis-content">
+                <div class="error-analysis-group">
+                  <div class="error-analysis-group-title">依信心程度分組</div>
+                  <div id="ml-confidence-breakdown" class="error-breakdown-list"></div>
+                </div>
+                <div class="error-analysis-group" id="ml-match-group" style="display:none">
+                  <div class="error-analysis-group-title">依技術狀態匹配嚴格程度分組</div>
+                  <div id="ml-match-breakdown" class="error-breakdown-list"></div>
+                </div>
+                <div class="error-analysis-group">
+                  <div class="error-analysis-group-title">當天新聞情緒是否極端</div>
+                  <div id="ml-news-breakdown" class="error-breakdown-list"></div>
+                </div>
+                <p class="error-analysis-note">
+                  這是統計「猜錯的預測有沒有共同特徵」,不是去猜測某一天為什麼猜錯(那種原因無法驗證)。
+                  每組樣本數不多時,命中率差異可能越只是巧合,需要更多資料才有參考價值。
+                </p>
+              </div>
+            </details>
+
+            <p class="track-record-note">
+              跟上面統計法用同一套自動核對機制,但這是兩個完全獨立的紀錄,方便互相比較準確率。
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== 頁面2: 技術籌碼指標(KD / RSI / 三大法人 / 融資融券) ===== -->
+    <div class="page-group" data-page="indicators">
+
+      <!-- 新增: KD指標區塊 -->
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>KD (9,3,3)</span>
+          <div class="legend-static">
+            <span class="dot k-line"></span>K值
+            <span class="dot d-line"></span>D值
+          </div>
+        </div>
+        <!-- 沿用 rsi-chart 的高度設定 -->
+        <div id="kd-chart" class="chart-box rsi-chart"></div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>RSI</span>
+        </div>
+        <div id="rsi-chart" class="chart-box rsi-chart"></div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>三大法人買賣超(張)</span>
+          <div id="inst-anomaly-badges" class="anomaly-badges"></div>
+          <div class="legend-static">
+            <span class="dot foreign"></span>外資
+            <span class="dot trust"></span>投信
+            <span class="dot dealer"></span>自營商
+          </div>
+        </div>
+        <div id="institutional-chart" class="chart-box inst-chart"></div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>融資融券餘額</span>
+          <div class="legend-static">
+            <span class="dot margin"></span>融資餘額(左軸)
+            <span class="dot short"></span>融券餘額(右軸)
+          </div>
+        </div>
+        <div id="margin-chart" class="chart-box margin-chart"></div>
+      </section>
+    </div>
+
+    <!-- ===== 頁面3: 基本面統計(本益比/淨值比 + 季報表格) ===== -->
+    <div class="page-group" data-page="fundamentals">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>本益比 / 淨值比</span>
+          <div class="legend-static">
+            <span class="dot per"></span>本益比 PER(左軸)
+            <span class="dot pbr"></span>淨值比 PBR(右軸)
+          </div>
+        </div>
+        <div id="valuation-chart" class="chart-box valuation-chart"></div>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>基本面(近8季)</span>
+        </div>
+        <div class="fund-table-wrap">
+          <table class="fund-table" id="fund-table">
+            <thead>
+              <tr id="fund-table-head"></tr>
+            </thead>
+            <tbody id="fund-table-body"></tbody>
+          </table>
+        </div>
+        <p class="fund-note">EPS / 毛利率 / 營益率 / ROE / ROA 為單季數字(非年化);營收與營業現金流單位為億元</p>
+      </section>
+    </div>
+
+    <!-- ===== 頁面4: 財經新聞(關鍵字利多/利空比對) ===== -->
+    <div class="page-group" data-page="news">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>新聞情緒趨勢(每日累積)</span>
+          <span id="sentiment-history-total" class="news-total"></span>
+        </div>
+        <div id="sentiment-chart" class="chart-box sentiment-chart"></div>
+        <p class="overview-note">
+          每個交易日網站會自動記錄當天的新聞氣氛分數(-1代表當天新聞全是利空關鍵字,+1代表全是利多關鍵字)。
+          累積到約一年份的交易日之後,這份歷史就會自動被納入ML模型的訓練特徵。
+        </p>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>新聞整體氣氛(關鍵字比對)</span>
+          <span id="news-total" class="news-total"></span>
+        </div>
+        <div class="news-summary-bar">
+          <div id="news-bar-pos" class="news-bar-pos"></div>
+          <div id="news-bar-neu" class="news-bar-neu"></div>
+          <div id="news-bar-neg" class="news-bar-neg"></div>
+        </div>
+        <div class="news-summary-legend">
+          <span class="news-pos-text">利多 <b id="news-pos-count">-</b> 則</span>
+          <span class="news-neu-text">中性 <b id="news-neu-count">-</b> 則</span>
+          <span class="news-neg-text">利空 <b id="news-neg-count">-</b> 則</span>
+        </div>
+        <p class="news-disclaimer">
+          這不是AI理解新聞內容後的摘要,只是單純統計新聞標題裡出現了幾個「利多/利空關鍵字」,
+          屬於粗略的字面比對,無法辨識反諷、疑問句等語意,也可能誤判同時提到成長與衰退的新聞。
+          僅供參考,不構成投資建議。
+        </p>
+      </section>
+
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>相關新聞列表</span>
+        </div>
+        <ul id="news-list" class="news-list"></ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    資料來源: FinMind &middot; 僅供技術研究參考,非投資建議
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
