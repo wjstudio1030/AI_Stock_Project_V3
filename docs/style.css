@@ -1087,3 +1087,18 @@ footer {
   align-items: center;
   gap: 8px;
 }
+
+/* 可排序表頭 */
+.compare-table th[id^="sort-"] {
+  user-select: none;
+}
+
+.compare-table th[id^="sort-"]:hover,
+.compare-table th.sort-active {
+  color: var(--accent);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+#theme-toggle {
+  font-family: inherit;
+}

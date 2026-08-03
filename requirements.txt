@@ -1,7 +1,9 @@
-pandas
-requests
-scikit-learn
-beautifulsoup4
-xgboost
-openai
-python-dotenv
+pandas>=2.2,<3
+numpy>=1.26,<3
+requests>=2.32,<3
+scikit-learn>=1.5,<2
+xgboost>=2.1,<4
+openai>=1.68,<3
+python-dotenv>=1.0,<2
+joblib>=1.4,<2
+urllib3>=2,<3

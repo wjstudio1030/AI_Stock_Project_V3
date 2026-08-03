@@ -1,5 +1,7 @@
 // docs/app.js
 
+const DATA_BASE_URL = "./data";
+
 const MA_COLORS = {
   MA5: "#f2b705",
   MA10: "#4d8dff",
@@ -19,7 +21,9 @@ const pageGroupEls = document.querySelectorAll(".page-group");
 const updatedAtEl = document.getElementById("updated-at");
 const downloadCsvBtn = document.getElementById("download-csv"); // 新增: CSV下載按鈕
 const themeToggleBtn = document.getElementById("theme-toggle");
-let isDarkMode = false;
+let isDarkMode = localStorage.getItem("ai-stock-theme") === "dark" ||
+  (!localStorage.getItem("ai-stock-theme") && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
 const maLegendEl = document.getElementById("ma-legend");
 const fundHeadEl = document.getElementById("fund-table-head");
 const fundBodyEl = document.getElementById("fund-table-body");
@@ -89,6 +93,8 @@ const compareTableBodyEl = document.getElementById("compare-table-body");
 const STALE_WARNING_DAYS = 4;
 let manifestStockIds = [];
 let compareDataLoaded = false;
+let compareRows = [];
+let compareSort = { key: "stock_id", direction: "asc" };
 
 let manifestStockNames = {};
 let currentPage = "price";
@@ -100,6 +106,15 @@ let perSeries, pbrSeries;
 let maSeriesMap = {};
 let isSyncingRange = false;
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function formatTaiwanTime(dateStr) {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
@@ -109,14 +124,15 @@ function chartBaseOptions() {
   return {
     layout: {
       background: { color: "transparent" },
-      textColor: "#64748b", // 改為深灰色
+      textColor: isDarkMode ? "#c7cad1" : "#64748b",
     },
     grid: {
-      vertLines: { color: "#f1f5f9" }, // 改為非常淺的灰色格線
-      horzLines: { color: "#f1f5f9" },
+      vertLines: { color: isDarkMode ? "#22252f" : "#f1f5f9" },
+      horzLines: { color: isDarkMode ? "#22252f" : "#f1f5f9" },
     },
-    rightPriceScale: { borderColor: "#e2e8f0" }, // 邊框改為淺灰
-    timeScale: { borderColor: "#e2e8f0" },
+    rightPriceScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
+    leftPriceScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
+    timeScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
     crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
   };
 }
@@ -142,7 +158,7 @@ function initCharts() {
     ...chartBaseOptions(),
     width: kdChartEl.clientWidth,
     height: kdChartEl.clientHeight,
-    rightPriceScale: { borderColor: "#262a36", scaleMargins: { top: 0.1, bottom: 0.1 } },
+    rightPriceScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0", scaleMargins: { top: 0.1, bottom: 0.1 } },
   });
 
   kSeries = kdChart.addLineSeries({
@@ -156,7 +172,7 @@ function initCharts() {
     ...chartBaseOptions(),
     width: rsiChartEl.clientWidth,
     height: rsiChartEl.clientHeight,
-    rightPriceScale: { borderColor: "#262a36", scaleMargins: { top: 0.1, bottom: 0.1 } },
+    rightPriceScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0", scaleMargins: { top: 0.1, bottom: 0.1 } },
   });
 
   rsiSeries14 = rsiChart.addLineSeries({
@@ -180,7 +196,7 @@ function initCharts() {
     ...chartBaseOptions(),
     width: marginChartEl.clientWidth,
     height: marginChartEl.clientHeight,
-    leftPriceScale: { visible: true, borderColor: "#262a36" },
+    leftPriceScale: { visible: true, borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
   });
   marginBalanceSeries = marginChart.addLineSeries({
     color: "#4d8dff", lineWidth: 1.5, priceScaleId: "left",
@@ -194,7 +210,7 @@ function initCharts() {
     ...chartBaseOptions(),
     width: valuationChartEl.clientWidth,
     height: valuationChartEl.clientHeight,
-    leftPriceScale: { visible: true, borderColor: "#262a36" },
+    leftPriceScale: { visible: true, borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
   });
   perSeries = valuationChart.addLineSeries({
     color: "#4d8dff", lineWidth: 1.5, priceScaleId: "left",
@@ -438,9 +454,9 @@ function renderTrackDateDetail(record, resultEl) {
     : `<span class="track-tag miss">✕ 猜錯</span>`;
   resultEl.innerHTML = `
     <div class="track-date-row">
-      <span>預測日: <b>${record.predict_date}</b></span>
+      <span>預測日: <b>${escapeHtml(record.predict_date)}</b></span>
       <span>當時猜: <b>${TRACK_DIRECTION_TEXT[record.predicted_direction] || "-"}</b></span>
-      <span>驗證日: <b>${record.target_date || "-"}</b></span>
+      <span>驗證日: <b>${escapeHtml(record.target_date || "-")}</b></span>
       <span>實際結果: <b>${TRACK_DIRECTION_TEXT[record.actual_direction] || "-"}</b></span>
       <span>${guessTag}</span>
     </div>
@@ -458,7 +474,7 @@ function renderBreakdownList(breakdown, listEl) {
     row.className = "error-breakdown-row";
     const pct = item.accuracy_pct != null ? item.accuracy_pct : 0;
     row.innerHTML = `
-      <span class="error-breakdown-label">${item.label}</span>
+      <span class="error-breakdown-label">${escapeHtml(item.label)}</span>
       <div class="error-breakdown-bar-wrap"><div class="error-breakdown-bar" style="width:${pct}%"></div></div>
       <span class="error-breakdown-value">${item.accuracy_pct != null ? item.accuracy_pct + "%" : "-"}(${item.correct}/${item.total})</span>
     `;
@@ -503,7 +519,6 @@ function setupCalendarLookup(recent, calEls, resultEl) {
 
   const allYm = Object.keys(dateMap).sort();
   const earliestYm = allYm[0];
-  const latestYm = allYm[allYm.length - 1];
 
   let viewYear = parseInt(recent[0].predict_date.slice(0, 4), 10);
   let viewMonth = parseInt(recent[0].predict_date.slice(5, 7), 10);
@@ -517,7 +532,12 @@ function setupCalendarLookup(recent, calEls, resultEl) {
     const ym = ymKey(viewYear, viewMonth);
     monthLabelEl.textContent = `${viewYear}年${viewMonth}月`;
     prevEl.disabled = ym <= earliestYm;
-    nextEl.disabled = ym >= latestYm;
+
+    // Allow navigation through the current calendar month.
+    // Future dates stay disabled until prediction records exist.
+    const now = new Date();
+    const currentYm = ymKey(now.getFullYear(), now.getMonth() + 1);
+    nextEl.disabled = ym >= currentYm;
 
     gridEl.innerHTML = "";
     const firstDay = new Date(viewYear, viewMonth - 1, 1);
@@ -755,14 +775,14 @@ function renderCompareTable(rows) {
     const tr = document.createElement("tr");
     if (hasAnomaly) tr.classList.add("has-anomaly");
     tr.innerHTML = `
-      <td>${data.stock_id}${data.stock_name ? " " + data.stock_name : ""}</td>
+      <td>${escapeHtml(data.stock_id)}${data.stock_name ? " " + escapeHtml(data.stock_name) : ""}</td>
       <td>${formatCompareValue(overview.close, 2)}</td>
       <td>${changeText}</td>
-      <td>${overview.newbie_advice || "-"}</td> <!-- 新增: 投資建議欄位 -->
+      <td>${escapeHtml(overview.newbie_advice || "-")}</td> <!-- 新增: 投資建議欄位 -->
       <td>${formatCompareValue(overview.per, 1)}</td>
       <td>${formatCompareValue(overview.pbr, 1)}</td>
       <td>${overview.rsi14 != null ? overview.rsi14 : "-"}</td>
-      <td>${overview.ma_state || "-"}</td>
+      <td>${escapeHtml(overview.ma_state || "-")}</td>
       <td>${nextDayText}</td>
       <td>${newsText}</td>
       <td>${anomalyText}</td>
@@ -777,6 +797,55 @@ function renderCompareTable(rows) {
   });
 }
 
+const COMPARE_SORT_GETTERS = {
+  stock_id: (data) => data.stock_id || "",
+  price: (data) => data.overview?.close,
+  change: (data) => data.overview?.change_pct,
+  per: (data) => data.overview?.per,
+  pbr: (data) => data.overview?.pbr,
+  rsi: (data) => data.overview?.rsi14,
+};
+
+function renderSortedCompareTable() {
+  const getter = COMPARE_SORT_GETTERS[compareSort.key] || COMPARE_SORT_GETTERS.stock_id;
+  const direction = compareSort.direction === "asc" ? 1 : -1;
+  const rows = [...compareRows].sort((a, b) => {
+    const av = getter(a);
+    const bv = getter(b);
+    const aMissing = av === null || av === undefined || Number.isNaN(av);
+    const bMissing = bv === null || bv === undefined || Number.isNaN(bv);
+    if (aMissing && bMissing) return 0;
+    if (aMissing) return 1;
+    if (bMissing) return -1;
+    if (typeof av === "string") return av.localeCompare(String(bv), "zh-Hant") * direction;
+    return (Number(av) - Number(bv)) * direction;
+  });
+  renderCompareTable(rows);
+
+  document.querySelectorAll("#compare-table thead th").forEach((th) => th.classList.remove("sort-active"));
+  const activeId = {
+    stock_id: "sort-id", price: "sort-price", change: "sort-change",
+    per: "sort-per", pbr: "sort-pbr", rsi: "sort-rsi",
+  }[compareSort.key];
+  if (activeId) document.getElementById(activeId)?.classList.add("sort-active");
+}
+
+function setupCompareSorting() {
+  const headers = {
+    "sort-id": "stock_id", "sort-price": "price", "sort-change": "change",
+    "sort-per": "per", "sort-pbr": "pbr", "sort-rsi": "rsi",
+  };
+  Object.entries(headers).forEach(([id, key]) => {
+    document.getElementById(id)?.addEventListener("click", () => {
+      compareSort = {
+        key,
+        direction: compareSort.key === key && compareSort.direction === "asc" ? "desc" : "asc",
+      };
+      renderSortedCompareTable();
+    });
+  });
+}
+
 async function loadCompareTable(force = false) {
   if (compareDataLoaded && !force) return;
 
@@ -785,14 +854,15 @@ async function loadCompareTable(force = false) {
 
   for (const id of manifestStockIds) {
     try {
-      const res = await fetch(`../docs/data/${id}.json?t=${Date.now()}`);
+      const res = await fetch(`${DATA_BASE_URL}/${id}.json?t=${Date.now()}`);
       if (!res.ok) continue;
       const data = await res.json();
       rows.push(data);
     } catch (e) {}
   }
 
-  renderCompareTable(rows);
+  compareRows = rows;
+  renderSortedCompareTable();
   compareDataLoaded = true;
 }
 
@@ -830,7 +900,7 @@ function renderMlPrediction(mlNextDay) {
 }
 
 async function loadStock(stockId) {
-  const res = await fetch(`../docs/data/${stockId}.json?t=${Date.now()}`);
+  const res = await fetch(`${DATA_BASE_URL}/${stockId}.json?t=${Date.now()}`);
   if (!res.ok) {
     alert(`找不到 ${stockId} 的資料`);
     return;
@@ -838,12 +908,17 @@ async function loadStock(stockId) {
   const data = await res.json();
 
   const stockName = data.stock_name || manifestStockNames[stockId] || "";
-  stockLabelEl.innerHTML = stockName
-    ? `${stockName}<span class="stock-id">${stockId}</span>`
-    : `<span class="stock-id">${stockId}</span>`;
+  stockLabelEl.replaceChildren();
+  if (stockName) {
+    stockLabelEl.appendChild(document.createTextNode(stockName));
+  }
+  const stockIdSpan = document.createElement("span");
+  stockIdSpan.className = "stock-id";
+  stockIdSpan.textContent = stockId;
+  stockLabelEl.appendChild(stockIdSpan);
 
   // 新增: 更新下載CSV連結
-  downloadCsvBtn.href = `../docs/data/${stockId}_unified.csv`;
+  downloadCsvBtn.href = `${DATA_BASE_URL}/${stockId}_unified.csv`;
   downloadCsvBtn.style.display = "inline-flex";
 
   candleSeries.setData(data.price);
@@ -894,7 +969,7 @@ async function loadStock(stockId) {
 }
 
 async function loadManifestAndInit() {
-  const res = await fetch(`../docs/data/manifest.json?t=${Date.now()}`);
+  const res = await fetch(`${DATA_BASE_URL}/manifest.json?t=${Date.now()}`);
   const manifest = await res.json();
   manifestStockNames = manifest.stock_names || {};
   manifestStockIds = manifest.stocks || [];
@@ -918,9 +993,12 @@ async function loadManifestAndInit() {
 pageSelectEl.addEventListener("change", () => setActivePage(pageSelectEl.value));
 
 // 新增：主題切換互動邏輯
+themeToggleBtn.textContent = isDarkMode ? "☀️ 淺色模式" : "🌙 深色模式";
+
 themeToggleBtn.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
   document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+  localStorage.setItem("ai-stock-theme", isDarkMode ? "dark" : "light");
   themeToggleBtn.textContent = isDarkMode ? "☀️ 淺色模式" : "🌙 深色模式";
 
   // 即時更新圖表的格線與文字顏色
@@ -931,10 +1009,11 @@ themeToggleBtn.addEventListener("click", () => {
       horzLines: { color: isDarkMode ? "#22252f" : "#f1f5f9" },
     },
     rightPriceScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
+    leftPriceScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
     timeScale: { borderColor: isDarkMode ? "#262a36" : "#e2e8f0" },
   };
 
-  [priceChart, kdChart, rsiChart, instChart, marginChart, valuationChart].forEach(chart => {
+  [priceChart, kdChart, rsiChart, instChart, marginChart, valuationChart, sentimentChart].forEach(chart => {
     if (chart) chart.applyOptions(chartOptions);
   });
 });
@@ -942,103 +1021,135 @@ themeToggleBtn.addEventListener("click", () => {
 initCharts();
 setActivePage("overview");
 // 👇 V3 新增：渲染 AI 早報與網格策略
+function appendInfoRow(container, label, value, highlight = false) {
+  const row = document.createElement("div");
+  row.className = "v3-ai-text";
+  const strong = document.createElement("strong");
+  strong.textContent = `${label}：`;
+  const span = document.createElement("span");
+  span.textContent = value ?? "-";
+  if (highlight) span.className = "v3-ai-highlight";
+  row.append(strong, span);
+  container.appendChild(row);
+}
+
+function setCardTitle(card, title) {
+  const heading = document.createElement("div");
+  heading.className = "v3-ai-title";
+  heading.textContent = title;
+  card.appendChild(heading);
+}
+
 function renderV3Features(data) {
   const v3 = data.v3_features || {};
   const alertBanner = document.getElementById("v3-alert-banner");
   const aiReportCard = document.getElementById("v3-ai-report-card");
   const gridCard = document.getElementById("v3-grid-strategy-card");
+  const xgbCard = document.getElementById("v3-xgb-prediction-card");
 
-  // 1. 黑天鵝警報橫幅
-  const newsScore = v3.ai_news_sentiment?.overall_sentiment_score;
-  if (newsScore !== undefined && newsScore <= -0.6) {
+  const risk = v3.risk_alert;
+  if (risk?.triggered) {
     alertBanner.style.display = "flex";
     alertBanner.className = "v3-alert-banner";
-    alertBanner.innerHTML = `🚨 【黑天鵝警報】AI 偵測到重大市場利空 (情緒分數: ${newsScore})，請立即檢視波段防線並嚴控風險！`;
+    alertBanner.textContent = `🚨 風險警報：${(risk.alerts || []).join("；")}`;
   } else {
     alertBanner.style.display = "none";
+    alertBanner.textContent = "";
   }
 
-  // 2. 總覽頁：AI 分析師早報
+  aiReportCard.replaceChildren();
   if (v3.ai_report) {
     aiReportCard.style.display = "block";
-    aiReportCard.innerHTML = `
-      <div class="v3-ai-title">🤖 首席 AI 量化早報</div>
-      <div class="v3-ai-text"><strong>評級：</strong> <span class="v3-ai-highlight">${v3.ai_report.trend_rating}</span></div>
-      <div class="v3-ai-text"><strong>量化摘要：</strong> ${v3.ai_report.quant_summary}</div>
-      <div class="v3-ai-text"><strong>操作建議：</strong> ${v3.ai_report.action_advice}</div>
-      <div class="v3-ai-text"><strong>風險提示：</strong> ${v3.ai_report.risk_warning}</div>
-    `;
+    setCardTitle(aiReportCard, "🤖 結構化量化早報");
+    appendInfoRow(aiReportCard, "評級", v3.ai_report.trend_rating, true);
+    appendInfoRow(aiReportCard, "量化摘要", v3.ai_report.quant_summary);
+    appendInfoRow(aiReportCard, "操作觀察", v3.ai_report.action_advice);
+    appendInfoRow(aiReportCard, "風險提示", v3.ai_report.risk_warning);
+    appendInfoRow(aiReportCard, "產生方式", v3.ai_report.analysis_method || "-");
   } else {
     aiReportCard.style.display = "none";
   }
 
-  // 3. 走向分析頁：波段回吐黃金網格防線
+  gridCard.replaceChildren();
   if (v3.grid_strategy) {
-    gridCard.style.display = "block";
     const grid = v3.grid_strategy;
     const lines = grid.grid_defense_lines || {};
-    gridCard.innerHTML = `
-      <div class="v3-ai-title">📐 波段回吐黃金網格策略</div>
-      <div class="v3-ai-text"><strong>波段結構：</strong> ${grid.wave_summary}</div>
-      <div class="v3-ai-text"><strong>目前狀態：</strong> <span class="v3-ai-highlight">${grid.strike_status}</span></div>
-      <table class="v3-grid-table">
-        <thead>
-          <tr><th>防線等級</th><th>觸發價位與狀態</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>強勢防線 (38.2%)</td><td>${lines.level_382}</td></tr>
-          <tr><td>中期防線 (50.0%)</td><td>${lines.level_500}</td></tr>
-          <tr><td>極限防線 (61.8%)</td><td>${lines.level_618}</td></tr>
-        </tbody>
-      </table>
-      <div class="v3-ai-text" style="margin-top: 10px;"><strong>🤖 鐵血指令：</strong> ${grid.ai_execution_order}</div>
-    `;
+    gridCard.style.display = "block";
+    setCardTitle(gridCard, "📐 波段回吐網格策略");
+    appendInfoRow(gridCard, "波段結構", grid.wave_summary);
+    appendInfoRow(gridCard, "目前狀態", grid.strike_status, true);
+
+    const table = document.createElement("table");
+    table.className = "v3-grid-table";
+    const thead = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    ["防線等級", "價位"].forEach((text) => {
+      const th = document.createElement("th");
+      th.textContent = text;
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    const tbody = document.createElement("tbody");
+    [
+      ["強勢防線 (38.2%)", lines.level_382],
+      ["中期防線 (50.0%)", lines.level_500],
+      ["最後防線 (61.8%)", lines.level_618],
+    ].forEach(([label, value]) => {
+      const tr = document.createElement("tr");
+      [label, value || "-"].forEach((text) => {
+        const td = document.createElement("td");
+        td.textContent = text;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.append(thead, tbody);
+    gridCard.appendChild(table);
+    appendInfoRow(gridCard, "紀律提示", grid.ai_execution_order);
   } else {
     gridCard.style.display = "none";
   }
+
+  xgbCard.replaceChildren();
+  if (v3.xgb_prediction) {
+    const prediction = v3.xgb_prediction;
+    const metrics = prediction.model_validation || {};
+    xgbCard.style.display = "block";
+    setCardTitle(xgbCard, "🌲 XGBoost 盤後原始模型");
+    appendInfoRow(xgbCard, "觀測日", prediction.observation_date);
+    appendInfoRow(xgbCard, "上漲 / 下跌", `${prediction.up_probability}% / ${prediction.down_probability}%`, true);
+    appendInfoRow(xgbCard, "時間序列驗證準確率", metrics.accuracy_pct != null ? `${metrics.accuracy_pct}%` : "-");
+    appendInfoRow(xgbCard, "驗證區間", metrics.holdout_start && metrics.holdout_end ? `${metrics.holdout_start} ～ ${metrics.holdout_end}` : "-");
+  } else {
+    xgbCard.style.display = "none";
+  }
 }
 
-// 👇 V4 新增：同時渲染 V4 專屬卡片，並覆寫舊版 UI 的預測 % 數
+// V4：只渲染獨立綜合機率卡片，不覆寫其他模型 UI
 function renderUltimateJudge(data) {
   const judgeData = data.v3_features?.ultimate_judge;
   const judgeCard = document.getElementById("v4-ultimate-judge-card");
-
   if (!judgeData) {
     if (judgeCard) judgeCard.style.display = "none";
     return;
   }
 
-  // 1. 啟動並更新您在 index.html 新增的 V4 終極判決卡片
-  if (judgeCard) {
-    judgeCard.style.display = "block";
-    const upProb = parseFloat(judgeData.ultimate_up_probability).toFixed(1);
-    const downProb = parseFloat(judgeData.ultimate_down_probability).toFixed(1);
-
-    const v4UpText = document.getElementById("v4-ultimate-up-text");
-    const v4DownText = document.getElementById("v4-ultimate-down-text");
-    const v4BarUp = document.getElementById("v4-ultimate-bar-up");
-    const v4Logic = document.getElementById("v4-ultimate-logic");
-
-    if (v4UpText) v4UpText.innerText = "上漲 " + upProb + "%";
-    if (v4DownText) v4DownText.innerText = "下跌 " + downProb + "%";
-    if (v4BarUp) v4BarUp.style.width = upProb + "%";
-    if (v4Logic) v4Logic.innerText = judgeData.adjustment_logic;
+  judgeCard.style.display = "block";
+  const upProb = Number(judgeData.ultimate_up_probability);
+  const downProb = Number(judgeData.ultimate_down_probability);
+  const valid = Number.isFinite(upProb) && Number.isFinite(downProb) &&
+    upProb >= 0 && downProb >= 0 && Math.abs(upProb + downProb - 100) < 0.11;
+  if (!valid) {
+    judgeCard.style.display = "none";
+    console.error("Invalid ultimate probability payload", judgeData);
+    return;
   }
 
-  // 2. 覆寫舊版「機器學習模型」區塊的 % 數與進度條長度
-  const mlUpPct = document.getElementById("ml-up-pct");
-  const mlDownPct = document.getElementById("ml-down-pct");
-  const mlBarUp = document.getElementById("ml-bar-up");
-  const mlBarDown = document.getElementById("ml-bar-down"); // 👈 關鍵修正：抓取下跌進度條
-
-  if (mlUpPct && mlDownPct && mlBarUp && mlBarDown) {
-    const upProb = parseFloat(judgeData.ultimate_up_probability).toFixed(1);
-    const downProb = parseFloat(judgeData.ultimate_down_probability).toFixed(1);
-    
-    mlUpPct.innerText = upProb;
-    mlDownPct.innerText = downProb;
-    mlBarUp.style.width = upProb + "%";
-    mlBarDown.style.width = downProb + "%"; // 👈 關鍵修正：同步覆寫下跌的寬度，填滿 100%
-  }
+  document.getElementById("v4-ultimate-up-text").textContent = `上漲 ${upProb.toFixed(1)}%`;
+  document.getElementById("v4-ultimate-down-text").textContent = `下跌 ${downProb.toFixed(1)}%`;
+  document.getElementById("v4-ultimate-bar-up").style.width = `${upProb}%`;
+  document.getElementById("v4-ultimate-logic").textContent = judgeData.adjustment_logic || "-";
 }
+
+setupCompareSorting();
 loadManifestAndInit();

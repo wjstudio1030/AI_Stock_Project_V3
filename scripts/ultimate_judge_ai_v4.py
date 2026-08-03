@@ -1,125 +1,89 @@
-# scripts/ultimate_judge_ai_v4.py
-"""
-AI Stock V4 - 終極 AI 投資長 (CIO) 判決引擎
-整合 XGBoost 數理機率、新聞情緒、波段網格與黑天鵝狀態，
-輸出全系統唯一的「最終綜合上漲勝率 (%)」與微調邏輯！
+"""確定性訊號融合器。
+
+最終機率由明確公式計算，語言模型不參與數字加權；輸出會驗證 0~100 且上下相加為 100。
 """
 
-import os
-import json
-from dotenv import load_dotenv
-from openai import OpenAI
+from __future__ import annotations
 
-# 載入環境變數
-load_dotenv()
-api_key = os.environ.get("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("❌ 找不到 OPENAI_API_KEY！")
+import sys
+from datetime import datetime, timezone
 
-client = OpenAI(api_key=api_key)
+from config import DOCS_DATA_DIR, STOCK_LIST
+from project_data import load_json, save_json
 
-# 路徑設定
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.dirname(SCRIPT_DIR)
-DATA_DIR = os.path.join(REPO_ROOT, "docs", "data")
 
-def get_synthesized_data(stock_id: str = "2408"):
-    """讀取散落在各處的 AI 報告與數據，打包成統合矩陣"""
-    
-    # 預設底線資料
-    synth_data = {
+def _news_adjustment(score: float) -> float:
+    return max(-5.0, min(5.0, score * 5.0))
+
+
+def _grid_adjustment(hit_level: str) -> float:
+    return {"none": -2.0, "level_382": 2.0, "level_500": 4.0, "level_618": 5.0}.get(hit_level, 0.0)
+
+
+def run_ultimate_judge(stock_id: str) -> dict:
+    xgb = load_json(DOCS_DATA_DIR / f"{stock_id}_xgb_prediction.json", {}) or {}
+    if "up_probability" not in xgb:
+        raise FileNotFoundError("缺少可驗證的 XGBoost 數值預測")
+    news = load_json(DOCS_DATA_DIR / f"{stock_id}_news_ai_sentiment.json", {}) or {}
+    grid = load_json(DOCS_DATA_DIR / f"{stock_id}_grid_strategy.json", {}) or {}
+    risk = load_json(DOCS_DATA_DIR / f"{stock_id}_risk_alert.json", {}) or {}
+
+    base = float(xgb["up_probability"])
+    news_score = float(news.get("overall_sentiment_score", 0.0))
+    news_adj = _news_adjustment(news_score)
+    grid_adj = _grid_adjustment(str(grid.get("hit_level", "unknown")))
+    risk_adjustment = -5.0 if risk.get("triggered") else 0.0
+    raw = base + news_adj + grid_adj + risk_adjustment
+    cap_applied = False
+    if risk.get("triggered") and news_score <= -0.6:
+        raw = min(raw, 30.0)
+        cap_applied = True
+    up = round(max(1.0, min(99.0, raw)), 1)
+    down = round(100.0 - up, 1)
+    if round(up + down, 1) != 100.0:
+        down = round(100.0 - up, 1)
+
+    logic_parts = [
+        f"XGBoost 基準 {base:.1f}%",
+        f"新聞調整 {news_adj:+.1f}%",
+        f"網格調整 {grid_adj:+.1f}%",
+        f"風險警報調整 {risk_adjustment:+.1f}%",
+    ]
+    if cap_applied:
+        logic_parts.append("極端負面風險上限 30%")
+    result = {
         "stock_id": stock_id,
-        "base_xgboost_prob": 50.0,
-        "news_sentiment_score": 0.0,
-        "grid_status": "未知",
-        "trend_rating": "未知",
-        "black_swan_alert": "無"
+        "observation_date": xgb.get("observation_date"),
+        "ultimate_up_probability": up,
+        "ultimate_down_probability": down,
+        "adjustment_logic": "；".join(logic_parts),
+        "components": {
+            "xgb_base_probability": base,
+            "news_sentiment_score": news_score,
+            "news_adjustment": news_adj,
+            "grid_hit_level": grid.get("hit_level", "unknown"),
+            "grid_adjustment": grid_adj,
+            "risk_adjustment": risk_adjustment,
+            "risk_cap_applied": cap_applied,
+        },
+        "calculation_method": "deterministic_weighted_fusion_v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
     }
-    
-    # 1. 讀取 AI 早報 (獲取 XGBoost 原始機率與趨勢評級)
-    report_path = os.path.join(DATA_DIR, f"{stock_id}_ai_report.json")
-    if os.path.exists(report_path):
-        with open(report_path, "r", encoding="utf-8") as f:
-            rep = json.load(f)
-            synth_data["trend_rating"] = rep.get("trend_rating", "未知")
-            # 嘗試從摘要中提取勝率，或假設從其他來源讀取 (此處簡化為模擬預期格式)
-            summary = rep.get("quant_summary", "")
-            if "勝率" in summary:
-                synth_data["base_xgboost_prob"] = summary # 讓語言模型自己解讀字串中的數字
-                
-    # 2. 讀取新聞情緒
-    news_path = os.path.join(DATA_DIR, f"{stock_id}_news_ai_sentiment.json")
-    if os.path.exists(news_path):
-        with open(news_path, "r", encoding="utf-8") as f:
-            news = json.load(f)
-            synth_data["news_sentiment_score"] = news.get("overall_sentiment_score", 0.0)
-            if float(synth_data["news_sentiment_score"]) <= -0.6:
-                synth_data["black_swan_alert"] = "觸發情緒黑天鵝！"
-                
-    # 3. 讀取波段網格防線
-    grid_path = os.path.join(DATA_DIR, f"{stock_id[:4]}_grid_strategy.json")
-    if os.path.exists(grid_path):
-        with open(grid_path, "r", encoding="utf-8") as f:
-            grid = json.load(f)
-            synth_data["grid_status"] = grid.get("strike_status", "未知")
-            
-    return synth_data
+    save_json(DOCS_DATA_DIR / f"{stock_id}_ultimate_judge.json", result)
+    print(f"✅ [{stock_id}] 最終上漲機率 {up:.1f}% / 下跌 {down:.1f}%")
+    return result
 
-def run_ultimate_judge(stock_id: str = "2408"):
-    """交由 GPT-4o-mini 進行最終機率融合"""
-    synth_data = get_synthesized_data(stock_id)
-    print("📡 正在彙整 5 大系統訊號，提交給 AI 投資長 (CIO) 進行最終判決...")
-    
-    system_prompt = """
-    你是量化基金的「AI 投資長」。你的任務是將底層模型 (XGBoost) 的勝率，結合市場情緒、網格防線與黑天鵝警報，輸出「全系統唯一的最終上漲機率」。
-    
-    【加權微調邏輯指引】
-    1. XGBoost 給出的是純數理基準 (Base Probability)。
-    2. 如果 news_sentiment_score 為正，應適度上調機率 (+2% ~ +5%)；若為負，應下調。
-    3. 如果 grid_status 顯示「進入打擊區/防線」，勝率應大幅上調；若為「空手等待/未觸發」，勝率應受到壓抑。
-    4. 如果出現 black_swan_alert，最終機率強制壓低至 30% 以下。
-    
-    【JSON 嚴格輸出格式】
-    {
-      "ultimate_up_probability": 數值 (0.0 到 100.0 的浮點數，代表最終綜合看漲機率),
-      "ultimate_down_probability": 數值 (100.0 減去看漲機率),
-      "adjustment_logic": "用 40 字說明你是如何從 XGBoost 基準，依照新聞與網格狀態加減權重，得出這個最終機率的。"
-    }
-    """
-    
-    user_prompt = f"請根據以下 5 大模組彙整狀態，給出最終唯一的機率判決：\n{json.dumps(synth_data, ensure_ascii=False)}"
-    
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.1
-        )
-        
-        result = json.loads(response.choices[0].message.content)
-        
-        print("\n" + "="*60)
-        print("⚖️ 【 AI Stock V4 ── 投資長最終判決報告 】 ⚖️")
-        print("="*60)
-        print(f"📈 終極上漲勝率： 【 {result.get('ultimate_up_probability')}% 】")
-        print(f"📉 終極下跌機率： 【 {result.get('ultimate_down_probability')}% 】")
-        print("-" * 60)
-        print(f"🧠 【 投資長加權邏輯 】：\n   {result.get('adjustment_logic')}")
-        print("="*60)
-        
-        # 存檔供前端讀取
-        out_file = os.path.join(DATA_DIR, f"{stock_id}_ultimate_judge.json")
-        with open(out_file, "w", encoding="utf-8") as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
-            
-        print(f"💾 終極判決已存至：{out_file}")
-        
-    except Exception as e:
-        print(f"❌ 判決引擎執行失敗：{e}")
+
+def main(stock_ids: list[str]) -> int:
+    failures = []
+    for stock_id in stock_ids:
+        try:
+            run_ultimate_judge(stock_id)
+        except Exception as exc:
+            failures.append(stock_id)
+            print(f"❌ [{stock_id}] 最終融合失敗：{exc}")
+    return 1 if failures and len(failures) == len(stock_ids) else 0
+
 
 if __name__ == "__main__":
-    run_ultimate_judge("2408")
+    raise SystemExit(main(sys.argv[1:] or STOCK_LIST))

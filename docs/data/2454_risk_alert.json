@@ -1,0 +1,12 @@
+{
+  "stock_id": "2454",
+  "stock": "2454 聯發科",
+  "observation_date": "2026-08-03",
+  "close": 3910.0,
+  "foreign_z": 0.937,
+  "total_institutional_z": 1.272,
+  "news_sentiment_score": 1.0,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-08-03T17:38:40.131350+00:00"
+}

@@ -41,9 +41,7 @@ from news_sentiment_log import (
 from prediction_tracker import (
     load_log, save_log, resolve_pending, add_new_prediction, compute_track_record, analyze_errors,
 )
-from db_manager import upsert_dataframe
-
-from db_manager import upsert_dataframe, get_db_connection
+from db_manager import upsert_dataframe, get_db_connection, init_database
 
 OUTPUT_DIR_ABS = os.path.join(REPO_ROOT, OUTPUT_DIR)
 
@@ -67,6 +65,66 @@ def _series_from_df(df, value_cols: list) -> dict:
             if v is not None:
                 series[col].append({"time": t, "value": v})
     return series
+
+
+def _load_json_if_exists(path: str):
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"  讀取 JSON 失敗 {path}: {exc}")
+        return None
+
+
+def _load_v3_features(stock_id: str) -> dict:
+    """讀取已生成的模型、AI、風險與產業資料，供前端 JSON 使用。"""
+    mapping = {
+        "ai_report": f"{stock_id}_ai_report.json",
+        "grid_strategy": f"{stock_id}_grid_strategy.json",
+        "ai_news_sentiment": f"{stock_id}_news_ai_sentiment.json",
+        "xgb_prediction": f"{stock_id}_xgb_prediction.json",
+        "xgb_metrics": f"{stock_id}_xgb_metrics.json",
+        "risk_alert": f"{stock_id}_risk_alert.json",
+        "ultimate_judge": f"{stock_id}_ultimate_judge.json",
+        "backtest": f"{stock_id}_backtest.json",
+    }
+    result = {}
+    for key, filename in mapping.items():
+        value = _load_json_if_exists(os.path.join(OUTPUT_DIR_ABS, filename))
+        if value is not None:
+            result[key] = value
+
+    conn = get_db_connection()
+    try:
+        df_dram = pd.read_sql_query(
+            "SELECT date, ddr4_8gb_price, ddr4_4gb_price, daily_change_pct, source "
+            "FROM dram_spot_price ORDER BY date DESC LIMIT 250",
+            conn,
+        )
+        df_proxy = pd.read_sql_query(
+            "SELECT date, position_proxy_score, retail_proxy_score, comment, source "
+            "FROM weekly_position_proxy WHERE stock_id = ? ORDER BY date DESC LIMIT 52",
+            conn,
+            params=(stock_id,),
+        )
+    finally:
+        conn.close()
+
+    if not df_dram.empty:
+        df_dram["date"] = pd.to_datetime(df_dram["date"], errors="coerce")
+        df_dram = df_dram.dropna(subset=["date"]).sort_values("date")
+        result["dram_series"] = _series_from_df(df_dram, ["ddr4_8gb_price", "ddr4_4gb_price", "daily_change_pct"])
+        result["dram_source"] = str(df_dram.iloc[-1].get("source", ""))
+    if not df_proxy.empty:
+        df_proxy["date"] = pd.to_datetime(df_proxy["date"], errors="coerce")
+        df_proxy = df_proxy.dropna(subset=["date"]).sort_values("date")
+        result["position_proxy_series"] = _series_from_df(
+            df_proxy, ["position_proxy_score", "retail_proxy_score"]
+        )
+        result["position_proxy_disclaimer"] = "籌碼代理分數，不是集保持股比例。"
+    return result
 
 
 def add_kd_and_signals(df: pd.DataFrame) -> pd.DataFrame:
@@ -177,6 +235,7 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
         inst_full_df = None
 
     # ---------- 財經新聞 ----------
+    news_df = pd.DataFrame(columns=["date", "title", "source", "link"])
     try:
         news_end_date = end_date
         news_start_date = (datetime.today() - timedelta(days=NEWS_LOOKBACK_DAYS)).strftime("%Y-%m-%d")
@@ -187,14 +246,32 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
         news = {"total": 0, "positive_count": 0, "negative_count": 0, "neutral_count": 0, "articles": []}
 
     # ---------- 新聞情緒每日累積記錄 ----------
+    # 只記錄最新交易日當天的新聞，不再把近 7 天重疊新聞包成「每日」分數。
     try:
         sentiment_log_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}_news_sentiment.json")
         sentiment_log = news_sentiment_load_log(sentiment_log_path)
-        today_str = datetime.today().strftime("%Y-%m-%d")
-        sentiment_log = news_sentiment_add_daily_entry(sentiment_log, today_str, news)
-        news_sentiment_save_log(sentiment_log_path, sentiment_log)
+        latest_trade_date = full_df["date"].max().strftime("%Y-%m-%d")
+        if not news_df.empty:
+            daily_news_df = news_df[news_df["date"].dt.strftime("%Y-%m-%d") == latest_trade_date]
+            daily_news = summarize_news(
+                daily_news_df,
+                max_articles=NEWS_TODAY_MAX_ARTICLES,
+                today_max_articles=NEWS_TODAY_MAX_ARTICLES,
+            ) if not daily_news_df.empty else {
+                "total": 0, "positive_count": 0, "negative_count": 0,
+                "neutral_count": 0, "articles": [],
+            }
+        else:
+            daily_news = {"total": 0, "positive_count": 0, "negative_count": 0, "neutral_count": 0, "articles": []}
+        existing_daily = next((entry for entry in sentiment_log if entry.get("date") == latest_trade_date), None)
+        if daily_news.get("total", 0) > 0 or existing_daily is None:
+            sentiment_log = news_sentiment_add_daily_entry(sentiment_log, latest_trade_date, daily_news)
+            news_sentiment_save_log(sentiment_log_path, sentiment_log)
+        else:
+            print(f"  [新聞情緒] {latest_trade_date} 本次抓取為空，保留既有記錄")
         news["sentiment_history"] = sentiment_log[-90:]
         news["sentiment_history_total"] = len(sentiment_log)
+        news["sentiment_log_method"] = "latest-trading-day-only"
     except Exception as e:
         print(f"  新聞情緒累積記錄失敗({stock_id}): {e}")
         sentiment_log = []
@@ -428,7 +505,9 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
             if margin_df is not None and not margin_df.empty:
                 m_temp = margin_df.copy()
                 m_temp["date"] = pd.to_datetime(m_temp["date"]).dt.strftime("%Y-%m-%d")
-                m_temp["margin_change"] = m_temp["margin_buy"] - m_temp["margin_sell"]
+                m_temp["margin_change"] = (m_temp["margin_buy"] - m_temp["margin_sell"]) / 1000
+                m_temp["margin_balance"] = m_temp["margin_balance"] / 1000
+                m_temp["short_balance"] = m_temp["short_balance"] / 1000
                 db_chips_df = db_chips_df.merge(
                     m_temp[["date", "margin_balance", "margin_change", "short_balance"]],
                     on="date", how="left"
@@ -447,56 +526,9 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
         # =====================================================================
 
     except Exception as e:
-        print(f"  CSV 匯出或資料庫寫入失敗({stock_id}): {e}")
+        raise RuntimeError(f"CSV 匯出或資料庫寫入失敗({stock_id}): {e}") from e
 
-    # =====================================================================
-    # 👇 【V3 新增】讀取 V3 專屬的進階數據與 AI 報告，準備傳給前端
-    # =====================================================================
-    v3_data = {}
-    try:
-        # 1. 讀取 AI 首席分析師早報
-        report_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}_ai_report.json")
-        if os.path.exists(report_path):
-            with open(report_path, "r", encoding="utf-8") as f:
-                v3_data["ai_report"] = json.load(f)
-        
-        # 2. 讀取波段黃金網格防線
-        grid_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id[:4]}_grid_strategy.json")
-        if os.path.exists(grid_path):
-            with open(grid_path, "r", encoding="utf-8") as f:
-                v3_data["grid_strategy"] = json.load(f)
-                
-        # 3. 讀取 AI 新聞情緒零樣本分析
-        news_ai_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}_news_ai_sentiment.json")
-        if os.path.exists(news_ai_path):
-            with open(news_ai_path, "r", encoding="utf-8") as f:
-                v3_data["ai_news_sentiment"] = json.load(f)
-
-        # 4. 讀取 SQLite 中的 DRAM 現貨走勢與集保大戶籌碼
-        conn = get_db_connection()
-        df_dram = pd.read_sql("SELECT * FROM dram_spot_price ORDER BY date DESC LIMIT 250", conn)
-        df_whales = pd.read_sql(f"SELECT * FROM weekly_whales WHERE stock_id = '{stock_id}' ORDER BY date DESC LIMIT 52", conn)
-        conn.close()
-        
-        # 👇 【關鍵修正】把 SQLite 讀出來的字串轉回 datetime 格式
-        if not df_dram.empty:
-            df_dram["date"] = pd.to_datetime(df_dram["date"])
-            df_dram = df_dram.sort_values("date")
-            v3_data["dram_series"] = _series_from_df(df_dram, ["ddr4_8gb_price", "ddr4_4gb_price"])
-        
-        if not df_whales.empty:
-            df_whales["date"] = pd.to_datetime(df_whales["date"])
-            df_whales = df_whales.sort_values("date")
-            v3_data["whales_series"] = _series_from_df(df_whales, ["whale_pct", "retail_pct"])
-
-        # 👇 【Lesson 16 新增】5. 讀取 V4 終極投資長判決
-        judge_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}_ultimate_judge.json")
-        if os.path.exists(judge_path):
-            with open(judge_path, "r", encoding="utf-8") as f:
-                v3_data["ultimate_judge"] = json.load(f)
-
-    except Exception as e:
-        print(f"  [V3 整合] 讀取進階資料失敗({stock_id}): {e}")
+    v3_data = _load_v3_features(stock_id)
 
     return {
         "stock_id": stock_id,
@@ -518,15 +550,51 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
     }
 
 
-def main():
-    stock_ids = sys.argv[1:] if len(sys.argv) > 1 else STOCK_LIST
-    token = os.environ.get("FINMIND_TOKEN", "")
+def refresh_v3_only(stock_ids: list[str]) -> None:
+    """不重新呼叫外部 API，只把後續模型/AI 產物注入既有前端 JSON。"""
+    refreshed = []
+    for stock_id in stock_ids:
+        out_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}.json")
+        if not os.path.exists(out_path):
+            print(f"⚠️ [{stock_id}] 尚無基礎 JSON，略過進階資料刷新")
+            continue
+        with open(out_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        data["v3_features"] = _load_v3_features(stock_id)
+        data["enriched_at"] = datetime.now(timezone.utc).isoformat()
+        temp_path = out_path + ".tmp"
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+        os.replace(temp_path, out_path)
+        refreshed.append(stock_id)
+        print(f"✅ [{stock_id}] 已刷新模型與 AI 前端資料")
 
+    manifest_path = os.path.join(OUTPUT_DIR_ABS, "manifest.json")
+    if os.path.exists(manifest_path):
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+        manifest["enriched_at"] = datetime.now(timezone.utc).isoformat()
+        temp_manifest_path = manifest_path + ".tmp"
+        with open(temp_manifest_path, "w", encoding="utf-8") as f:
+            json.dump(manifest, f, ensure_ascii=False, indent=2)
+        os.replace(temp_manifest_path, manifest_path)
+
+
+def main():
+    args = sys.argv[1:]
+    refresh_only = "--refresh-v3-only" in args
+    stock_ids = [arg for arg in args if not arg.startswith("--")] or STOCK_LIST
+    init_database()
     os.makedirs(OUTPUT_DIR_ABS, exist_ok=True)
 
+    if refresh_only:
+        refresh_v3_only(stock_ids)
+        return
+
+    token = os.environ.get("FINMIND_TOKEN", "")
     try:
         name_map = get_stock_names(token=token)
-        print(f"已取得股票名稱對照表,共 {len(name_map)} 檔")
+        print(f"已取得股票名稱對照表，共 {len(name_map)} 檔")
     except Exception as e:
         print(f"股票名稱對照表抓取失敗: {e}")
         name_map = {}
@@ -535,27 +603,30 @@ def main():
         market_start_date = (datetime.today() - timedelta(days=int(ANALYSIS_LOOKBACK_YEARS * 365))).strftime("%Y-%m-%d")
         market_end_date = datetime.today().strftime("%Y-%m-%d")
         market_df = get_market_index(market_start_date, market_end_date, token=token)
-        print(f"已取得大盤加權指數,共 {len(market_df)} 筆")
+        print(f"已取得大盤加權指數，共 {len(market_df)} 筆")
     except Exception as e:
-        print(f"大盤加權指數抓取失敗(ML模型會少一組特徵,不影響其他功能): {e}")
+        print(f"大盤加權指數抓取失敗，ML 會使用缺失旗標/0 值: {e}")
         market_df = None
 
     manifest = []
     manifest_names = {}
-
+    failures = []
     for stock_id in stock_ids:
         print(f"抓取並計算 {stock_id} ...")
         stock_name = name_map.get(stock_id)
         try:
             data = build_one(stock_id, token=token, stock_name=stock_name, market_df=market_df)
         except Exception as e:
-            print(f"  跳過 {stock_id},失敗原因: {e}")
+            failures.append(stock_id)
+            print(f"❌ 跳過 {stock_id}: {e}")
             continue
 
         out_path = os.path.join(OUTPUT_DIR_ABS, f"{stock_id}.json")
-        with open(out_path, "w", encoding="utf-8") as f:
+        temp_path = out_path + ".tmp"
+        with open(temp_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
-        print(f"  已輸出: {out_path} ({len(data['price'])} 筆)")
+        os.replace(temp_path, out_path)
+        print(f"✅ 已輸出: {out_path} ({len(data['price'])} 筆)")
         manifest.append(stock_id)
         manifest_names[stock_id] = stock_name
 
@@ -565,8 +636,11 @@ def main():
             "stocks": manifest,
             "stock_names": manifest_names,
             "updated_at": datetime.now(timezone.utc).isoformat(),
+            "news_lookback_days": NEWS_LOOKBACK_DAYS,
         }, f, ensure_ascii=False)
     print(f"已輸出股票清單索引: {manifest_path}")
+    if failures and len(failures) == len(stock_ids):
+        raise RuntimeError("所有股票資料建置皆失敗")
 
 
 if __name__ == "__main__":

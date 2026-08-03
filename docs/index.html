@@ -90,7 +90,7 @@
           </div>
 
           <div class="overview-card">
-            <div class="overview-label">新聞氣氛(近14天)</div>
+            <div class="overview-label">新聞氣氛(近7天)</div>
             <div id="overview-news" class="overview-value overview-value-sm">-</div>
           </div>
         </div>
@@ -163,11 +163,14 @@
     
         <!-- V3 網格卡片 -->
         <div id="v3-grid-strategy-card" class="v3-ai-card" style="display: none;"></div>
+
+        <!-- XGBoost 原始模型機率：與下方邏輯迴歸實驗模型分開呈現 -->
+        <div id="v3-xgb-prediction-card" class="v3-ai-card" style="display: none;"></div>
     
-        <!-- 👇 V4 終極 AI 投資長判決卡片 (保留在此) 👇 -->
-        <div id="v4-ultimate-judge-card" class="card" style="display: none; margin-bottom: 20px;">
-          <h3 style="color: var(--accent); margin-bottom: 15px; font-size: 18px;">⚖️ 終極 AI 投資長 (CIO) 綜合勝率判決</h3>
-          <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 15px;">整合 XGBoost 數理機率、新聞情緒、波段網格與黑天鵝狀態的唯一決策指標。
+        <!-- V4 確定性綜合機率卡片 -->
+        <div id="v4-ultimate-judge-card" class="v3-ai-card" style="display: none; margin-bottom: 20px;">
+          <h3 style="color: var(--accent); margin-bottom: 15px; font-size: 18px;">⚖️ 多訊號確定性綜合機率</h3>
+          <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 15px;">以固定公式整合 XGBoost、新聞情緒、波段網格與風險警報；不由語言模型決定機率。
           </p>
           <div class="progress-bar-container"
             style="height: 28px; background: var(--down); border-radius: 6px; overflow: hidden; display: flex; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);">
@@ -180,7 +183,7 @@
           </div>
           <div class="v3-ai-card"
             style="margin-top: 20px; background: rgba(37, 99, 235, 0.05); border-left-color: #f59e0b;">
-            <div class="v3-ai-title" style="color: #d97706;">🧠 投資長加權邏輯微調說明</div>
+            <div class="v3-ai-title" style="color: #d97706;">🧮 固定加權公式說明</div>
             <div id="v4-ultimate-logic" class="v3-ai-text" style="font-size: 15px; line-height: 1.6;">資料讀取中...</div>
           </div>
         </div>
@@ -271,7 +274,7 @@
             <span class="prob-up-text">上漲 <b id="ml-up-pct">-</b>%</span>
             <span class="prob-down-text">下跌 <b id="ml-down-pct">-</b>%</span>
           </div>
-          <p class="prob-disclaimer">這是用近5年的股價/技術指標訓練的邏輯迴歸模型...</p>
+          <p class="prob-disclaimer">這是以歷史股價、技術指標、法人、大盤及可用新聞特徵訓練的邏輯迴歸實驗模型；它與上方 XGBoost 及綜合機率是不同模型，命中率也分開追蹤。</p>
           <div class="track-record-block">
             <div class="track-record-header"><span>這個模型過去猜得準不準?(自動追蹤驗證)</span></div>
             <div class="track-summary-card">
@@ -450,7 +453,7 @@
   </main>
 
   <footer>
-    資料來源: FinMind &middot; 僅供技術研究參考,非投資建議
+    資料來源: FinMind 與專案設定的可驗證外部資料 &middot; 僅供技術研究參考,非投資建議
   </footer>
 
   <script src="app.js"></script>

@@ -1,2 +1,27 @@
+# Secrets
 .env
+.env.*
+!.env.example
+
+# Python
 __pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# SQLite transient files (the main DB may be committed by the workflow)
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Temporary files
+*.tmp
+*.log

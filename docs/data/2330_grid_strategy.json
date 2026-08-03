@@ -1,0 +1,31 @@
+{
+  "stock": "2330 台積電",
+  "stock_id": "2330",
+  "date": "2026-08-03",
+  "current_price": 2370.0,
+  "wave_start": {
+    "date": "2026-03-31",
+    "price": 1760.0
+  },
+  "wave_peak": {
+    "date": "2026-06-22",
+    "price": 2510.0
+  },
+  "wave_summary": "波段由 1760.00 上升至 2510.00，目前收盤 2370.00。",
+  "grid_defense_lines": {
+    "level_382": "2223.50 元",
+    "level_500": "2135.00 元",
+    "level_618": "2046.50 元"
+  },
+  "grid_prices": {
+    "level_382_price": 2223.5,
+    "level_500_price": 2135.0,
+    "level_618_price": 2046.5
+  },
+  "hit_level": "none",
+  "strike_status": "尚未抵達回吐防線",
+  "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
+  "xgb_up_probability": 62.3,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-08-03T17:37:44.912627+00:00"
+}

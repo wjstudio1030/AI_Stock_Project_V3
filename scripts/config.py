@@ -1,51 +1,70 @@
-# scripts/config.py
+"""AI Stock 專案集中設定。
 
-FINMIND_API_URL = "https://api.finmindtrade.com/api/v4/data"
+所有憑證與部署差異都由環境變數提供；程式庫中不保存任何金鑰。
+"""
 
-# 若有 FinMind token 填這裡(可用 GitHub Actions Secrets 帶入環境變數覆蓋,見 build_data.py)
-FINMIND_TOKEN = ""
+from __future__ import annotations
 
-# 想追蹤的股票清單(之後要加股票,改這裡就好)
-STOCK_LIST = ["2408", "2344", "2337", "4973", "6770"]
+import os
+from pathlib import Path
 
-# 抓取區間:抓近 N 個交易日,避免每次抓全部歷史資料
-LOOKBACK_DAYS = 250
+from dotenv import load_dotenv
 
-# RSI 參數
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent
+load_dotenv(REPO_ROOT / ".env")
+DOCS_DATA_DIR = REPO_ROOT / "docs" / "data"
+DATA_DB_DIR = REPO_ROOT / "data_db"
+MODEL_DIR = DATA_DB_DIR / "models"
+
+FINMIND_API_URL = os.getenv("FINMIND_API_URL", "https://api.finmindtrade.com/api/v4/data")
+FINMIND_TOKEN = os.getenv("FINMIND_TOKEN", "").strip()
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
+
+
+def _csv_env(name: str, default: str) -> list[str]:
+    raw = os.getenv(name, default)
+    return [item.strip() for item in raw.split(",") if item.strip()]
+
+
+STOCK_LIST = _csv_env("STOCK_LIST", "2408,2344,2337,4973,6770")
+LOOKBACK_DAYS = int(os.getenv("LOOKBACK_DAYS", "250"))
 RSI_PERIODS = [6, 14]
-
-# 均線參數
 MA_WINDOWS = [5, 10, 20, 60]
-
-# 基本面資料(EPS/ROE等)要顯示近幾季
-FUNDAMENTALS_QUARTERS = 8
-
-# 「隔日漲跌機率」統計要抓近幾年的歷史資料(樣本越多統計越穩定,但抓取會比較慢)
-ANALYSIS_LOOKBACK_YEARS = 5
-
-# 同一種技術狀態的歷史樣本數至少要達到這個數字,統計才算可信,不夠會自動退回較寬鬆的分類
-ANALYSIS_MIN_SAMPLE = 20
-
-# 財經新聞要抓近幾天
-NEWS_LOOKBACK_DAYS = 7
-
-# 當天(最新一天)最多保留幾篇新聞(用時間新舊當作「熱門」的代理指標)
-NEWS_TODAY_MAX_ARTICLES = 10
-
-# 全部新聞最多保留幾篇(當天10篇 + 其餘幾天平均分配剩下的扣打)
-NEWS_MAX_ARTICLES = 30
-
-# 「隔日漲跌機率」預測準確率追蹤,最多保留幾筆歷史紀錄(每個交易日累積一筆)
-TRACK_RECORD_MAX_ENTRIES = 180
-
-# 新聞情緒每日累積記錄,最多保留幾筆(約1000筆等於快4年份的交易日)
-NEWS_SENTIMENT_LOG_MAX_ENTRIES = 1000
-
-# 新聞情緒歷史至少累積到幾筆,才拿去餵給ML模型當特徵(不夠的話ML模型會自動跳過這組特徵)
-NEWS_SENTIMENT_MIN_FOR_ML = 250
-
-# 三大法人連續買超/賣超超過幾天算是「異常」,要標記出來提醒
-ANOMALY_STREAK_THRESHOLD = 3
-
-# 輸出JSON存放位置(GitHub Pages 會發布 docs/ 目錄)
+FUNDAMENTALS_QUARTERS = int(os.getenv("FUNDAMENTALS_QUARTERS", "8"))
+ANALYSIS_LOOKBACK_YEARS = float(os.getenv("ANALYSIS_LOOKBACK_YEARS", "5"))
+ANALYSIS_MIN_SAMPLE = int(os.getenv("ANALYSIS_MIN_SAMPLE", "20"))
+NEWS_LOOKBACK_DAYS = int(os.getenv("NEWS_LOOKBACK_DAYS", "7"))
+NEWS_TODAY_MAX_ARTICLES = int(os.getenv("NEWS_TODAY_MAX_ARTICLES", "10"))
+NEWS_MAX_ARTICLES = int(os.getenv("NEWS_MAX_ARTICLES", "30"))
+TRACK_RECORD_MAX_ENTRIES = int(os.getenv("TRACK_RECORD_MAX_ENTRIES", "180"))
+NEWS_SENTIMENT_LOG_MAX_ENTRIES = int(os.getenv("NEWS_SENTIMENT_LOG_MAX_ENTRIES", "1000"))
+NEWS_SENTIMENT_MIN_FOR_ML = int(os.getenv("NEWS_SENTIMENT_MIN_FOR_ML", "250"))
+ANOMALY_STREAK_THRESHOLD = int(os.getenv("ANOMALY_STREAK_THRESHOLD", "3"))
 OUTPUT_DIR = "docs/data"
+
+# XGBoost
+XGB_MIN_TRAIN_SAMPLES = int(os.getenv("XGB_MIN_TRAIN_SAMPLES", "200"))
+XGB_HOLDOUT_DAYS = int(os.getenv("XGB_HOLDOUT_DAYS", "60"))
+XGB_SIGNAL_THRESHOLD = float(os.getenv("XGB_SIGNAL_THRESHOLD", "0.65"))
+
+# 回測與交易摩擦
+TAX_RATE = float(os.getenv("TAX_RATE", "0.003"))
+FEE_RATE = float(os.getenv("FEE_RATE", "0.001425"))
+HOLD_DAYS = int(os.getenv("HOLD_DAYS", "5"))
+
+# 風險警報採標準化異常，不使用對所有股票都不合理的固定張數門檻。
+ALERT_FOREIGN_Z = float(os.getenv("ALERT_FOREIGN_Z", "-2.5"))
+ALERT_TOTAL_Z = float(os.getenv("ALERT_TOTAL_Z", "-2.5"))
+ALERT_NEWS_SCORE = float(os.getenv("ALERT_NEWS_SCORE", "-0.6"))
+
+# DRAM 不再產生模擬價格。需提供真實 CSV URL、CSV 路徑，或單日真實報價。
+DRAM_DATA_URL = os.getenv("DRAM_DATA_URL", "").strip()
+DRAM_DATA_PATH = os.getenv("DRAM_DATA_PATH", "").strip()
+DRAM_LATEST_DATE = os.getenv("DRAM_LATEST_DATE", "").strip()
+DRAM_LATEST_8GB_PRICE = os.getenv("DRAM_LATEST_8GB_PRICE", "").strip()
+DRAM_LATEST_4GB_PRICE = os.getenv("DRAM_LATEST_4GB_PRICE", "").strip()
+DRAM_DATA_SOURCE = os.getenv("DRAM_DATA_SOURCE", "user-configured real source").strip()
+
+for directory in (DOCS_DATA_DIR, DATA_DB_DIR, MODEL_DIR):
+    directory.mkdir(parents=True, exist_ok=True)

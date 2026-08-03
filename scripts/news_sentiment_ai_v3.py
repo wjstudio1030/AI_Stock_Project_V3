@@ -1,146 +1,127 @@
-# scripts/news_sentiment_ai_v3.py
-"""
-AI Stock V3 - OpenAI 新聞情緒零樣本分析模組
-取代傳統關鍵字計數，利用 GPT-4o-mini 深度理解財經新聞標題的潛台詞、
-利多出盡與反諷語境，產出 -1.0 ~ +1.0 的真實情緒評分，並保存至 SQLite！
-"""
+"""以 Structured Outputs 分析近期新聞；無金鑰時使用明確標示的關鍵字備援。"""
 
-import os
+from __future__ import annotations
+
 import json
-import sqlite3
+import sys
+from datetime import datetime, timedelta, timezone
+
 import pandas as pd
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
-from openai import OpenAI
+
+from config import DOCS_DATA_DIR, STOCK_LIST
 from data_fetcher import get_stock_news
-from db_manager import get_db_connection
+from news_analysis import classify_news_title
+from openai_utils import has_openai_key, structured_json
+from project_data import save_json, stock_label
 
-# 1. 載入金鑰
-load_dotenv()
-api_key = os.environ.get("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("❌ 找不到 OPENAI_API_KEY！請檢查 .env 檔案。")
 
-client = OpenAI(api_key=api_key)
+def fetch_recent_news(stock_id: str, days: int = 10, limit: int = 15) -> list[dict]:
+    end = datetime.today().strftime("%Y-%m-%d")
+    start = (datetime.today() - timedelta(days=days)).strftime("%Y-%m-%d")
+    df = get_stock_news(stock_id, start, end)
+    records = []
+    for idx, row in df.head(limit).reset_index(drop=True).iterrows():
+        records.append({
+            "id": idx + 1,
+            "date": pd.Timestamp(row["date"]).strftime("%Y-%m-%d"),
+            "title": str(row["title"]),
+            "source": str(row.get("source") or ""),
+        })
+    return records
 
-# 檔案路徑
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.dirname(SCRIPT_DIR)
-OUTPUT_DIR = os.path.join(REPO_ROOT, "docs", "data")
 
-def fetch_recent_news_for_ai(stock_id: str = "2408", days: int = 7):
-    """抓取近期個股新聞，準備餵給 AI 進行深度情緒分析"""
-    end_date = datetime.today().strftime("%Y-%m-%d")
-    start_date = (datetime.today() - timedelta(days=days)).strftime("%Y-%m-%d")
-    
-    print(f"📡 正在從 FinMind 抓取 [{stock_id}] 近 {days} 天的新聞標題...")
-    try:
-        df_news = get_stock_news(stock_id, start_date, end_date)
-        if df_news.empty:
-            print("⚠️ 查無近期新聞資料。")
-            return []
-            
-        # 整理為乾淨的字典清單
-        news_list = []
-        for idx, row in df_news.iterrows():
-            news_list.append({
-                "id": idx + 1,
-                "date": row["date"].strftime("%Y-%m-%d") if isinstance(row["date"], pd.Timestamp) else str(row["date"])[:10],
-                "title": row["title"],
-                "source": row.get("source", "財經媒體")
-            })
-        print(f"✨ 成功整理出 {len(news_list)} 則相關財經新聞！")
-        return news_list[:15] # 為了 API 反應速度與專注度，取最新前 15 則
-    except Exception as e:
-        print(f"❌ 新聞抓取失敗：{e}")
-        return []
-
-def analyze_news_sentiment_zeroshot(stock_id: str = "2408"):
-    """呼叫 OpenAI 進行 Zero-shot 零樣本情緒深度評分"""
-    news_list = fetch_recent_news_for_ai(stock_id, days=10)
-    
-    if not news_list:
-        print("📭 沒有新聞可供分析，跳過評分。")
-        return None
-        
-    print("🧠 正在將新聞矩陣發送給 OpenAI 進行深度語意解讀 (排除字面陷阱)...")
-    
-    # --- 💡 【Lesson 8 核心】防語意陷阱的 Zero-shot 提示詞 ---
-    system_prompt = """
-    你是一位專精於半導體與記憶體產業 (DRAM) 的頂級金融市場情緒分析師。
-    你的任務是閱讀傳入的個股新聞標題，給出最客觀、最符合真實股市反應的情緒評分。
-    
-    【專業語意解讀原則 - 嚴格遵守】
-    1. 警惕「利多出盡」與「利空出盡」：若標題顯示獲利創新高但提及市場擔憂後市、或外資趁機調節，應調降分數；若提及大跌後跌無可跌、利空築底，應給予回升評價。
-    2. 識別多重語意：若同時提及成長與衰退，請以對股價趨勢影響最大的主軸線產品（如 DDR4/DDR5 現貨需求）為主。
-    3. 忽略情緒化字眼：不要被「狂飆」、「崩盤」等浮誇記者字眼綁架，深入評估其實際商業影響力。
-
-    【JSON 輸出格式規範】
-    請必定回傳純 JSON 物件，結構如下：
-    {
-      "stock_id": "股票代號",
-      "overall_sentiment_score": 數值 (介於 -1.0 到 +1.0 之間，小數點後二位。-1為極度看空，0為中性，+1為極度看多),
-      "market_vibe_summary": "用 40 字總結這批新聞展現的市場主旋律與潛在情緒隱患",
-      "article_analysis": [
-        {
-          "id": 對應的新聞編號,
-          "title": "新聞標題",
-          "score": 單篇分數 (-1.0 ~ +1.0),
-          "ai_comment": "一條 15 字以內的短評，說明為什麼給這個分數（如：雖提及成長但有報價下滑隱憂）"
-        }
-      ]
+def _fallback(stock_id: str, articles: list[dict]) -> dict:
+    analyses = []
+    scores = []
+    for article in articles:
+        classified = classify_news_title(article["title"])
+        score = 0.5 if classified["sentiment"] == "利多" else -0.5 if classified["sentiment"] == "利空" else 0.0
+        scores.append(score)
+        analyses.append({
+            "id": article["id"],
+            "title": article["title"],
+            "score": score,
+            "ai_comment": "未設定 OpenAI；使用關鍵字備援",
+        })
+    overall = round(sum(scores) / len(scores), 2) if scores else 0.0
+    return {
+        "stock_id": stock_id,
+        "overall_sentiment_score": overall,
+        "market_vibe_summary": "未設定 OpenAI API，以下為關鍵字法備援，不能視為深度語意分析。",
+        "article_analysis": analyses,
+        "analysis_method": "keyword_fallback",
     }
-    """
-    
-    user_prompt = f"以下是南亞科 ({stock_id}) 近期財經新聞標題，請進行嚴格的 Zero-shot 情緒分析：\n{json.dumps(news_list, ensure_ascii=False)}"
-    
+
+
+def analyze_news_sentiment(stock_id: str) -> dict | None:
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.2  # 低溫度讓評分標準保持嚴謹一致
-        )
-        
-        result_json_str = response.choices[0].message.content
-        result_dict = json.loads(result_json_str)
-        
-        # --- 美觀呈現於終端機 ---
-        score = result_dict.get("overall_sentiment_score", 0.0)
-        vibe = "🚀 極度樂觀" if score > 0.5 else "📈 偏多看好" if score > 0.1 else "⚖️ 處於中性" if score > -0.1 else "📉 偏空謹慎" if score > -0.5 else "⚠️ 極度悲觀"
-        
-        print("\n" + "="*60)
-        print(f"📰 【 AI Stock V3 ── OpenAI 財經新聞零樣本深度解讀 】 📰")
-        print("="*60)
-        print(f"📌 標的：{result_dict.get('stock_id', stock_id)} | 綜合情緒分數：【 {score:+.2f} 】 ({vibe})")
-        print("-" * 60)
-        print(f"🧠 【 市場氣氛總結 】：\n   {result_dict.get('market_vibe_summary', '-')}")
-        print("-" * 60)
-        print("🔍 【 關鍵標題深度診斷抽樣 】：")
-        
-        articles = result_dict.get("article_analysis", [])
-        for art in articles[:5]: # 印出前 5 篇重點
-            s = art.get('score', 0)
-            tag = "🔴 [利多]" if s > 0.2 else "🟢 [利空]" if s < -0.2 else "⚪ [中性]"
-            print(f"  {tag} {s:+.1f} | {art.get('title')[:26]}...")
-            print(f"      💡 AI短評：{art.get('ai_comment')}")
-        print("="*60)
-        
-        # 保存至 JSON 供網頁展示
-        out_file = os.path.join(OUTPUT_DIR, f"{stock_id}_news_ai_sentiment.json")
-        os.makedirs(os.path.dirname(out_file), exist_ok=True)
-        with open(out_file, "w", encoding="utf-8") as f:
-            json.dump(result_dict, f, ensure_ascii=False, indent=2)
-        print(f"💾 AI 情緒評分報告已同步保存至：[{out_file}]")
-        
-        return result_dict
-        
-    except Exception as e:
-        print(f"❌ OpenAI API 呼叫或解析失敗：{e}")
+        articles = fetch_recent_news(stock_id)
+    except Exception as exc:
+        print(f"⚠️ [{stock_id}] 沒有可分析新聞：{exc}")
         return None
+    if not articles:
+        return None
+
+    if not has_openai_key():
+        result = _fallback(stock_id, articles)
+    else:
+        schema = {
+            "type": "object",
+            "properties": {
+                "stock_id": {"type": "string"},
+                "overall_sentiment_score": {"type": "number", "minimum": -1, "maximum": 1},
+                "market_vibe_summary": {"type": "string", "maxLength": 120},
+                "article_analysis": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "integer"},
+                            "title": {"type": "string"},
+                            "score": {"type": "number", "minimum": -1, "maximum": 1},
+                            "ai_comment": {"type": "string", "maxLength": 80},
+                        },
+                        "required": ["id", "title", "score", "ai_comment"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "required": ["stock_id", "overall_sentiment_score", "market_vibe_summary", "article_analysis"],
+            "additionalProperties": False,
+        }
+        system = (
+            "你是台股財經新聞情緒分析師。只評估新聞對指定股票未來短期基本面與市場預期的影響。"
+            "辨識否定、利多出盡、利空出盡與同時含正負資訊的標題；不要因誇張字眼直接給極端分數。"
+        )
+        user = f"標的：{stock_label(stock_id)}。請分析：\n{json.dumps(articles, ensure_ascii=False)}"
+        result = structured_json(
+            schema_name="stock_news_sentiment",
+            schema=schema,
+            system_prompt=system,
+            user_prompt=user,
+            temperature=0.15,
+        )
+        result["analysis_method"] = "openai_structured_output"
+
+    result["stock_id"] = stock_id
+    result["generated_at"] = datetime.now(timezone.utc).isoformat()
+    result["overall_sentiment_score"] = round(max(-1.0, min(1.0, float(result.get("overall_sentiment_score", 0)))), 2)
+    out = DOCS_DATA_DIR / f"{stock_id}_news_ai_sentiment.json"
+    save_json(out, result)
+    print(f"✅ [{stock_id}] 新聞情緒 {result['overall_sentiment_score']:+.2f} ({result['analysis_method']})")
+    return result
+
+
+def main(stock_ids: list[str]) -> int:
+    failures = []
+    for stock_id in stock_ids:
+        try:
+            analyze_news_sentiment(stock_id)
+        except Exception as exc:
+            failures.append(stock_id)
+            print(f"❌ [{stock_id}] 新聞情緒分析失敗：{exc}")
+    return 1 if failures and len(failures) == len(stock_ids) else 0
+
 
 if __name__ == "__main__":
-    analyze_news_sentiment_zeroshot("2408")
+    raise SystemExit(main(sys.argv[1:] or STOCK_LIST))

@@ -1,12 +1,31 @@
 {
-  "stock": "南亞科 2408",
+  "stock": "2408 南亞科",
+  "stock_id": "2408",
   "date": "2026-08-03",
-  "wave_summary": "此波段從198.5漲至505.0，現價396.5仍在高位，需謹慎觀察。",
-  "grid_defense_lines": {
-    "level_382": "38.2% 強勢防線價位387.92，狀態：尚未抵達",
-    "level_500": "50.0% 半山腰防線價位351.75，狀態：尚未抵達",
-    "level_618": "61.8% 最後防線價位315.58，狀態：尚未抵達"
+  "current_price": 396.5,
+  "wave_start": {
+    "date": "2026-03-31",
+    "price": 198.5
   },
-  "strike_status": "尚未抵達空手等待",
-  "ai_execution_order": "繼續空手等待，禁止追高！"
+  "wave_peak": {
+    "date": "2026-06-22",
+    "price": 505.0
+  },
+  "wave_summary": "波段由 198.50 上升至 505.00，目前收盤 396.50。",
+  "grid_defense_lines": {
+    "level_382": "387.92 元",
+    "level_500": "351.75 元",
+    "level_618": "315.58 元"
+  },
+  "grid_prices": {
+    "level_382_price": 387.92,
+    "level_500_price": 351.75,
+    "level_618_price": 315.58
+  },
+  "hit_level": "none",
+  "strike_status": "尚未抵達回吐防線",
+  "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
+  "xgb_up_probability": 45.0,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-08-03T17:37:44.752628+00:00"
 }

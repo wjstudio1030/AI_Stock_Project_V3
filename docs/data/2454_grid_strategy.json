@@ -1,0 +1,31 @@
+{
+  "stock": "2454 聯發科",
+  "stock_id": "2454",
+  "date": "2026-08-03",
+  "current_price": 3910.0,
+  "wave_start": {
+    "date": "2026-04-01",
+    "price": 1465.0
+  },
+  "wave_peak": {
+    "date": "2026-05-27",
+    "price": 4640.0
+  },
+  "wave_summary": "波段由 1465.00 上升至 4640.00，目前收盤 3910.00。",
+  "grid_defense_lines": {
+    "level_382": "3427.15 元",
+    "level_500": "3052.50 元",
+    "level_618": "2677.85 元"
+  },
+  "grid_prices": {
+    "level_382_price": 3427.15,
+    "level_500_price": 3052.5,
+    "level_618_price": 2677.85
+  },
+  "hit_level": "none",
+  "strike_status": "尚未抵達回吐防線",
+  "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
+  "xgb_up_probability": 51.2,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-08-03T17:37:44.960625+00:00"
+}

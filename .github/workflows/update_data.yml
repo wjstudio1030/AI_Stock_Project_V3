@@ -1,62 +1,107 @@
-name: AI Stock V3 Daily Automator
+name: AI Stock Daily Pipeline
 
 on:
   schedule:
-    # 每天台股盤後自動執行 (可依需求調整時間)
-    - cron: '0 9 * * 1-5'
-  workflow_dispatch: # 支援手動按鈕觸發
+    # 17:00 Asia/Taipei, Monday-Friday (UTC 09:00)
+    - cron: "0 9 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-stock-daily-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-and-predict:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o-mini' }}
+      TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+      TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      STOCK_LIST: ${{ vars.STOCK_LIST || '2408,2344,2337,4973,6770' }}
+      DRAM_DATA_URL: ${{ secrets.DRAM_DATA_URL }}
+      DRAM_LATEST_DATE: ${{ vars.DRAM_LATEST_DATE }}
+      DRAM_LATEST_8GB_PRICE: ${{ secrets.DRAM_LATEST_8GB_PRICE }}
+      DRAM_LATEST_4GB_PRICE: ${{ secrets.DRAM_LATEST_4GB_PRICE }}
+      DRAM_DATA_SOURCE: ${{ vars.DRAM_DATA_SOURCE || 'configured verified source' }}
 
     steps:
-      - name: 📥 步驟一：拉取最新程式碼
-        uses: actions/checkout@v3
-
-      - name: 🐍 步驟二：設定 Python 環境
-        uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
         with:
-          python-version: '3.10'
+          fetch-depth: 0
 
-      - name: 📦 步驟三：安裝所需套件
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas numpy xgboost openai finmind requests beautifulsoup4 lightgbm matplotlib scikit-learn joblib python-dotenv
+          python -m pip install -r requirements.txt
 
-      - name: 🤖 步驟四：執行 V3/V4 全套量化與 AI 產線
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+      - name: Static validation
         run: |
-          echo "1. 抓取外部產業與籌碼資料..."
-          python scripts/fetch_dram.py
-          python scripts/fetch_whales.py
-          
-          echo "2. 訓練與更新 XGBoost AI 大腦..."
-          python scripts/train_xgb_v3.py
-          
-          echo "3. 呼叫 OpenAI 進行新聞與網格分析..."
+          python -m compileall -q scripts
+          python -m unittest discover -s tests -v
+          node --check docs/app.js
+
+      - name: Initialize database schema
+        run: python scripts/db_manager.py
+
+      - name: Refresh market, fundamentals, news, and base frontend data
+        run: python scripts/build_data.py
+
+      - name: Import verified DRAM data when configured
+        run: python scripts/fetch_dram.py
+
+      - name: Build clearly-labeled position proxy scores
+        run: python scripts/fetch_whales.py
+
+      - name: Train independent per-stock XGBoost models
+        run: python scripts/train_xgb_v3.py
+
+      - name: Generate current XGBoost predictions
+        run: python scripts/predict_today_v3.py
+
+      - name: Generate structured news and quant reports
+        run: |
           python scripts/news_sentiment_ai_v3.py
           python scripts/strategy_grid_ai_v3.py
           python scripts/ai_analyst_v3.py
-          
-          # 👇 【新加這行】呼叫 V4 AI 投資長判決
-          echo "🌟 呼叫 V4 AI 投資長進行終極判決..."
-          python scripts/ultimate_judge_ai_v4.py
-          
-          echo "4. 進行數據大一統打包 (給前端網頁用)..."
-          python scripts/build_data.py 2408
-          
-          echo "5. 啟動黑天鵝防禦與 Discord/TG 推播..."
-          python scripts/alert_system_v3.py
 
-      # 👇 【新加這個步驟】把機器人算好的新資料 Commit 並 Push 回 GitHub，讓網頁讀取！
-      - name: 📤 步驟五：將最新 AI 數據與判決自動 Commit 並 Push 上雲端
+      - name: Run relative-risk alerts
+        run: python scripts/alert_system_v3.py
+
+      - name: Generate deterministic signal fusion
+        run: python scripts/ultimate_judge_ai_v4.py
+
+      - name: Inject model and report outputs into frontend JSON
+        run: python scripts/build_data.py --refresh-v3-only
+
+      - name: Re-run static validation after generation
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data/ data_db/
-          git commit -m "🤖 [Automated] 每日盤後數據與 V4 AI 判決自動更新 [skip ci]" || echo "無資料變更"
-          git push
+          python -m compileall -q scripts
+          node --check docs/app.js
+
+      - name: Commit generated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data data_db
+          if git diff --cached --quiet; then
+            echo "No generated data changes"
+            exit 0
+          fi
+          git commit -m "chore(data): daily AI Stock update [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

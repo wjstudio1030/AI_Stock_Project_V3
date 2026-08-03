@@ -49,14 +49,8 @@ def compute_daily_score(news_summary: dict) -> float:
 
 
 def add_daily_entry(log: list, date_str: str, news_summary: dict) -> list:
-    """
-    幫今天新增一筆記錄(如果今天已經記錄過就跳過,不會重複累積)。
-    """
-    log = list(log)  # 淺拷貝,避免直接改到原本傳入的list
-    already_has_today = any(entry["date"] == date_str for entry in log)
-    if already_has_today:
-        return log
-
+    """以日期為鍵新增或更新一筆記錄。同一天重跑會覆寫最新結果。"""
+    log = [dict(entry) for entry in log if entry.get("date") != date_str]
     log.append({
         "date": date_str,
         "positive_count": news_summary.get("positive_count", 0),
@@ -65,4 +59,4 @@ def add_daily_entry(log: list, date_str: str, news_summary: dict) -> list:
         "total": news_summary.get("total", 0),
         "score": compute_daily_score(news_summary),
     })
-    return log
+    return sorted(log, key=lambda entry: entry.get("date", ""))

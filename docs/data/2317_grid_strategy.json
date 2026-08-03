@@ -1,0 +1,31 @@
+{
+  "stock": "2317 鴻海",
+  "stock_id": "2317",
+  "date": "2026-08-03",
+  "current_price": 253.0,
+  "wave_start": {
+    "date": "2026-03-31",
+    "price": 187.5
+  },
+  "wave_peak": {
+    "date": "2026-06-03",
+    "price": 309.0
+  },
+  "wave_summary": "波段由 187.50 上升至 309.00，目前收盤 253.00。",
+  "grid_defense_lines": {
+    "level_382": "262.59 元",
+    "level_500": "248.25 元",
+    "level_618": "233.91 元"
+  },
+  "grid_prices": {
+    "level_382_price": 262.59,
+    "level_500_price": 248.25,
+    "level_618_price": 233.91
+  },
+  "hit_level": "level_382",
+  "strike_status": "進入 38.2% 第一防線",
+  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
+  "xgb_up_probability": 38.1,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-08-03T17:37:45.007625+00:00"
+}
