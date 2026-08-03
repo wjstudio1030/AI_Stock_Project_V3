@@ -1,33 +1,31 @@
 name: AI Stock V3 Daily Automator
 
-# 設定機器人什麼時候要起床工作
 on:
   schedule:
-    # 每天台灣時間下午 15:00 (UTC 07:00) 自動執行
-    - cron: '0 7 * * 1-5' # 1-5 代表週一到週五執行
-  workflow_dispatch:      # 允許我們在網頁上點擊按鈕「手動立刻執行」
+    # 每天台股盤後自動執行 (可依需求調整時間)
+    - cron: '0 9 * * 1-5'
+  workflow_dispatch: # 支援手動按鈕觸發
 
 jobs:
   build-and-predict:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 步驟一：下載最新版程式碼
+      - name: 📥 步驟一：拉取最新程式碼
         uses: actions/checkout@v3
 
-      - name: 🐍 步驟二：安裝 Python 3.10 環境
+      - name: 🐍 步驟二：設定 Python 環境
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 📦 步驟三：安裝專案所需套件
+      - name: 📦 步驟三：安裝所需套件
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install pandas numpy xgboost openai finmind requests sqlite3 lightgbm matplotlib
 
-      - name: 🤖 步驟四：執行 V3 全套量化與 AI 產線
+      - name: 🤖 步驟四：執行 V3/V4 全套量化與 AI 產線
         env:
-          # 👇 這裡改為讀取 Telegram 的保險箱金鑰
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
@@ -44,17 +42,21 @@ jobs:
           python scripts/strategy_grid_ai_v3.py
           python scripts/ai_analyst_v3.py
           
+          # 👇 【新加這行】呼叫 V4 AI 投資長判決
+          echo "🌟 呼叫 V4 AI 投資長進行終極判決..."
+          python scripts/ultimate_judge_ai_v4.py
+          
           echo "4. 進行數據大一統打包 (給前端網頁用)..."
           python scripts/build_data.py 2408
           
-          echo "5. 啟動黑天鵝防禦與 Discord 推播..."
+          echo "5. 啟動黑天鵝防禦與 Discord/TG 推播..."
           python scripts/alert_system_v3.py
 
-      - name: 💾 步驟五：將最新數據存回 GitHub 雲端
+      # 👇 【新加這個步驟】把機器人算好的新資料 Commit 並 Push 回 GitHub，讓網頁讀取！
+      - name: 📤 步驟五：將最新 AI 數據與判決自動 Commit 並 Push 上雲端
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
-          # 只把資料庫與產出的 JSON 報告存進去
-          git add data_db/ docs/data/
-          git commit -m "🤖 Auto-update V3 Data & AI Reports" || echo "No changes to commit"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/ data_db/
+          git commit -m "🤖 [Automated] 每日盤後數據與 V4 AI 判決自動更新 [skip ci]" || echo "無資料變更"
           git push
