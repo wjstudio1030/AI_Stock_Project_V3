@@ -1,8 +1,8 @@
 {
-  "date": "2026-07-31",
+  "date": "2026-08-03",
   "stock": "2408 南亞科",
-  "trend_rating": "⭐️⭐️ 區間震盪",
-  "quant_summary": "XGBoost預測勝率偏低，外資賣超且KD值低，顯示短期壓力。",
-  "action_advice": "觀望為主，等待明確信號再進場。",
-  "risk_warning": "外資持續賣超可能影響股價走勢。"
+  "trend_rating": "⭐⭐ 區間震盪",
+  "quant_summary": "XGBoost 預測上漲勝率僅 39.9%，外資買超但投信賣超，市場情緒偏弱。",
+  "action_advice": "短期觀望，等待明確信號再行動。",
+  "risk_warning": "外資與投信籌碼分歧需留意。"
 }
