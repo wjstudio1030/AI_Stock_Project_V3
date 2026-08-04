@@ -1,8 +1,8 @@
 {
   "stock": "8299 群聯",
   "stock_id": "8299",
-  "date": "2026-08-03",
-  "current_price": 1760.0,
+  "date": "2026-08-04",
+  "current_price": 1820.0,
   "wave_start": {
     "date": "2026-03-31",
     "price": 1500.0
@@ -11,7 +11,7 @@
     "date": "2026-05-14",
     "price": 2880.0
   },
-  "wave_summary": "波段由 1500.00 上升至 2880.00，目前收盤 1760.00。",
+  "wave_summary": "波段由 1500.00 上升至 2880.00，目前收盤 1820.00。",
   "grid_defense_lines": {
     "level_382": "2352.84 元",
     "level_500": "2190.00 元",
@@ -25,7 +25,7 @@
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 54.1,
+  "xgb_up_probability": 54.9,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-03T18:06:05.411689+00:00"
+  "generated_at": "2026-08-04T11:25:00.855207+00:00"
 }
