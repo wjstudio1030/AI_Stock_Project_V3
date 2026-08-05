@@ -1,8 +1,8 @@
 {
   "stock": "2308 台達電",
   "stock_id": "2308",
-  "date": "2026-08-04",
-  "current_price": 1620.0,
+  "date": "2026-08-05",
+  "current_price": 1650.0,
   "wave_start": {
     "date": "2026-02-05",
     "price": 1150.0
@@ -11,7 +11,7 @@
     "date": "2026-05-27",
     "price": 2520.0
   },
-  "wave_summary": "波段由 1150.00 上升至 2520.00，目前收盤 1620.00。",
+  "wave_summary": "波段由 1150.00 上升至 2520.00，目前收盤 1650.00。",
   "grid_defense_lines": {
     "level_382": "1996.66 元",
     "level_500": "1835.00 元",
@@ -25,7 +25,7 @@
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 30.8,
+  "xgb_up_probability": 50.5,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-04T11:25:00.953405+00:00"
+  "generated_at": "2026-08-05T11:21:34.276192+00:00"
 }

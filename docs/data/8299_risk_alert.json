@@ -1,12 +1,12 @@
 {
   "stock_id": "8299",
   "stock": "8299 群聯",
-  "observation_date": "2026-08-04",
-  "close": 1820.0,
-  "foreign_z": -0.075,
-  "total_institutional_z": 0.143,
+  "observation_date": "2026-08-05",
+  "close": 1845.0,
+  "foreign_z": -0.058,
+  "total_institutional_z": -0.09,
   "news_sentiment_score": 0.5,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-04T11:25:36.166777+00:00"
+  "generated_at": "2026-08-05T11:22:05.294324+00:00"
 }

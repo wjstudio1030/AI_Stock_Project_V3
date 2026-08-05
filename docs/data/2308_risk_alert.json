@@ -1,12 +1,12 @@
 {
   "stock_id": "2308",
   "stock": "2308 台達電",
-  "observation_date": "2026-08-04",
-  "close": 1620.0,
-  "foreign_z": 1.985,
-  "total_institutional_z": 1.193,
-  "news_sentiment_score": 1.0,
+  "observation_date": "2026-08-05",
+  "close": 1650.0,
+  "foreign_z": 0.385,
+  "total_institutional_z": 0.489,
+  "news_sentiment_score": 0.8,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-04T11:25:36.214597+00:00"
+  "generated_at": "2026-08-05T11:22:05.334861+00:00"
 }

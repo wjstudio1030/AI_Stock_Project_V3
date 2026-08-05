@@ -1,6 +1,6 @@
 {
   "stock_id": "8299",
-  "observation_date": "2026-08-04",
+  "observation_date": "2026-08-05",
   "ultimate_up_probability": 62.4,
   "ultimate_down_probability": 37.6,
   "adjustment_logic": "XGBoost 基準 54.9%；新聞調整 +2.5%；網格調整 +5.0%；風險警報調整 +0.0%",
@@ -14,5 +14,5 @@
     "risk_cap_applied": false
   },
   "calculation_method": "deterministic_weighted_fusion_v1",
-  "generated_at": "2026-08-04T11:25:36.324482+00:00"
+  "generated_at": "2026-08-05T11:22:05.429189+00:00"
 }

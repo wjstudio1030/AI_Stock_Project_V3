@@ -1,12 +1,12 @@
 {
   "stock_id": "2330",
   "stock": "2330 台積電",
-  "observation_date": "2026-08-04",
-  "close": 2320.0,
-  "foreign_z": -0.661,
-  "total_institutional_z": -1.017,
-  "news_sentiment_score": 0.1,
+  "observation_date": "2026-08-05",
+  "close": 2405.0,
+  "foreign_z": 1.648,
+  "total_institutional_z": 1.286,
+  "news_sentiment_score": 0.8,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-04T11:25:36.186453+00:00"
+  "generated_at": "2026-08-05T11:22:05.308448+00:00"
 }
