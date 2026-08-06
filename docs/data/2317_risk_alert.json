@@ -1,12 +1,12 @@
 {
   "stock_id": "2317",
   "stock": "2317 鴻海",
-  "observation_date": "2026-08-05",
-  "close": 258.5,
-  "foreign_z": 1.537,
-  "total_institutional_z": 1.398,
-  "news_sentiment_score": 0.8,
+  "observation_date": "2026-08-06",
+  "close": 264.5,
+  "foreign_z": 0.856,
+  "total_institutional_z": 0.79,
+  "news_sentiment_score": 0.7,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-05T11:22:05.326730+00:00"
+  "generated_at": "2026-08-06T11:24:03.175959+00:00"
 }
