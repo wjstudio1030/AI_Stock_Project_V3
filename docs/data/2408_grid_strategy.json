@@ -1,8 +1,8 @@
 {
   "stock": "2408 南亞科",
   "stock_id": "2408",
-  "date": "2026-08-06",
-  "current_price": 459.0,
+  "date": "2026-08-07",
+  "current_price": 457.0,
   "wave_start": {
     "date": "2026-03-31",
     "price": 198.5
@@ -11,7 +11,7 @@
     "date": "2026-06-22",
     "price": 505.0
   },
-  "wave_summary": "波段由 198.50 上升至 505.00，目前收盤 459.00。",
+  "wave_summary": "波段由 198.50 上升至 505.00，目前收盤 457.00。",
   "grid_defense_lines": {
     "level_382": "387.92 元",
     "level_500": "351.75 元",
@@ -25,7 +25,7 @@
   "hit_level": "none",
   "strike_status": "尚未抵達回吐防線",
   "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 42.0,
+  "xgb_up_probability": 34.1,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-06T11:23:31.530330+00:00"
+  "generated_at": "2026-08-07T10:02:10.657292+00:00"
 }
