@@ -76,7 +76,6 @@ const overviewStockTitleEl = document.getElementById("overview-stock-title");
 const overviewUpdatedEl = document.getElementById("overview-updated");
 const overviewCloseEl = document.getElementById("overview-close");
 const overviewChangeEl = document.getElementById("overview-change");
-const overviewNewbieAdviceEl = document.getElementById("overview-newbie-advice"); // 新增: 投資建議
 const overviewPerEl = document.getElementById("overview-per");
 const overviewPbrEl = document.getElementById("overview-pbr");
 const overviewRsiEl = document.getElementById("overview-rsi");
@@ -89,6 +88,7 @@ const overviewAnomalyBannerEl = document.getElementById("overview-anomaly-banner
 const staleWarningEl = document.getElementById("stale-warning");
 const compareCountEl = document.getElementById("compare-count");
 const compareTableBodyEl = document.getElementById("compare-table-body");
+const checklistContainerEl = document.getElementById("checklist-container");
 
 const STALE_WARNING_DAYS = 4;
 let manifestStockIds = [];
@@ -659,8 +659,6 @@ function renderOverview(data) {
   } else {
     overviewChangeEl.textContent = "";
   }
-  
-  overviewNewbieAdviceEl.textContent = overview.newbie_advice || "-"; // 新增: 顯示投資建議
 
   overviewPerEl.textContent = overview.per != null ? overview.per.toFixed(2) : "-";
   overviewPbrEl.textContent = overview.pbr != null ? overview.pbr.toFixed(2) : "-";
@@ -778,7 +776,6 @@ function renderCompareTable(rows) {
       <td>${escapeHtml(data.stock_id)}${data.stock_name ? " " + escapeHtml(data.stock_name) : ""}</td>
       <td>${formatCompareValue(overview.close, 2)}</td>
       <td>${changeText}</td>
-      <td>${escapeHtml(overview.newbie_advice || "-")}</td> <!-- 新增: 投資建議欄位 -->
       <td>${formatCompareValue(overview.per, 1)}</td>
       <td>${formatCompareValue(overview.pbr, 1)}</td>
       <td>${overview.rsi14 != null ? overview.rsi14 : "-"}</td>
@@ -953,6 +950,7 @@ async function loadStock(stockId) {
   renderNews(data.news);
   renderSentimentHistory(data.news);
   renderOverview(data);
+  renderChecklist(data);
   renderV3Features(data);
   renderUltimateJudge(data);
 
@@ -1149,6 +1147,89 @@ function renderUltimateJudge(data) {
   document.getElementById("v4-ultimate-down-text").textContent = `下跌 ${downProb.toFixed(1)}%`;
   document.getElementById("v4-ultimate-bar-up").style.width = `${upProb}%`;
   document.getElementById("v4-ultimate-logic").textContent = judgeData.adjustment_logic || "-";
+}
+
+function renderChecklist(data) {
+  const conditions = data.overview?.conditions || {};
+  const details = conditions.details || {};
+  checklistContainerEl.innerHTML = "";
+
+  // 格式化數字的安全小工具
+  const safeNum = (val, digits = 2) => val != null ? Number(val).toFixed(digits) : "無資料";
+
+  // 計算季線乖離率 (判斷短線是否過熱或跌深)
+  let ma60BiasText = "";
+  if (details.close && details.ma60_today) {
+    const bias = ((details.close - details.ma60_today) / details.ma60_today) * 100;
+    ma60BiasText = `目前與季線乖離率為 <b>${bias > 0 ? '+' : ''}${bias.toFixed(2)}%</b>`;
+    if (bias > 15) ma60BiasText += " (乖離偏高，短線有拉回修正風險)";
+    else if (bias < -15) ma60BiasText += " (乖離偏低，可能有跌深反彈契機)";
+  }
+
+  // 定義條件清單與豐富的說明
+  const items = [
+    {
+      label: "1. KD 落入 20 以下 (尋找超賣區)",
+      passed: conditions.kd_under_20,
+      desc: `
+        <div class="chk-logic"><b>判斷邏輯：</b>昨日 K 值 ≤ 20。</div>
+        <div class="chk-data"><b>當前數據：</b>昨日 K=${safeNum(details.k_yest)}。今日 K=${safeNum(details.k_today)}、D=${safeNum(details.d_today)}。</div>
+        <div class="chk-warning">💡 <b>實戰補充：</b>若 K 值連續多日在 20 以下徘徊稱為「低檔鈍化」，代表空頭極強，此時不宜盲目接刀，需等待明確止跌訊號出現。</div>
+      `
+    },
+    {
+      label: "2. KD 出現黃金交叉 (短線轉強訊號)",
+      passed: conditions.kd_golden_cross,
+      desc: `
+        <div class="chk-logic"><b>判斷邏輯：</b>昨日 K < D 且 今日 K > D。</div>
+        <div class="chk-data"><b>當前數據：</b>昨日 K(${safeNum(details.k_yest)}) ${details.k_yest < details.d_yest ? '<' : '≮'} D(${safeNum(details.d_yest)}) ➡️ 今日 K(${safeNum(details.k_today)}) ${details.k_today > details.d_today ? '>' : '≯'} D(${safeNum(details.d_today)})。</div>
+        <div class="chk-warning">💡 <b>實戰補充：</b>黃金交叉若發生在 20 以下（低檔）的勝率較高；反之，若在 80 以上發生「死亡交叉」則為獲利了結的警戒訊號。</div>
+      `
+    },
+    {
+      label: "3. 股價在季線之上且季線上揚 (中期多頭)",
+      passed: conditions.ma60_uptrend,
+      desc: `
+        <div class="chk-logic"><b>判斷邏輯：</b>今日收盤價 > 今日季線(MA60)，且今日季線數值大於昨日。</div>
+        <div class="chk-data"><b>當前數據：</b>收盤價=${safeNum(details.close)}。今日季線=${safeNum(details.ma60_today)}，較昨日(${safeNum(details.ma60_yest)}) <span class="${details.ma60_today > details.ma60_yest ? 'txt-up' : 'txt-down'}">${details.ma60_today > details.ma60_yest ? '上升 📈' : '下降 📉'}</span>。</div>
+        <div class="chk-warning">💡 <b>實戰補充：</b>季線(60日均線)是判斷中期多空的分水嶺。${ma60BiasText}。</div>
+      `
+    },
+    {
+      label: "4. 區間抄底：跌破布林通道下軌",
+      passed: conditions.bb_lower_breakout,
+      desc: `
+        <div class="chk-logic"><b>進場條件：</b>今日收盤價 &lt; 布林通道下軌。</div>
+        <div class="chk-data"><b>當前數據：</b>收盤價=${safeNum(details.close)}。布林下軌=${safeNum(details.bb_lower)}、上軌=${safeNum(details.bb_upper)}。</div>
+        <div class="chk-warning">💡 <b>實戰補充：</b>在統計學上，股價有 95% 的時間會在布林通道內。跌破下線代表市場出現恐慌超跌，進場「搶反彈」。此策略在盤整或區間震盪時交易次數多且勝率亮眼。（獲利出場可設定為突破上軌）</div>
+      `
+    },
+    {
+      label: "5. 同邏輯對稱組：RSI 落入超賣區",
+      passed: conditions.rsi_oversold,
+      desc: `
+        <div class="chk-logic"><b>進場條件：</b>今日 RSI14 &lt; 30 (超賣區)。</div>
+        <div class="chk-data"><b>當前數據：</b>今日 RSI14 = ${safeNum(details.rsi14_today)}。</div>
+        <div class="chk-warning">💡 <b>實戰補充：</b>當指標落入超賣買進，等它一路漲到超買 (例如 RSI > 70) 賣出，這樣就是一個完整的交易週期。使用相同指標進出場，能避免時間週期不對稱的問題，出手機會也會有效提升。</div>
+      `
+    }
+  ];
+
+  items.forEach(item => {
+    const row = document.createElement("div");
+    row.className = `checklist-row ${item.passed ? 'pass' : 'fail'}`;
+
+    const icon = item.passed ? "✅" : "❌";
+    // 這裡我們不再用單純的 textContent，而是用 innerHTML 放入有結構的文字
+    row.innerHTML = `
+      <div class="checklist-icon">${icon}</div>
+      <div class="checklist-content">
+        <div class="checklist-label">${item.label}</div>
+        <div class="checklist-desc">${item.desc}</div>
+      </div>
+    `;
+    checklistContainerEl.appendChild(row);
+  });
 }
 
 setupCompareSorting();

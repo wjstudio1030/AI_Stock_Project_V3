@@ -19,6 +19,7 @@
       <select id="page-select">
         <option value="overview">總覽</option>
         <option value="compare">多股比較</option>
+        <option value="checklist">多空條件檢核表</option>
         <option value="price">K線</option>
         <option value="trend">走向分析</option>
         <option value="indicators">技術籌碼指標</option>
@@ -50,12 +51,6 @@
             <div class="overview-label">現價</div>
             <div id="overview-close" class="overview-value overview-value-lg">-</div>
             <div id="overview-change" class="overview-change"></div>
-          </div>
-
-          <!-- 新增: 新手投資建議卡片 -->
-          <div class="overview-card">
-            <div class="overview-label">新手投資建議</div>
-            <div id="overview-newbie-advice" class="overview-value overview-value-sm">-</div>
           </div>
 
           <div class="overview-card">
@@ -136,6 +131,22 @@
           </table>
         </div>
         <p class="overview-note">點任一列可以切換到該股票的總覽頁查看詳細內容。</p>
+      </section>
+    </div>
+
+    <!-- ===== 頁面0.8: 多空條件檢核表 ===== -->
+    <div class="page-group" data-page="checklist" style="display: none;">
+      <section class="chart-section">
+        <div class="chart-header">
+          <span>策略與訊號檢核狀態</span>
+        </div>
+        <div class="overview-note" style="margin-top: 0; margin-bottom: 16px;">
+          以下列出目前符合的量化與技術條件。未來有新的判斷標準都會加入此頁面。
+        </div>
+    
+        <div class="checklist-container" id="checklist-container">
+          <!-- JS 會在這裡動態產生打勾/打叉的項目 -->
+        </div>
       </section>
     </div>
 

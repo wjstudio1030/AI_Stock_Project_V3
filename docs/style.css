@@ -1102,3 +1102,80 @@ footer {
 #theme-toggle {
   font-family: inherit;
 }
+
+/* =========================================
+   多空條件檢核表專屬樣式
+========================================= */
+/* =========================================
+   多空條件檢核表專屬樣式 (進階版)
+========================================= */
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checklist-row {
+  display: flex;
+  align-items: flex-start;
+  /* 靠上對齊，因為文字變多了 */
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.checklist-row.pass {
+  background: rgba(16, 185, 129, 0.05);
+  border-left: 4px solid var(--down);
+  /* 左側加上過關的綠色邊框 */
+}
+
+.checklist-row.fail {
+  border-left: 4px solid var(--border);
+  /* 沒過關的灰色邊框 */
+  opacity: 0.9;
+}
+
+.checklist-icon {
+  font-size: 22px;
+  margin-top: 2px;
+}
+
+.checklist-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checklist-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.checklist-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.chk-logic {
+  color: var(--text-dim);
+}
+
+.chk-data {
+  background: rgba(37, 99, 235, 0.05);
+  /* 淡淡的藍底凸顯數據 */
+  padding: 6px 10px;
+  border-radius: 4px;
+  border-left: 2px solid var(--accent);
+}
+
+.chk-warning {
+  font-size: 12px;
+  color: var(--yellow-alert);
+}

@@ -154,13 +154,6 @@ def add_kd_and_signals(df: pd.DataFrame) -> pd.DataFrame:
                     df['出現黃金交叉'].astype(int) + \
                     df['趨勢向上非鈍化'].astype(int)
                     
-    def get_comment(score):
-        if score == 3: return "⭐⭐⭐ 黃金買點"
-        elif score == 2: return "⭐⭐ 偏多觀察"
-        elif score == 1: return "⭐ 弱勢反彈"
-        else: return "❌ 空頭或無訊號"
-        
-    df['新手投資建議'] = df['符合條件數'].apply(get_comment)
     return df
 
 
@@ -176,6 +169,11 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
     
     # 新增 KD 與投資建議欄位
     full_df = add_kd_and_signals(full_df)
+
+    # 計算布林通道上下軌
+    full_df['BB_std'] = full_df['close'].rolling(window=20).std()
+    full_df['BB_upper'] = full_df['MA20'] + (full_df['BB_std'] * 2)
+    full_df['BB_lower'] = full_df['MA20'] - (full_df['BB_std'] * 2)
 
     # 只保留最近 LOOKBACK_DAYS 個交易日給圖表顯示,避免檔案太大
     df = full_df.tail(LOOKBACK_DAYS).reset_index(drop=True)
@@ -404,7 +402,8 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
     # ---------- 總覽 ----------
     try:
         latest_row = df.iloc[-1]
-        prev_close = df.iloc[-2]["close"] if len(df) >= 2 else None
+        prev_row = df.iloc[-2] if len(df) >= 2 else latest_row
+        prev_close = prev_row["close"] if len(df) >= 2 else None
         change = None if prev_close is None else latest_row["close"] - prev_close
         change_pct = None if not prev_close else (change / prev_close * 100)
 
@@ -430,7 +429,27 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
             "news_positive": news.get("positive_count", 0),
             "news_negative": news.get("negative_count", 0),
             "news_neutral": news.get("neutral_count", 0),
-            "newbie_advice": latest_row.get("新手投資建議", "-"), # 提取新手投資建議
+            "conditions": {
+                "kd_under_20": bool(latest_row.get("KD落入20以下", False)),
+                "kd_golden_cross": bool(latest_row.get("出現黃金交叉", False)),
+                "ma60_uptrend": bool(latest_row.get("趨勢向上非鈍化", False)),
+                # 布林跌破下軌 與 RSI超賣 判斷 
+                "bb_lower_breakout": bool(latest_row.get("close", 0) < latest_row.get("BB_lower", 0)), 
+                "rsi_oversold": bool(latest_row.get("RSI14", 50) < 30),
+                "details": {
+                    "k_today": _clean(latest_row.get("K")),
+                    "d_today": _clean(latest_row.get("D")),
+                    "k_yest": _clean(prev_row.get("K")),
+                    "d_yest": _clean(prev_row.get("D")),
+                    "close": _clean(latest_row.get("close")),
+                    "ma60_today": _clean(latest_row.get("MA60")),
+                    "ma60_yest": _clean(prev_row.get("MA60")),
+                    # 新增布林上下軌 與 RSI 數值給前端 
+                    "bb_upper": _clean(latest_row.get("BB_upper")),
+                    "bb_lower": _clean(latest_row.get("BB_lower")),
+                    "rsi14_today": _clean(latest_row.get("RSI14")),
+                }
+            }
         }
     except Exception as e:
         print(f"  總覽資料整理失敗({stock_id}): {e}")
@@ -464,7 +483,8 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
 
         export_cols = [
             'close', 'volume', '外資', '投信', '自營商', '三大法人合計(張)', '融資增減(張)',
-            'K', 'D', 'KD落入20以下', '出現黃金交叉', '趨勢向上非鈍化', '新手投資建議'
+            'K', 'D', 'RSI14', 'BB_upper', 'BB_lower', 
+            'KD落入20以下', '出現黃金交叉', '趨勢向上非鈍化'
         ]
         export_cols = [c for c in export_cols if c in export_df.columns]
         
