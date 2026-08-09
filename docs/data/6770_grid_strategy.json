@@ -25,7 +25,7 @@
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 37.0,
+  "xgb_up_probability": 38.4,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-07T10:02:10.676099+00:00"
+  "generated_at": "2026-08-09T17:49:42.446509+00:00"
 }

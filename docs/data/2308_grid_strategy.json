@@ -25,7 +25,7 @@
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
-  "xgb_up_probability": 62.1,
+  "xgb_up_probability": 63.6,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-07T10:02:10.739823+00:00"
+  "generated_at": "2026-08-09T17:49:42.551049+00:00"
 }
