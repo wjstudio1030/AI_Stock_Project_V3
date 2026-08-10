@@ -877,7 +877,7 @@ const COMPARE_SORT_GETTERS = {
 
 function renderSortedCompareTable() {
   // 先定義表頭 (依照市場切換)
-  const isGlobal = currentMarket === "GLOBAL";
+  const isGlobal = currentMarket.toUpperCase() === "GLOBAL";
   
   const theadHTML = isGlobal 
     ? `<tr>
@@ -1107,8 +1107,8 @@ async function loadManifestAndInit() {
   const manifest = await res.json();
   
   // 讀取台股清單
-  manifestStockNames = manifest.stock_names || {};
   manifestStockIds = manifest.stocks || [];
+  manifestStockNames = manifest.stock_names || {};
   
   // 讀取全球股清單
   globalStockIds = manifest.global_stocks || [];
@@ -1117,11 +1117,30 @@ async function loadManifestAndInit() {
   // 綁定「市場切換」下拉選單的事件
   marketSelectEl.addEventListener("change", (e) => {
     currentMarket = e.target.value;
+    compareDataLoaded = false; // 告訴系統：市場換了，舊資料作廢
     
-    // 👇 補上這行：讓系統知道切換市場後，多股比較表需要重新抓資料
-    compareDataLoaded = false; 
+    // 1. 記住切換市場前，使用者正在看哪個頁面 (例如: compare)
+    const prevPage = pageSelectEl.value;
     
+    // 2. 更新頁面的下拉選單選項 (台股/全球股專屬選單)
     updateDropdownsByMarket();
+    
+    // 3. 判斷新市場有沒有原本的頁面，如果有就留在該頁，沒有就預設跳回「總覽(overview)」
+    const hasPage = Array.from(pageSelectEl.options).some(opt => opt.value === prevPage);
+    const targetPage = hasPage ? prevPage : "overview";
+    
+    // 4. 強制 UI 選單切換到正確的頁面，並觸發畫面渲染
+    pageSelectEl.value = targetPage;
+    
+    // 如果你有 setActivePage 函式，請呼叫它來切換畫面
+    if (typeof setActivePage === "function") {
+        setActivePage(targetPage);
+    }
+    
+    // 5. 如果目前正停留在「多股比較」，強制重新抓取新市場的表格資料
+    if (targetPage === "compare") {
+      loadCompareTable(true);
+    }
   });
 
   // 綁定「股票切換」下拉選單的事件

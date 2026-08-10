@@ -211,18 +211,33 @@ def build_global_stock(ticker: str, name: str):
 
 def update_manifest(success_tickers):
     manifest_path = os.path.join(OUTPUT_DIR_ABS, "manifest.json")
+    
+    # 1. 建立空字典作為預設值
+    manifest = {}
+    
+    # 2. 安全讀取機制：加入 try...except 保護傘
     if os.path.exists(manifest_path):
-        with open(manifest_path, "r", encoding="utf-8") as f:
-            manifest = json.load(f)
-    else:
-        manifest = {}
+        try:
+            with open(manifest_path, "r", encoding="utf-8") as f:
+                manifest = json.load(f)
+        except Exception as e:
+            # 如果檔案壞掉 (例如 Git 衝突造成的 JSONDecodeError)，就印出警告並從空字典重新開始
+            print(f"⚠️ 讀取 manifest.json 發生錯誤 ({e})，將自動重建檔案。")
+            manifest = {}
 
+    # 3. 只寫入全球股專屬欄位，絕對不碰台股的 "stocks" 欄位
     manifest["global_stocks"] = success_tickers
     manifest["global_stock_names"] = GLOBAL_STOCKS
     
+    # (可選) 加上更新時間，幫助我們之後追蹤除錯
+    from datetime import datetime, timezone
+    manifest["global_updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # 4. 安全寫回檔案
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=2)
-    print("✅ manifest.json 全球股清單已更新")
+        
+    print(f"✅ manifest.json 全球股清單已更新 (成功寫入 {len(success_tickers)} 檔)")
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR_ABS, exist_ok=True)
