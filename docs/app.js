@@ -875,50 +875,80 @@ const COMPARE_SORT_GETTERS = {
   rsi: (data) => data.overview?.rsi14,
 };
 
+
+// --- 多股比較表相關函式 (徹底修復幽靈 DOM 與排序脫節問題) ---
+
+// 1. 新增：點擊表格列時，自動切換到該股票的總覽頁面
+window.switchToStock = function(stockId) {
+  const sSelect = document.getElementById("stock-select");
+  const pSelect = document.getElementById("page-select");
+  if (sSelect) sSelect.value = stockId;
+  loadStock(stockId);
+  if (pSelect) pSelect.value = "overview";
+  setActivePage("overview");
+};
+
 function renderSortedCompareTable() {
-  // 先定義表頭 (依照市場切換)
   const isGlobal = currentMarket.toUpperCase() === "GLOBAL";
   
+  // 動態建立表頭 (加上點擊排序標籤)
   const theadHTML = isGlobal 
     ? `<tr>
-        <th>股票</th><th>現價</th><th>漲跌%</th><th>RSI14</th><th>均線排列</th>
+        <th style="cursor: pointer;" title="點擊排序">股票 ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">現價 ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">漲跌% ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">RSI14 ↕</th>
+        <th>均線排列</th>
        </tr>`
     : `<tr>
-        <th>股票</th><th>現價</th><th>漲跌%</th><th>外資買賣</th><th>PER</th><th>PBR</th><th>RSI14</th><th>均線</th><th>隔日漲跌機率</th>
+        <th style="cursor: pointer;" title="點擊排序">股票 ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">現價 ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">漲跌% ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">外資買賣 ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">PER ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">PBR ↕</th>
+        <th style="cursor: pointer;" title="點擊排序">RSI14 ↕</th>
+        <th>均線</th>
+        <th>隔日漲跌機率</th>
        </tr>`;
        
-  // 建立表格內容
+  // 動態建立表格內容
   let tbodyHTML = "";
   compareRows.forEach(data => {
     const ov = data.overview || {};
-    const priceStr = ov.close !== undefined ? ov.close : "-";
-    const changePctStr = ov.change_pct !== undefined ? `${ov.change_pct}%` : "-";
+    const priceStr = ov.close !== undefined ? ov.close.toFixed(2) : "-";
     const rsiStr = ov.rsi14 !== undefined ? ov.rsi14 : "-";
     const maStateStr = ov.ma_state || "盤整";
     
-    // 判斷漲跌顏色
-    const changeClass = ov.change_pct > 0 ? 'up' : (ov.change_pct < 0 ? 'down' : '');
+    // 漲跌幅顏色與符號 (套用 index.html 裡的 css)
+    const changeClass = ov.change_pct > 0 ? 'txt-up' : (ov.change_pct < 0 ? 'txt-down' : '');
+    const sign = ov.change_pct > 0 ? "+" : "";
+    const changeText = ov.change_pct !== undefined ? `<span class="${changeClass}">${sign}${ov.change_pct}%</span>` : "-";
     
     if (isGlobal) {
-      // 全球股專用的表格列
-      tbodyHTML += `<tr>
+      tbodyHTML += `<tr style="cursor: pointer;" onclick="switchToStock('${data.stock_id}')" class="compare-row-hover">
         <td>${data.stock_id} ${data.stock_name}</td>
         <td>${priceStr}</td>
-        <td class="${changeClass}">${changePctStr}</td>
+        <td>${changeText}</td>
         <td>${rsiStr}</td>
         <td>${maStateStr}</td>
       </tr>`;
     } else {
-      // 台股專用的表格列
-      const perStr = ov.per || "-";
-      const pbrStr = ov.pbr || "-";
-      const probStr = ov.next_day_up_pct ? `${ov.next_day_up_pct}%` : "資料不足";
-      const foreignStr = ov.foreign_net_today || "-";
+      const perStr = ov.per !== undefined ? ov.per.toFixed(2) : "-";
+      const pbrStr = ov.pbr !== undefined ? ov.pbr.toFixed(2) : "-";
+      const probStr = ov.next_day_up_pct != null ? `<span class="txt-up">${ov.next_day_up_pct}%</span> / <span class="txt-down">${ov.next_day_down_pct}%</span>` : "資料不足";
       
-      tbodyHTML += `<tr>
+      let foreignStr = "-";
+      if (ov.foreign_net_today !== undefined && ov.foreign_net_today !== null) {
+          const fCls = ov.foreign_net_today > 0 ? 'txt-up' : (ov.foreign_net_today < 0 ? 'txt-down' : '');
+          const fSign = ov.foreign_net_today > 0 ? '+' : '';
+          foreignStr = `<span class="${fCls}">${fSign}${ov.foreign_net_today}</span>`;
+      }
+      
+      tbodyHTML += `<tr style="cursor: pointer;" onclick="switchToStock('${data.stock_id}')" class="compare-row-hover">
         <td>${data.stock_id} ${data.stock_name}</td>
         <td>${priceStr}</td>
-        <td class="${changeClass}">${changePctStr}</td>
+        <td>${changeText}</td>
         <td>${foreignStr}</td>
         <td>${perStr}</td>
         <td>${pbrStr}</td>
@@ -929,20 +959,25 @@ function renderSortedCompareTable() {
     }
   });
 
-  // 安全寫入：直接對現有的 tbody 的「父元素 (也就是 table)」進行整併覆蓋
-  if (compareTableBodyEl && compareTableBodyEl.parentElement) {
-      compareTableBodyEl.parentElement.innerHTML = `<thead>${theadHTML}</thead><tbody id="compare-table-body">${tbodyHTML}</tbody>`;
+  // 安全更新表格 DOM：直接抓取 Table 本體，不使用全域變數，避開幽靈脫節問題
+  const tableEl = document.getElementById("compare-table");
+  if (tableEl) {
+      tableEl.innerHTML = `<thead>${theadHTML}</thead><tbody id="compare-table-body">${tbodyHTML}</tbody>`;
+      // 表頭被我們覆蓋重建了，所以一定要重新綁定點擊排序的監聽器！
+      setupCompareSorting();
   }
+  
+  const countEl = document.getElementById("compare-count");
+  if (countEl) countEl.textContent = `共 ${compareRows.length} 檔`;
 }
 
 let compareSortCol = "stock_id";
 let compareSortAsc = true;
 
 function setupCompareSorting() {
-  const ths = document.querySelectorAll(".compare-table th");
+  const ths = document.querySelectorAll("#compare-table th");
   ths.forEach((th) => {
     th.addEventListener("click", () => {
-      // 取得點擊的欄位名稱
       const colText = th.textContent.replace("↕", "").trim();
       let colKey = "stock_id";
       
@@ -953,22 +988,19 @@ function setupCompareSorting() {
       else if (colText.includes("PBR")) colKey = "pbr";
       else if (colText.includes("外資")) colKey = "foreign_net_today";
       
-      // 切換排序方向
       if (compareSortCol === colKey) {
         compareSortAsc = !compareSortAsc;
       } else {
         compareSortCol = colKey;
-        compareSortAsc = true; // 預設新欄位為升冪
+        compareSortAsc = true; 
       }
       
-      // 執行排序
       compareRows.sort((a, b) => {
         const valA = a.overview[colKey] || 0;
         const valB = b.overview[colKey] || 0;
         return compareSortAsc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
       });
       
-      // 重新渲染表格
       renderSortedCompareTable();
     });
   });
@@ -977,13 +1009,13 @@ function setupCompareSorting() {
 async function loadCompareTable(force = false) {
   if (compareDataLoaded && !force) return;
 
-  compareTableBodyEl.innerHTML = `<tr><td colspan="11">載入中...</td></tr>`;
+  // 每次載入前，重新抓取一次 tbody 元素，顯示「載入中」
+  const tbody = document.getElementById("compare-table-body");
+  if (tbody) tbody.innerHTML = `<tr><td colspan="11">載入中...</td></tr>`;
+  
   const rows = [];
-
-  // 👇 1. 新增這行：動態判斷要跑台股還是全球股清單
   const compareList = currentMarket === "TW" ? manifestStockIds : globalStockIds;
 
-  // 👇 2. 把原本的 manifestStockIds 換成 compareList
   for (const id of compareList) {
     try {
       const res = await fetch(`${DATA_BASE_URL}/${id}.json?t=${Date.now()}`);
@@ -994,6 +1026,13 @@ async function loadCompareTable(force = false) {
   }
 
   compareRows = rows;
+  
+  // 如果是強制重新載入(切換市場)，將排序恢復預設，避免錯亂
+  if (force) {
+     compareSortCol = "stock_id";
+     compareSortAsc = true;
+  }
+  
   renderSortedCompareTable();
   compareDataLoaded = true;
 }
@@ -1101,16 +1140,13 @@ async function loadStock(stockId) {
   renderStaleWarning(data.updated_at);
 }
 
-// --- 初始化與讀取 manifest 檔案的函式 (完全替換原本的) ---
+// --- 初始化與讀取 manifest 檔案的函式 ---
 async function loadManifestAndInit() {
   const res = await fetch(`${DATA_BASE_URL}/manifest.json?t=${Date.now()}`);
   const manifest = await res.json();
   
-  // 讀取台股清單
   manifestStockIds = manifest.stocks || [];
   manifestStockNames = manifest.stock_names || {};
-  
-  // 讀取全球股清單
   globalStockIds = manifest.global_stocks || [];
   globalStockNames = manifest.global_stock_names || {};
 
@@ -1119,35 +1155,45 @@ async function loadManifestAndInit() {
     currentMarket = e.target.value;
     compareDataLoaded = false; // 告訴系統：市場換了，舊資料作廢
     
-    // 1. 記住切換市場前，使用者正在看哪個頁面 (例如: compare)
+    // 1. 記住切換市場前，使用者正在看哪個頁面
     const prevPage = pageSelectEl.value;
     
-    // 2. 更新頁面的下拉選單選項 (台股/全球股專屬選單)
+    // 2. 更新下拉選單
     updateDropdownsByMarket();
     
-    // 3. 判斷新市場有沒有原本的頁面，如果有就留在該頁，沒有就預設跳回「總覽(overview)」
+    // 3. 載入新市場的第一檔股票 (確保總覽/K線有資料可以畫)
+    const currentStocks = currentMarket === "TW" ? manifestStockIds : globalStockIds;
+    if (currentStocks.length > 0) {
+      selectEl.value = currentStocks[0];
+      loadStock(currentStocks[0]);
+    }
+    
+    // 4. 判斷新市場有沒有原本的頁面
     const hasPage = Array.from(pageSelectEl.options).some(opt => opt.value === prevPage);
     const targetPage = hasPage ? prevPage : "overview";
     
-    // 4. 強制 UI 選單切換到正確的頁面，並觸發畫面渲染
+    // 5. 強制 UI 切換並渲染
     pageSelectEl.value = targetPage;
+    setActivePage(targetPage);
     
-    // 如果你有 setActivePage 函式，請呼叫它來切換畫面
-    if (typeof setActivePage === "function") {
-        setActivePage(targetPage);
-    }
-    
-    // 5. 如果目前正停留在「多股比較」，強制重新抓取新市場的表格資料
+    // 6. 如果目標頁面是「多股比較」，強制重新抓取新市場的表格資料
     if (targetPage === "compare") {
       loadCompareTable(true);
     }
   });
 
-  // 綁定「股票切換」下拉選單的事件
   selectEl.addEventListener("change", () => loadStock(selectEl.value));
   
   // 網頁剛開起來時，執行第一次的選單生成與載入
   updateDropdownsByMarket();
+  
+  // 網頁第一次載入時，預設讀取台股第一檔並切換到總覽
+  if (manifestStockIds.length > 0) {
+    selectEl.value = manifestStockIds[0];
+    loadStock(manifestStockIds[0]);
+    pageSelectEl.value = "overview";
+    setActivePage("overview");
+  }
 }
 
 pageSelectEl.addEventListener("change", () => setActivePage(pageSelectEl.value));
@@ -1408,7 +1454,7 @@ function updateDropdownsByMarket() {
     selectEl.appendChild(opt);
   });
 
-  // 2. 更新頁面分頁選單 (這裡修正了之前的語法錯誤)
+  // 2. 更新頁面分頁選單
   pageSelectEl.innerHTML = `
     <option value="overview">總覽</option>
     <option value="compare">多股比較</option>
@@ -1417,20 +1463,15 @@ function updateDropdownsByMarket() {
     ${currentMarket === "TW" ? '<option value="trend">走向分析</option>' : ''}
     ${currentMarket === "TW" 
       ? '<option value="indicators">技術籌碼指標</option><option value="fundamentals">基本面統計</option><option value="news">財經新聞</option>' 
-      : '<option value="indicators">技術指標(全球)</option><option value="news">國際要聞</option>'} <!-- 👇 全球股補上這項 -->
+      : '<option value="indicators">技術指標(全球)</option><option value="news">國際要聞</option>'} 
   `;
 
-  // 3. 隱藏/顯示台股專屬的 UI 卡片 (有加上 tw-only 的區塊)
+  // 3. 隱藏/顯示台股專屬的 UI 卡片
   document.querySelectorAll(".tw-only").forEach(el => {
     el.style.display = currentMarket === "TW" ? "" : "none";
   });
 
-  // 4. 自動載入該市場的第一檔股票，並切換回總覽頁面
-  if (stocks.length > 0) {
-    loadStock(stocks[0]);
-    pageSelectEl.value = "overview";
-    setActivePage("overview");
-  }
+  // 刪除原本在這裡的「自動載入第一檔股票並跳回總覽」邏輯，把控制權交還給呼叫它的地方
 }
 
 setupCompareSorting();

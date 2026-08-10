@@ -651,27 +651,28 @@ def main():
         manifest.append(stock_id)
         manifest_names[stock_id] = stock_name
 
+    # === 替換 scripts/build_data.py 最底下的 manifest 寫入邏輯 ===
     manifest_path = os.path.join(OUTPUT_DIR_ABS, "manifest.json")
     
-    # 1. 嘗試讀取舊的 manifest，保留裡面的全球股資料 (global_stocks)
+    # 1. 嘗試讀取現有的 manifest.json (保留全球股資料)
     existing_manifest = {}
     if os.path.exists(manifest_path):
         try:
             with open(manifest_path, "r", encoding="utf-8") as f:
                 existing_manifest = json.load(f)
         except Exception:
-            pass # 如果檔案有問題，就從空字典開始
+            existing_manifest = {}
 
-    # 2. 只更新台股的專屬欄位，不碰全球股欄位
+    # 2. 只更新台股專屬欄位，保留原本的 global_stocks
     existing_manifest["stocks"] = manifest
     existing_manifest["stock_names"] = manifest_names
     existing_manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
     existing_manifest["news_lookback_days"] = NEWS_LOOKBACK_DAYS
 
-    # 3. 將合併後的完整資料寫回檔案
+    # 3. 寫回檔案
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(existing_manifest, f, ensure_ascii=False, indent=2)
-        
+
     print(f"已輸出股票清單索引: {manifest_path}")
     
     # 錯誤攔截機制保持不變
