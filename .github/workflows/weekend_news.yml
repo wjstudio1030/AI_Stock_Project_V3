@@ -1,0 +1,61 @@
+name: Weekend News Updater
+
+on:
+  schedule:
+    # 週末排程：台灣時間早上 10:00 與 晚上 20:00 (僅在週六 6 與週日 0 執行)
+    - cron: "0 2 * * 0,6"
+    - cron: "0 12 * * 0,6"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekend-news-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update-news-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # 因為不跑 AI，時間可以設很短，節省額度
+
+    env:
+      FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
+      STOCK_LIST: ${{ vars.STOCK_LIST || '2408,2344,2337,4973,6770' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      # 👇 只執行抓資料與新聞的腳本，完全跳過 AI 訓練步驟
+      - name: Build Global Data and News
+        run: python scripts/build_global_data.py
+
+      - name: Refresh Taiwan Stock Data and News
+        run: python scripts/build_data.py
+
+      - name: Commit generated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data data_db
+          if git diff --cached --quiet; then
+            echo "No news or data changes"
+            exit 0
+          fi
+          git commit -m "chore(data): weekend news update [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
