@@ -2,8 +2,10 @@ name: AI Stock Daily Pipeline
 
 on:
   schedule:
-    # 17:00 Asia/Taipei, Monday-Friday (UTC 09:00)
-    - cron: "0 9 * * 1-5"
+    # 亞洲/台股收盤：台灣時間 15:00，週一至週五 (UTC 07:00)
+    - cron: "0 7 * * 1-5"
+    # 美股收盤/盤後：台灣時間 06:00，週二至週六 (UTC 22:00，對應美國週一至週五)
+    - cron: "0 22 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -57,6 +59,9 @@ jobs:
 
       - name: Initialize database schema
         run: python scripts/db_manager.py
+
+      - name: Build Global Data and News
+        run: python scripts/build_global_data.py
 
       - name: Refresh market, fundamentals, news, and base frontend data
         run: python scripts/build_data.py

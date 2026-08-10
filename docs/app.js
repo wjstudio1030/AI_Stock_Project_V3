@@ -89,8 +89,10 @@ const staleWarningEl = document.getElementById("stale-warning");
 const compareCountEl = document.getElementById("compare-count");
 const compareTableBodyEl = document.getElementById("compare-table-body");
 const checklistContainerEl = document.getElementById("checklist-container");
-
 const STALE_WARNING_DAYS = 4;
+
+const marketSelectEl = document.getElementById("market-select");
+
 let manifestStockIds = [];
 let compareDataLoaded = false;
 let compareRows = [];
@@ -105,6 +107,10 @@ let foreignSeries, trustSeries, dealerSeries, marginBalanceSeries, shortBalanceS
 let perSeries, pbrSeries;
 let maSeriesMap = {};
 let isSyncingRange = false;
+
+let currentMarket = "TW"; 
+let globalStockIds = [];
+let globalStockNames = {};
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -386,59 +392,125 @@ function renderSentimentHistory(news) {
 }
 
 function renderNews(news) {
-  const total = news?.total || 0;
-  const pos = news?.positive_count || 0;
-  const neu = news?.neutral_count || 0;
-  const neg = news?.negative_count || 0;
-
-  newsTotalEl.textContent = `近 ${total} 則相關新聞`;
-
-  if (total === 0) {
-    newsBarPosEl.style.width = "0%";
-    newsBarNeuEl.style.width = "100%";
-    newsBarNegEl.style.width = "0%";
-  } else {
-    newsBarPosEl.style.width = `${(pos / total) * 100}%`;
-    newsBarNeuEl.style.width = `${(neu / total) * 100}%`;
-    newsBarNegEl.style.width = `${(neg / total) * 100}%`;
-  }
-  newsPosCountEl.textContent = pos;
-  newsNeuCountEl.textContent = neu;
-  newsNegCountEl.textContent = neg;
-
+  // 先清空原本的新聞列表
   newsListEl.innerHTML = "";
-  const articles = news?.articles || [];
-  if (articles.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "目前沒有相關新聞資料。";
-    newsListEl.appendChild(li);
-    return;
+
+  // 根據當前市場決定渲染邏輯
+  if (currentMarket === "TW") {
+    // ==========================================
+    // 台股模式：保留原本的所有邏輯 (含情緒統計圖)
+    // ==========================================
+    const total = news?.total || 0;
+    const pos = news?.positive_count || 0;
+    const neu = news?.neutral_count || 0;
+    const neg = news?.negative_count || 0;
+
+    // 更新情緒統計長條圖
+    if (newsTotalEl) newsTotalEl.textContent = `近 ${total} 則相關新聞`;
+    if (total === 0) {
+      if (newsBarPosEl) newsBarPosEl.style.width = "0%";
+      if (newsBarNeuEl) newsBarNeuEl.style.width = "100%";
+      if (newsBarNegEl) newsBarNegEl.style.width = "0%";
+    } else {
+      if (newsBarPosEl) newsBarPosEl.style.width = `${(pos / total) * 100}%`;
+      if (newsBarNeuEl) newsBarNeuEl.style.width = `${(neu / total) * 100}%`;
+      if (newsBarNegEl) newsBarNegEl.style.width = `${(neg / total) * 100}%`;
+    }
+    if (newsPosCountEl) newsPosCountEl.textContent = pos;
+    if (newsNeuCountEl) newsNeuCountEl.textContent = neu;
+    if (newsNegCountEl) newsNegCountEl.textContent = neg;
+
+    // 渲染台股新聞列表
+    const articles = news?.articles || [];
+    if (articles.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "目前沒有相關新聞資料。";
+      newsListEl.appendChild(li);
+      return;
+    }
+
+    articles.forEach((a) => {
+      const li = document.createElement("li");
+      const tagClass = SENTIMENT_TAG_CLASS ? (SENTIMENT_TAG_CLASS[a.sentiment] || "neu") : "neu";
+
+      const tag = document.createElement("span");
+      tag.className = `news-tag ${tagClass}`;
+      tag.textContent = a.sentiment;
+
+      const titleLink = document.createElement("a");
+      titleLink.className = "news-item-title";
+      titleLink.href = a.link || "#";
+      titleLink.target = "_blank";
+      titleLink.rel = "noopener noreferrer";
+      titleLink.textContent = a.title;
+
+      const meta = document.createElement("span");
+      meta.className = "news-item-meta";
+      meta.textContent = `${a.source || ""} · ${a.date || ""}`;
+
+      li.appendChild(tag);
+      li.appendChild(titleLink);
+      li.appendChild(meta);
+      newsListEl.appendChild(li);
+    });
+
+  } else {
+    // ==========================================
+    // 全球股模式：雙語國際新聞渲染
+    const articles = Array.isArray(news) ? news : [];
+
+    if (articles.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "目前沒有國際新聞資料。";
+      newsListEl.appendChild(li);
+      return;
+    }
+
+    articles.forEach((a) => {
+      const li = document.createElement("li");
+      // 加上一些簡單的排版讓雙語新聞更好看
+      li.style.listStyle = "none"; // 隱藏預設的黑圓點
+      li.style.display = "flex";
+      li.style.flexDirection = "column";
+      li.style.alignItems = "flex-start";
+      li.style.gap = "6px";
+      li.style.padding = "10px 0";
+      li.style.borderBottom = "1px solid var(--border-color)";
+
+      // 1. 中文大標題 (超連結)
+      const titleLink = document.createElement("a");
+      titleLink.className = "news-item-title";
+      titleLink.href = a.link || "#";
+      titleLink.target = "_blank";
+      titleLink.rel = "noopener noreferrer";
+      titleLink.textContent = a.title_zh || a.title_en; 
+      titleLink.style.fontSize = "1.05rem";
+      titleLink.style.fontWeight = "600";
+      titleLink.style.lineHeight = "1.4";
+
+      // 2. 英文原標題 (灰色斜體小字)
+      const titleEn = document.createElement("div");
+      titleEn.textContent = a.title_en;
+      titleEn.style.fontSize = "0.85rem";
+      titleEn.style.color = "var(--text-color)";
+      titleEn.style.opacity = "0.7";
+      titleEn.style.fontStyle = "italic";
+
+      // 3. 來源與時間
+      const meta = document.createElement("span");
+      meta.className = "news-item-meta";
+      meta.textContent = `${a.source || "Yahoo Finance"} · ${a.time || "無時間"}`;
+      meta.style.fontSize = "0.8rem";
+
+      li.appendChild(titleLink);
+      // 如果翻譯成功，中英不同才顯示英文原標
+      if (a.title_zh && a.title_zh !== a.title_en) {
+         li.appendChild(titleEn); 
+      }
+      li.appendChild(meta);
+      newsListEl.appendChild(li);
+    });
   }
-
-  articles.forEach((a) => {
-    const li = document.createElement("li");
-    const tagClass = SENTIMENT_TAG_CLASS[a.sentiment] || "neu";
-
-    const tag = document.createElement("span");
-    tag.className = `news-tag ${tagClass}`;
-    tag.textContent = a.sentiment;
-
-    const titleLink = document.createElement("a");
-    titleLink.className = "news-item-title";
-    titleLink.href = a.link || "#";
-    titleLink.target = "_blank";
-    titleLink.rel = "noopener noreferrer";
-    titleLink.textContent = a.title;
-
-    const meta = document.createElement("span");
-    meta.className = "news-item-meta";
-    meta.textContent = `${a.source || ""} · ${a.date || ""}`;
-
-    li.appendChild(tag);
-    li.appendChild(titleLink);
-    li.appendChild(meta);
-    newsListEl.appendChild(li);
-  });
 }
 
 const TRACK_DIRECTION_TEXT = { up: "漲", down: "跌" };
@@ -804,40 +876,99 @@ const COMPARE_SORT_GETTERS = {
 };
 
 function renderSortedCompareTable() {
-  const getter = COMPARE_SORT_GETTERS[compareSort.key] || COMPARE_SORT_GETTERS.stock_id;
-  const direction = compareSort.direction === "asc" ? 1 : -1;
-  const rows = [...compareRows].sort((a, b) => {
-    const av = getter(a);
-    const bv = getter(b);
-    const aMissing = av === null || av === undefined || Number.isNaN(av);
-    const bMissing = bv === null || bv === undefined || Number.isNaN(bv);
-    if (aMissing && bMissing) return 0;
-    if (aMissing) return 1;
-    if (bMissing) return -1;
-    if (typeof av === "string") return av.localeCompare(String(bv), "zh-Hant") * direction;
-    return (Number(av) - Number(bv)) * direction;
+  // 先定義表頭 (依照市場切換)
+  const isGlobal = currentMarket === "GLOBAL";
+  
+  const theadHTML = isGlobal 
+    ? `<tr>
+        <th>股票</th><th>現價</th><th>漲跌%</th><th>RSI14</th><th>均線排列</th>
+       </tr>`
+    : `<tr>
+        <th>股票</th><th>現價</th><th>漲跌%</th><th>外資買賣</th><th>PER</th><th>PBR</th><th>RSI14</th><th>均線</th><th>隔日漲跌機率</th>
+       </tr>`;
+       
+  // 建立表格內容
+  let tbodyHTML = "";
+  compareRows.forEach(data => {
+    const ov = data.overview || {};
+    const priceStr = ov.close !== undefined ? ov.close : "-";
+    const changePctStr = ov.change_pct !== undefined ? `${ov.change_pct}%` : "-";
+    const rsiStr = ov.rsi14 !== undefined ? ov.rsi14 : "-";
+    const maStateStr = ov.ma_state || "盤整";
+    
+    // 判斷漲跌顏色
+    const changeClass = ov.change_pct > 0 ? 'up' : (ov.change_pct < 0 ? 'down' : '');
+    
+    if (isGlobal) {
+      // 全球股專用的表格列
+      tbodyHTML += `<tr>
+        <td>${data.stock_id} ${data.stock_name}</td>
+        <td>${priceStr}</td>
+        <td class="${changeClass}">${changePctStr}</td>
+        <td>${rsiStr}</td>
+        <td>${maStateStr}</td>
+      </tr>`;
+    } else {
+      // 台股專用的表格列
+      const perStr = ov.per || "-";
+      const pbrStr = ov.pbr || "-";
+      const probStr = ov.next_day_up_pct ? `${ov.next_day_up_pct}%` : "資料不足";
+      const foreignStr = ov.foreign_net_today || "-";
+      
+      tbodyHTML += `<tr>
+        <td>${data.stock_id} ${data.stock_name}</td>
+        <td>${priceStr}</td>
+        <td class="${changeClass}">${changePctStr}</td>
+        <td>${foreignStr}</td>
+        <td>${perStr}</td>
+        <td>${pbrStr}</td>
+        <td>${rsiStr}</td>
+        <td>${maStateStr}</td>
+        <td>${probStr}</td>
+      </tr>`;
+    }
   });
-  renderCompareTable(rows);
 
-  document.querySelectorAll("#compare-table thead th").forEach((th) => th.classList.remove("sort-active"));
-  const activeId = {
-    stock_id: "sort-id", price: "sort-price", change: "sort-change",
-    per: "sort-per", pbr: "sort-pbr", rsi: "sort-rsi",
-  }[compareSort.key];
-  if (activeId) document.getElementById(activeId)?.classList.add("sort-active");
+  // 安全寫入：直接對現有的 tbody 的「父元素 (也就是 table)」進行整併覆蓋
+  if (compareTableBodyEl && compareTableBodyEl.parentElement) {
+      compareTableBodyEl.parentElement.innerHTML = `<thead>${theadHTML}</thead><tbody id="compare-table-body">${tbodyHTML}</tbody>`;
+  }
 }
 
+let compareSortCol = "stock_id";
+let compareSortAsc = true;
+
 function setupCompareSorting() {
-  const headers = {
-    "sort-id": "stock_id", "sort-price": "price", "sort-change": "change",
-    "sort-per": "per", "sort-pbr": "pbr", "sort-rsi": "rsi",
-  };
-  Object.entries(headers).forEach(([id, key]) => {
-    document.getElementById(id)?.addEventListener("click", () => {
-      compareSort = {
-        key,
-        direction: compareSort.key === key && compareSort.direction === "asc" ? "desc" : "asc",
-      };
+  const ths = document.querySelectorAll(".compare-table th");
+  ths.forEach((th) => {
+    th.addEventListener("click", () => {
+      // 取得點擊的欄位名稱
+      const colText = th.textContent.replace("↕", "").trim();
+      let colKey = "stock_id";
+      
+      if (colText.includes("現價")) colKey = "close";
+      else if (colText.includes("漲跌%")) colKey = "change_pct";
+      else if (colText.includes("RSI")) colKey = "rsi14";
+      else if (colText.includes("PER")) colKey = "per";
+      else if (colText.includes("PBR")) colKey = "pbr";
+      else if (colText.includes("外資")) colKey = "foreign_net_today";
+      
+      // 切換排序方向
+      if (compareSortCol === colKey) {
+        compareSortAsc = !compareSortAsc;
+      } else {
+        compareSortCol = colKey;
+        compareSortAsc = true; // 預設新欄位為升冪
+      }
+      
+      // 執行排序
+      compareRows.sort((a, b) => {
+        const valA = a.overview[colKey] || 0;
+        const valB = b.overview[colKey] || 0;
+        return compareSortAsc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+      });
+      
+      // 重新渲染表格
       renderSortedCompareTable();
     });
   });
@@ -849,7 +980,11 @@ async function loadCompareTable(force = false) {
   compareTableBodyEl.innerHTML = `<tr><td colspan="11">載入中...</td></tr>`;
   const rows = [];
 
-  for (const id of manifestStockIds) {
+  // 👇 1. 新增這行：動態判斷要跑台股還是全球股清單
+  const compareList = currentMarket === "TW" ? manifestStockIds : globalStockIds;
+
+  // 👇 2. 把原本的 manifestStockIds 換成 compareList
+  for (const id of compareList) {
     try {
       const res = await fetch(`${DATA_BASE_URL}/${id}.json?t=${Date.now()}`);
       if (!res.ok) continue;
@@ -966,26 +1101,34 @@ async function loadStock(stockId) {
   renderStaleWarning(data.updated_at);
 }
 
+// --- 初始化與讀取 manifest 檔案的函式 (完全替換原本的) ---
 async function loadManifestAndInit() {
   const res = await fetch(`${DATA_BASE_URL}/manifest.json?t=${Date.now()}`);
   const manifest = await res.json();
+  
+  // 讀取台股清單
   manifestStockNames = manifest.stock_names || {};
   manifestStockIds = manifest.stocks || [];
+  
+  // 讀取全球股清單
+  globalStockIds = manifest.global_stocks || [];
+  globalStockNames = manifest.global_stock_names || {};
 
-  selectEl.innerHTML = "";
-  manifest.stocks.forEach((id) => {
-    const opt = document.createElement("option");
-    opt.value = id;
-    const name = manifestStockNames[id];
-    opt.textContent = name ? `${id} ${name}` : id;
-    selectEl.appendChild(opt);
+  // 綁定「市場切換」下拉選單的事件
+  marketSelectEl.addEventListener("change", (e) => {
+    currentMarket = e.target.value;
+    
+    // 👇 補上這行：讓系統知道切換市場後，多股比較表需要重新抓資料
+    compareDataLoaded = false; 
+    
+    updateDropdownsByMarket();
   });
 
+  // 綁定「股票切換」下拉選單的事件
   selectEl.addEventListener("change", () => loadStock(selectEl.value));
-
-  if (manifest.stocks.length > 0) {
-    await loadStock(manifest.stocks[0]);
-  }
+  
+  // 網頁剛開起來時，執行第一次的選單生成與載入
+  updateDropdownsByMarket();
 }
 
 pageSelectEl.addEventListener("change", () => setActivePage(pageSelectEl.value));
@@ -1230,6 +1373,45 @@ function renderChecklist(data) {
     `;
     checklistContainerEl.appendChild(row);
   });
+}
+
+// --- 處理市場切換與選單連動的函式 ---
+function updateDropdownsByMarket() {
+  // 1. 更新股票下拉選單
+  selectEl.innerHTML = "";
+  const stocks = currentMarket === "TW" ? manifestStockIds : globalStockIds;
+  const names = currentMarket === "TW" ? manifestStockNames : globalStockNames;
+  
+  stocks.forEach((id) => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = names[id] ? `${id} ${names[id]}` : id;
+    selectEl.appendChild(opt);
+  });
+
+  // 2. 更新頁面分頁選單 (這裡修正了之前的語法錯誤)
+  pageSelectEl.innerHTML = `
+    <option value="overview">總覽</option>
+    <option value="compare">多股比較</option>
+    <option value="checklist">多空條件檢核表</option>
+    <option value="price">K線</option>
+    ${currentMarket === "TW" ? '<option value="trend">走向分析</option>' : ''}
+    ${currentMarket === "TW" 
+      ? '<option value="indicators">技術籌碼指標</option><option value="fundamentals">基本面統計</option><option value="news">財經新聞</option>' 
+      : '<option value="indicators">技術指標(全球)</option><option value="news">國際要聞</option>'} <!-- 👇 全球股補上這項 -->
+  `;
+
+  // 3. 隱藏/顯示台股專屬的 UI 卡片 (有加上 tw-only 的區塊)
+  document.querySelectorAll(".tw-only").forEach(el => {
+    el.style.display = currentMarket === "TW" ? "" : "none";
+  });
+
+  // 4. 自動載入該市場的第一檔股票，並切換回總覽頁面
+  if (stocks.length > 0) {
+    loadStock(stocks[0]);
+    pageSelectEl.value = "overview";
+    setActivePage("overview");
+  }
 }
 
 setupCompareSorting();

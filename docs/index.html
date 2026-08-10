@@ -13,6 +13,11 @@
   <header>
     <h1>AI Stock</h1>
     <div class="controls">
+      <label for="market-select">市場:</label>
+      <select id="market-select">
+        <option value="TW">台股</option>
+        <option value="GLOBAL">全球權值股</option>
+      </select>
       <label for="stock-select">股票:</label>
       <select id="stock-select"></select>
       <label for="page-select">頁面:</label>
@@ -53,12 +58,12 @@
             <div id="overview-change" class="overview-change"></div>
           </div>
 
-          <div class="overview-card">
+          <div class="overview-card tw-only">
             <div class="overview-label">本益比 PER</div>
             <div id="overview-per" class="overview-value">-</div>
           </div>
 
-          <div class="overview-card">
+          <div class="overview-card tw-only">
             <div class="overview-label">淨值比 PBR</div>
             <div id="overview-pbr" class="overview-value">-</div>
           </div>
@@ -74,7 +79,7 @@
             <div id="overview-ma-state" class="overview-value overview-value-sm">-</div>
           </div>
 
-          <div class="overview-card">
+          <div class="overview-card tw-only">
             <div class="overview-label">今日三大法人(張)</div>
             <div id="overview-institutional" class="overview-inst-list"></div>
           </div>
@@ -364,7 +369,7 @@
         <div id="rsi-chart" class="chart-box rsi-chart"></div>
       </section>
 
-      <section class="chart-section">
+      <section class="chart-section tw-only">
         <div class="chart-header">
           <span>三大法人買賣超(張)</span>
           <div id="inst-anomaly-badges" class="anomaly-badges"></div>
@@ -377,7 +382,7 @@
         <div id="institutional-chart" class="chart-box inst-chart"></div>
       </section>
 
-      <section class="chart-section">
+      <section class="chart-section tw-only">
         <div class="chart-header">
           <span>融資融券餘額</span>
           <div class="legend-static">
@@ -391,7 +396,7 @@
 
     <!-- ===== 頁面3: 基本面統計(本益比/淨值比 + 季報表格) ===== -->
     <div class="page-group" data-page="fundamentals">
-      <section class="chart-section">
+      <section class="chart-section tw-only">
         <div class="chart-header">
           <span>本益比 / 淨值比</span>
           <div class="legend-static">
@@ -402,7 +407,7 @@
         <div id="valuation-chart" class="chart-box valuation-chart"></div>
       </section>
 
-      <section class="chart-section">
+      <section class="chart-section tw-only">
         <div class="chart-header">
           <span>基本面(近8季)</span>
         </div>
@@ -420,7 +425,9 @@
 
     <!-- ===== 頁面4: 財經新聞(關鍵字利多/利空比對) ===== -->
     <div class="page-group" data-page="news">
-      <section class="chart-section">
+    
+      <!-- 👇 加上 tw-only，讓全球股隱藏這個區塊 -->
+      <section class="chart-section tw-only">
         <div class="chart-header">
           <span>新聞情緒趨勢(每日累積)</span>
           <span id="sentiment-history-total" class="news-total"></span>
@@ -431,8 +438,9 @@
           累積到約一年份的交易日之後,這份歷史就會自動被納入ML模型的訓練特徵。
         </p>
       </section>
-
-      <section class="chart-section">
+    
+      <!-- 👇 加上 tw-only，讓全球股隱藏這個區塊 -->
+      <section class="chart-section tw-only">
         <div class="chart-header">
           <span>新聞整體氣氛(關鍵字比對)</span>
           <span id="news-total" class="news-total"></span>
@@ -453,13 +461,15 @@
           僅供參考,不構成投資建議。
         </p>
       </section>
-
+    
+      <!-- 👇 這個區塊保持原樣 (不加 tw-only)，讓台股和全球股都能共用來顯示新聞列表 -->
       <section class="chart-section">
         <div class="chart-header">
           <span>相關新聞列表</span>
         </div>
         <ul id="news-list" class="news-list"></ul>
       </section>
+    
     </div>
   </main>
 

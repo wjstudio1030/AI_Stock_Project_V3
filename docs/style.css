@@ -60,6 +60,7 @@ header h1 {
   color: var(--text-dim);
 }
 
+#market-select,
 #stock-select,
 #page-select {
   background: var(--bg);
@@ -69,6 +70,7 @@ header h1 {
   padding: 6px 10px;
   font-size: 14px;
   outline: none;
+  min-width: 140px;
 }
 
 #stock-select:focus,

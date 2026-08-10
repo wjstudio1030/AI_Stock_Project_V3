@@ -14,6 +14,7 @@ import json
 import math
 import pandas as pd
 from datetime import datetime, timedelta, timezone
+from analysis import classify_rsi, classify_ma_trend
 
 # 確保無論從哪個目錄執行,都能正確定位到 repo 根目錄下的 docs/data
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -418,9 +419,9 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
             "change_pct": _clean(round(change_pct, 2)) if change_pct is not None else None,
             "per": _clean(_last_value(valuation.get("PER", []))),
             "pbr": _clean(_last_value(valuation.get("PBR", []))),
-            "rsi14": state["rsi14"],
-            "rsi_state": state["rsi_state"],
-            "ma_state": state["ma_state"],
+            "rsi14": round(latest_row.get("RSI14"), 2) if pd.notna(latest_row.get("RSI14")) else None,
+            "rsi_state": classify_rsi(latest_row.get("RSI14")),
+            "ma_state": classify_ma_trend(latest_row.get("close"), latest_row.get("MA5"), latest_row.get("MA20"), latest_row.get("MA60")),
             "foreign_net_today": _clean(_last_value(institutional.get("foreign_net", []))),
             "trust_net_today": _clean(_last_value(institutional.get("trust_net", []))),
             "dealer_net_today": _clean(_last_value(institutional.get("dealer_net", []))),
@@ -651,14 +652,29 @@ def main():
         manifest_names[stock_id] = stock_name
 
     manifest_path = os.path.join(OUTPUT_DIR_ABS, "manifest.json")
+    
+    # 1. 嘗試讀取舊的 manifest，保留裡面的全球股資料 (global_stocks)
+    existing_manifest = {}
+    if os.path.exists(manifest_path):
+        try:
+            with open(manifest_path, "r", encoding="utf-8") as f:
+                existing_manifest = json.load(f)
+        except Exception:
+            pass # 如果檔案有問題，就從空字典開始
+
+    # 2. 只更新台股的專屬欄位，不碰全球股欄位
+    existing_manifest["stocks"] = manifest
+    existing_manifest["stock_names"] = manifest_names
+    existing_manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
+    existing_manifest["news_lookback_days"] = NEWS_LOOKBACK_DAYS
+
+    # 3. 將合併後的完整資料寫回檔案
     with open(manifest_path, "w", encoding="utf-8") as f:
-        json.dump({
-            "stocks": manifest,
-            "stock_names": manifest_names,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-            "news_lookback_days": NEWS_LOOKBACK_DAYS,
-        }, f, ensure_ascii=False)
+        json.dump(existing_manifest, f, ensure_ascii=False, indent=2)
+        
     print(f"已輸出股票清單索引: {manifest_path}")
+    
+    # 錯誤攔截機制保持不變
     if failures and len(failures) == len(stock_ids):
         raise RuntimeError("所有股票資料建置皆失敗")
 
