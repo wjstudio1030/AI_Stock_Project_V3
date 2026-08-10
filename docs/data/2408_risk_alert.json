@@ -3,10 +3,10 @@
   "stock": "2408 南亞科",
   "observation_date": "2026-08-10",
   "close": 502.0,
-  "foreign_z": 0.115,
-  "total_institutional_z": 0.078,
+  "foreign_z": 1.856,
+  "total_institutional_z": 1.789,
   "news_sentiment_score": 0.9,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-10T07:01:24.845624+00:00"
+  "generated_at": "2026-08-10T09:01:29.708212+00:00"
 }
