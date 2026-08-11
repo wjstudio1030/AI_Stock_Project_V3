@@ -25,7 +25,7 @@
   "hit_level": "none",
   "strike_status": "尚未抵達回吐防線",
   "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 53.4,
+  "xgb_up_probability": 50.2,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-11T08:33:31.248436+00:00"
+  "generated_at": "2026-08-11T15:33:38.317667+00:00"
 }
