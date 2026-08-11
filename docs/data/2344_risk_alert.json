@@ -1,12 +1,12 @@
 {
   "stock_id": "2344",
   "stock": "2344 華邦電",
-  "observation_date": "2026-08-10",
-  "close": 179.5,
+  "observation_date": "2026-08-11",
+  "close": 178.0,
   "foreign_z": 0.751,
   "total_institutional_z": 0.815,
-  "news_sentiment_score": 0.5,
+  "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-10T22:29:12.152690+00:00"
+  "generated_at": "2026-08-11T08:33:49.547421+00:00"
 }
