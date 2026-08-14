@@ -1,18 +1,18 @@
 {
   "stock_id": "2344",
-  "observation_date": "2026-08-13",
-  "ultimate_up_probability": 36.1,
-  "ultimate_down_probability": 63.9,
-  "adjustment_logic": "XGBoost 基準 37.1%；新聞調整 +1.0%；網格調整 -2.0%；風險警報調整 +0.0%",
+  "observation_date": "2026-08-14",
+  "ultimate_up_probability": 50.8,
+  "ultimate_down_probability": 49.2,
+  "adjustment_logic": "XGBoost 基準 50.3%；新聞調整 +2.5%；網格調整 -2.0%；風險警報調整 +0.0%",
   "components": {
-    "xgb_base_probability": 37.1,
-    "news_sentiment_score": 0.2,
-    "news_adjustment": 1.0,
+    "xgb_base_probability": 50.3,
+    "news_sentiment_score": 0.5,
+    "news_adjustment": 2.5,
     "grid_hit_level": "none",
     "grid_adjustment": -2.0,
     "risk_adjustment": 0.0,
     "risk_cap_applied": false
   },
   "calculation_method": "deterministic_weighted_fusion_v1",
-  "generated_at": "2026-08-13T22:33:13.731978+00:00"
+  "generated_at": "2026-08-14T08:49:26.313101+00:00"
 }
