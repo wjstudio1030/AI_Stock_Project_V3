@@ -3,10 +3,10 @@
   "stock": "6770 力積電",
   "observation_date": "2026-08-17",
   "close": 74.6,
-  "foreign_z": 2.786,
-  "total_institutional_z": 2.696,
-  "news_sentiment_score": 0.6,
+  "foreign_z": -1.316,
+  "total_institutional_z": -1.318,
+  "news_sentiment_score": -0.3,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-17T08:11:20.735789+00:00"
+  "generated_at": "2026-08-17T14:57:52.881738+00:00"
 }
