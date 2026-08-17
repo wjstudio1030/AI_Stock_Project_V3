@@ -1,8 +1,8 @@
 {
   "stock": "2337 旺宏",
   "stock_id": "2337",
-  "date": "2026-08-14",
-  "current_price": 137.0,
+  "date": "2026-08-17",
+  "current_price": 129.5,
   "wave_start": {
     "date": "2026-03-10",
     "price": 90.7
@@ -11,7 +11,7 @@
     "date": "2026-06-22",
     "price": 185.5
   },
-  "wave_summary": "波段由 90.70 上升至 185.50，目前收盤 137.00。",
+  "wave_summary": "波段由 90.70 上升至 185.50，目前收盤 129.50。",
   "grid_defense_lines": {
     "level_382": "149.29 元",
     "level_500": "138.10 元",
@@ -25,7 +25,7 @@
   "hit_level": "level_500",
   "strike_status": "進入 50.0% 中期防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 32.7,
+  "xgb_up_probability": 51.4,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-14T22:14:41.456911+00:00"
+  "generated_at": "2026-08-17T08:11:06.267837+00:00"
 }
