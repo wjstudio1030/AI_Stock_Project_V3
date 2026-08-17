@@ -16,7 +16,7 @@
     "holdout_end": "2026-08-14"
   },
   "model_trained_through": "2026-08-14",
-  "generated_at": "2026-08-17T14:56:33.229880+00:00",
+  "generated_at": "2026-08-17T22:15:10.943517+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 71.2771,
     "2.技術_KD值(D)": 76.6395,
