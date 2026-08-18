@@ -3,12 +3,10 @@
   "stock": "2408 南亞科",
   "observation_date": "2026-08-18",
   "close": 515.0,
-  "foreign_z": 0.575,
-  "total_institutional_z": 0.471,
-  "news_sentiment_score": -1.0,
-  "triggered": true,
-  "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
-  ],
-  "generated_at": "2026-08-18T08:07:07.003479+00:00"
+  "foreign_z": -0.004,
+  "total_institutional_z": -0.058,
+  "news_sentiment_score": -0.2,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-08-18T15:06:04.796779+00:00"
 }
