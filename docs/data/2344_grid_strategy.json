@@ -1,8 +1,8 @@
 {
   "stock": "2344 華邦電",
   "stock_id": "2344",
-  "date": "2026-08-19",
-  "current_price": 168.0,
+  "date": "2026-08-20",
+  "current_price": 176.5,
   "wave_start": {
     "date": "2026-04-20",
     "price": 85.7
@@ -11,7 +11,7 @@
     "date": "2026-06-22",
     "price": 222.0
   },
-  "wave_summary": "波段由 85.70 上升至 222.00，目前收盤 168.00。",
+  "wave_summary": "波段由 85.70 上升至 222.00，目前收盤 176.50。",
   "grid_defense_lines": {
     "level_382": "169.93 元",
     "level_500": "153.85 元",
@@ -22,10 +22,10 @@
     "level_500_price": 153.85,
     "level_618_price": 137.77
   },
-  "hit_level": "level_382",
-  "strike_status": "進入 38.2% 第一防線",
-  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 38.5,
+  "hit_level": "none",
+  "strike_status": "尚未抵達回吐防線",
+  "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
+  "xgb_up_probability": 48.4,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-19T22:16:44.426930+00:00"
+  "generated_at": "2026-08-20T08:09:03.957933+00:00"
 }
