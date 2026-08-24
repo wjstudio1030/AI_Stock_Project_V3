@@ -1,12 +1,12 @@
 {
   "stock_id": "2337",
   "stock": "2337 旺宏",
-  "observation_date": "2026-08-21",
-  "close": 122.5,
+  "observation_date": "2026-08-24",
+  "close": 124.0,
   "foreign_z": 0.101,
   "total_institutional_z": 0.142,
-  "news_sentiment_score": 0.2,
+  "news_sentiment_score": -0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-21T22:15:42.079002+00:00"
+  "generated_at": "2026-08-24T08:14:45.883791+00:00"
 }
