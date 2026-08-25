@@ -3,10 +3,10 @@
   "stock": "2344 華邦電",
   "observation_date": "2026-08-25",
   "close": 179.0,
-  "foreign_z": -0.011,
-  "total_institutional_z": -0.064,
+  "foreign_z": 0.054,
+  "total_institutional_z": 0.028,
   "news_sentiment_score": -0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-08-25T08:11:25.162281+00:00"
+  "generated_at": "2026-08-25T15:25:29.851654+00:00"
 }
