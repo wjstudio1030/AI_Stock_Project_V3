@@ -3,10 +3,12 @@
   "stock": "2337 旺宏",
   "observation_date": "2026-08-26",
   "close": 125.5,
-  "foreign_z": -0.188,
-  "total_institutional_z": -0.137,
-  "news_sentiment_score": -0.3,
-  "triggered": false,
-  "alerts": [],
-  "generated_at": "2026-08-26T08:11:47.906452+00:00"
+  "foreign_z": 0.557,
+  "total_institutional_z": 0.598,
+  "news_sentiment_score": -1.0,
+  "triggered": true,
+  "alerts": [
+    "新聞情緒偏極端負面（-1.00）"
+  ],
+  "generated_at": "2026-08-26T16:03:48.466614+00:00"
 }
