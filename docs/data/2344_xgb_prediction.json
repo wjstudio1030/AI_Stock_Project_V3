@@ -2,12 +2,12 @@
   "stock_id": "2344",
   "observation_date": "2026-08-28",
   "close": 181.5,
-  "up_probability": 41.1,
-  "down_probability": 58.9,
+  "up_probability": 42.0,
+  "down_probability": 58.0,
   "model_validation": {
-    "accuracy_pct": 53.33,
-    "balanced_accuracy_pct": 53.5,
-    "log_loss": 0.6864,
+    "accuracy_pct": 50.0,
+    "balanced_accuracy_pct": 50.17,
+    "log_loss": 0.6892,
     "holdout_days": 60,
     "train_samples": 1134,
     "total_samples": 1194,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-08-27"
   },
   "model_trained_through": "2026-08-27",
-  "generated_at": "2026-08-28T23:39:08.957151+00:00",
+  "generated_at": "2026-08-29T03:26:07.865441+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 61.4007,
     "2.技術_KD值(D)": 57.6991,
