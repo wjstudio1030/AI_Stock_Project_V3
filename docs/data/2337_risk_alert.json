@@ -5,10 +5,8 @@
   "close": 126.0,
   "foreign_z": 0.366,
   "total_institutional_z": 0.408,
-  "news_sentiment_score": -1.0,
-  "triggered": true,
-  "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
-  ],
-  "generated_at": "2026-08-31T15:20:51.841628+00:00"
+  "news_sentiment_score": -0.3,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-08-31T20:20:08.849342+00:00"
 }
