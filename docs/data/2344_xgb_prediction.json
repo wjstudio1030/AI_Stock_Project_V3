@@ -2,8 +2,8 @@
   "stock_id": "2344",
   "observation_date": "2026-09-01",
   "close": 176.0,
-  "up_probability": 28.9,
-  "down_probability": 71.1,
+  "up_probability": 21.9,
+  "down_probability": 78.1,
   "model_validation": {
     "accuracy_pct": 46.67,
     "balanced_accuracy_pct": 47.05,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-08-31"
   },
   "model_trained_through": "2026-08-31",
-  "generated_at": "2026-09-01T12:43:08.591626+00:00",
+  "generated_at": "2026-09-01T17:56:06.903743+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 52.3308,
     "2.技術_KD值(D)": 56.9852,
@@ -24,7 +24,7 @@
     "4.技術_近3日動能%": -5.3763,
     "5.籌碼_外資買賣超(張)": -56232.0,
     "6.籌碼_投信買賣超(張)": -6417.0,
-    "7.散戶_融資增減(張)": 0.0,
+    "7.散戶_融資增減(張)": 8.641,
     "8.籌碼_大戶代理分數": 48.68,
     "9.產業_DRAM現貨單日漲跌%": 0.0,
     "10.大戶代理資料可用": 1.0,
