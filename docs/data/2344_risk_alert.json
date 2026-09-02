@@ -4,9 +4,9 @@
   "observation_date": "2026-09-02",
   "close": 179.0,
   "foreign_z": 0.659,
-  "total_institutional_z": 0.719,
-  "news_sentiment_score": 0.3,
+  "total_institutional_z": 0.717,
+  "news_sentiment_score": 0.5,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-09-02T12:17:04.722291+00:00"
+  "generated_at": "2026-09-02T18:02:21.457956+00:00"
 }
