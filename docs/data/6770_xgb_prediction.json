@@ -2,8 +2,8 @@
   "stock_id": "6770",
   "observation_date": "2026-09-08",
   "close": 72.4,
-  "up_probability": 34.0,
-  "down_probability": 66.0,
+  "up_probability": 47.3,
+  "down_probability": 52.7,
   "model_validation": {
     "accuracy_pct": 51.67,
     "balanced_accuracy_pct": 51.11,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-09-07"
   },
   "model_trained_through": "2026-09-07",
-  "generated_at": "2026-09-08T12:16:33.140779+00:00",
+  "generated_at": "2026-09-08T18:02:43.243906+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 57.7167,
     "2.技術_KD值(D)": 50.2067,
@@ -24,7 +24,7 @@
     "4.技術_近3日動能%": 6.7847,
     "5.籌碼_外資買賣超(張)": -7824.0,
     "6.籌碼_投信買賣超(張)": -22.0,
-    "7.散戶_融資增減(張)": 0.0,
+    "7.散戶_融資增減(張)": -2.739,
     "8.籌碼_大戶代理分數": 47.45,
     "9.產業_DRAM現貨單日漲跌%": 0.0,
     "10.大戶代理資料可用": 1.0,
