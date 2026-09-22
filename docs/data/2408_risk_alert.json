@@ -4,9 +4,11 @@
   "observation_date": "2026-09-22",
   "close": 497.0,
   "foreign_z": -1.475,
-  "total_institutional_z": -1.425,
-  "news_sentiment_score": -0.4,
-  "triggered": false,
-  "alerts": [],
-  "generated_at": "2026-09-22T12:49:50.721547+00:00"
+  "total_institutional_z": -1.426,
+  "news_sentiment_score": -1.0,
+  "triggered": true,
+  "alerts": [
+    "新聞情緒偏極端負面（-1.00）"
+  ],
+  "generated_at": "2026-09-22T18:15:50.394125+00:00"
 }
