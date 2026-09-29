@@ -5,8 +5,8 @@
   "close": 506.0,
   "foreign_z": 0.069,
   "total_institutional_z": 0.018,
-  "news_sentiment_score": 0.2,
+  "news_sentiment_score": -0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-09-29T14:17:57.971571+00:00"
+  "generated_at": "2026-09-29T19:36:43.290810+00:00"
 }
