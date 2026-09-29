@@ -1,12 +1,12 @@
 {
   "stock_id": "6770",
   "stock": "6770 力積電",
-  "observation_date": "2026-09-24",
-  "close": 72.0,
-  "foreign_z": -0.939,
-  "total_institutional_z": -0.938,
-  "news_sentiment_score": -0.2,
+  "observation_date": "2026-09-29",
+  "close": 72.3,
+  "foreign_z": 0.327,
+  "total_institutional_z": 0.308,
+  "news_sentiment_score": 1.0,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-09-29T01:23:34.906847+00:00"
+  "generated_at": "2026-09-29T14:17:57.991883+00:00"
 }
