@@ -1,8 +1,8 @@
 {
   "stock": "6770 力積電",
   "stock_id": "6770",
-  "date": "2026-09-30",
-  "current_price": 75.3,
+  "date": "2026-10-01",
+  "current_price": 74.5,
   "wave_start": {
     "date": "2026-04-20",
     "price": 51.4
@@ -11,7 +11,7 @@
     "date": "2026-05-29",
     "price": 88.7
   },
-  "wave_summary": "波段由 51.40 上升至 88.70，目前收盤 75.30。",
+  "wave_summary": "波段由 51.40 上升至 88.70，目前收盤 74.50。",
   "grid_defense_lines": {
     "level_382": "74.45 元",
     "level_500": "70.05 元",
@@ -25,7 +25,7 @@
   "hit_level": "none",
   "strike_status": "尚未抵達回吐防線",
   "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 41.2,
+  "xgb_up_probability": 33.5,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-10-01T00:57:06.576433+00:00"
+  "generated_at": "2026-10-01T14:44:21.510388+00:00"
 }
