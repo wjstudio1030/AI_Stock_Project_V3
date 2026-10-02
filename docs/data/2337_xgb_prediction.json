@@ -2,8 +2,8 @@
   "stock_id": "2337",
   "observation_date": "2026-10-01",
   "close": 121.0,
-  "up_probability": 43.5,
-  "down_probability": 56.5,
+  "up_probability": 44.3,
+  "down_probability": 55.7,
   "model_validation": {
     "accuracy_pct": 50.0,
     "balanced_accuracy_pct": 49.11,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-09-30"
   },
   "model_trained_through": "2026-09-30",
-  "generated_at": "2026-10-01T19:45:30.314580+00:00",
+  "generated_at": "2026-10-02T01:12:40.451140+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 55.9548,
     "2.技術_KD值(D)": 45.4181,
