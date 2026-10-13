@@ -5,12 +5,12 @@
   "close": 488.0,
   "foreign_z": -2.617,
   "total_institutional_z": -2.652,
-  "news_sentiment_score": -1.0,
+  "news_sentiment_score": -0.6,
   "triggered": true,
   "alerts": [
     "外資賣超達自身近60日極端值（z=-2.62）",
     "三大法人合計賣超達自身近60日極端值（z=-2.65）",
-    "新聞情緒偏極端負面（-1.00）"
+    "新聞情緒偏極端負面（-0.60）"
   ],
-  "generated_at": "2026-10-13T15:15:29.444125+00:00"
+  "generated_at": "2026-10-13T20:21:31.112630+00:00"
 }
