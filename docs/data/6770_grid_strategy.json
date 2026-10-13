@@ -1,31 +1,31 @@
 {
   "stock": "6770 力積電",
   "stock_id": "6770",
-  "date": "2026-10-12",
-  "current_price": 71.4,
+  "date": "2026-10-13",
+  "current_price": 67.5,
   "wave_start": {
-    "date": "2026-04-20",
-    "price": 51.4
+    "date": "2026-04-30",
+    "price": 51.9
   },
   "wave_peak": {
     "date": "2026-05-29",
     "price": 88.7
   },
-  "wave_summary": "波段由 51.40 上升至 88.70，目前收盤 71.40。",
+  "wave_summary": "波段由 51.90 上升至 88.70，目前收盤 67.50。",
   "grid_defense_lines": {
-    "level_382": "74.45 元",
-    "level_500": "70.05 元",
-    "level_618": "65.65 元"
+    "level_382": "74.64 元",
+    "level_500": "70.30 元",
+    "level_618": "65.96 元"
   },
   "grid_prices": {
-    "level_382_price": 74.45,
-    "level_500_price": 70.05,
-    "level_618_price": 65.65
+    "level_382_price": 74.64,
+    "level_500_price": 70.3,
+    "level_618_price": 65.96
   },
-  "hit_level": "level_382",
-  "strike_status": "進入 38.2% 第一防線",
+  "hit_level": "level_500",
+  "strike_status": "進入 50.0% 中期防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 56.9,
+  "xgb_up_probability": 44.9,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-10-13T02:48:07.702597+00:00"
+  "generated_at": "2026-10-13T15:15:11.919273+00:00"
 }
