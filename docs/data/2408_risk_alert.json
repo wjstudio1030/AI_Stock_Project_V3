@@ -1,16 +1,14 @@
 {
   "stock_id": "2408",
   "stock": "2408 南亞科",
-  "observation_date": "2026-10-13",
-  "close": 488.0,
-  "foreign_z": -2.617,
-  "total_institutional_z": -2.652,
-  "news_sentiment_score": -0.6,
+  "observation_date": "2026-10-14",
+  "close": 480.5,
+  "foreign_z": -1.46,
+  "total_institutional_z": -1.447,
+  "news_sentiment_score": -0.7,
   "triggered": true,
   "alerts": [
-    "外資賣超達自身近60日極端值（z=-2.62）",
-    "三大法人合計賣超達自身近60日極端值（z=-2.65）",
-    "新聞情緒偏極端負面（-0.60）"
+    "新聞情緒偏極端負面（-0.70）"
   ],
-  "generated_at": "2026-10-14T00:46:42.637390+00:00"
+  "generated_at": "2026-10-14T13:02:37.432073+00:00"
 }
