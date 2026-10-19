@@ -1,31 +1,31 @@
 {
   "stock": "2337 旺宏",
   "stock_id": "2337",
-  "date": "2026-10-16",
-  "current_price": 107.0,
+  "date": "2026-10-19",
+  "current_price": 102.0,
   "wave_start": {
-    "date": "2026-04-24",
-    "price": 132.0
+    "date": "2026-06-10",
+    "price": 135.0
   },
   "wave_peak": {
     "date": "2026-06-22",
     "price": 185.5
   },
-  "wave_summary": "波段由 132.00 上升至 185.50，目前收盤 107.00。",
+  "wave_summary": "波段由 135.00 上升至 185.50，目前收盤 102.00。",
   "grid_defense_lines": {
-    "level_382": "165.06 元",
-    "level_500": "158.75 元",
-    "level_618": "152.44 元"
+    "level_382": "166.21 元",
+    "level_500": "160.25 元",
+    "level_618": "154.29 元"
   },
   "grid_prices": {
-    "level_382_price": 165.06,
-    "level_500_price": 158.75,
-    "level_618_price": 152.44
+    "level_382_price": 166.21,
+    "level_500_price": 160.25,
+    "level_618_price": 154.29
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 47.0,
+  "xgb_up_probability": 51.2,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-10-17T00:04:27.075471+00:00"
+  "generated_at": "2026-10-19T14:56:13.341683+00:00"
 }
