@@ -1,8 +1,8 @@
 {
   "stock_id": "2337",
-  "accuracy_pct": 58.33,
-  "balanced_accuracy_pct": 55.54,
-  "log_loss": 0.6828,
+  "accuracy_pct": 55.0,
+  "balanced_accuracy_pct": 53.05,
+  "log_loss": 0.6829,
   "holdout_days": 60,
   "train_samples": 1133,
   "total_samples": 1193,
