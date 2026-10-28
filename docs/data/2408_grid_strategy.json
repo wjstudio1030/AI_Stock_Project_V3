@@ -1,31 +1,31 @@
 {
   "stock": "2408 南亞科",
   "stock_id": "2408",
-  "date": "2026-10-27",
-  "current_price": 441.0,
+  "date": "2026-10-28",
+  "current_price": 477.0,
   "wave_start": {
-    "date": "2026-05-04",
-    "price": 237.0
+    "date": "2026-05-05",
+    "price": 256.5
   },
   "wave_peak": {
     "date": "2026-08-31",
     "price": 543.0
   },
-  "wave_summary": "波段由 237.00 上升至 543.00，目前收盤 441.00。",
+  "wave_summary": "波段由 256.50 上升至 543.00，目前收盤 477.00。",
   "grid_defense_lines": {
-    "level_382": "426.11 元",
-    "level_500": "390.00 元",
-    "level_618": "353.89 元"
+    "level_382": "433.56 元",
+    "level_500": "399.75 元",
+    "level_618": "365.94 元"
   },
   "grid_prices": {
-    "level_382_price": 426.11,
-    "level_500_price": 390.0,
-    "level_618_price": 353.89
+    "level_382_price": 433.56,
+    "level_500_price": 399.75,
+    "level_618_price": 365.94
   },
   "hit_level": "none",
   "strike_status": "尚未抵達回吐防線",
   "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 52.3,
+  "xgb_up_probability": 55.7,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-10-28T00:50:55.455065+00:00"
+  "generated_at": "2026-10-28T14:23:14.987582+00:00"
 }
