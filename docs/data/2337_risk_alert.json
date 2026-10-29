@@ -1,16 +1,14 @@
 {
   "stock_id": "2337",
   "stock": "2337 旺宏",
-  "observation_date": "2026-10-28",
-  "close": 103.5,
-  "foreign_z": -3.111,
-  "total_institutional_z": -2.965,
+  "observation_date": "2026-10-29",
+  "close": 100.0,
+  "foreign_z": -1.83,
+  "total_institutional_z": -1.772,
   "news_sentiment_score": -1.0,
   "triggered": true,
   "alerts": [
-    "外資賣超達自身近60日極端值（z=-3.11）",
-    "三大法人合計賣超達自身近60日極端值（z=-2.96）",
     "新聞情緒偏極端負面（-1.00）"
   ],
-  "generated_at": "2026-10-29T01:25:17.723507+00:00"
+  "generated_at": "2026-10-29T14:38:36.158819+00:00"
 }
