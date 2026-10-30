@@ -1,8 +1,8 @@
 {
   "stock_id": "6770",
   "accuracy_pct": 55.0,
-  "balanced_accuracy_pct": 55.01,
-  "log_loss": 0.6948,
+  "balanced_accuracy_pct": 54.89,
+  "log_loss": 0.6928,
   "holdout_days": 60,
   "train_samples": 1131,
   "total_samples": 1191,
