@@ -1,14 +1,12 @@
 {
   "stock_id": "2408",
   "stock": "2408 南亞科",
-  "observation_date": "2026-11-06",
-  "close": 343.5,
-  "foreign_z": 0.31,
-  "total_institutional_z": 0.305,
-  "news_sentiment_score": -1.0,
-  "triggered": true,
-  "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
-  ],
-  "generated_at": "2026-11-07T01:29:41.189752+00:00"
+  "observation_date": "2026-11-09",
+  "close": 370.0,
+  "foreign_z": -0.273,
+  "total_institutional_z": -0.204,
+  "news_sentiment_score": 1.0,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-09T17:47:32.215929+00:00"
 }
