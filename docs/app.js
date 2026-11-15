@@ -718,7 +718,7 @@ function renderOverview(data) {
   const stockName = data.stock_name || manifestStockNames[data.stock_id] || "";
   overviewStockTitleEl.textContent = stockName ? `${stockName} ${data.stock_id} 總覽` : `${data.stock_id} 總覽`;
   overviewUpdatedEl.textContent = data.updated_at
-    ? `資料更新: ${formatTaiwanTime(data.updated_at)}`
+    ? `資料更新: ${formatTaiwanTime(data.updated_at)}${data.price_as_of ? ` · 行情日期: ${data.price_as_of}` : ""}`
     : "";
 
   overviewCloseEl.textContent = overview.close != null ? overview.close.toFixed(2) : "-";
@@ -780,7 +780,7 @@ function renderOverview(data) {
   });
 }
 
-function renderStaleWarning(updatedAtStr) {
+function renderStaleWarning(updatedAtStr, quotaLimited = false) {
   if (!updatedAtStr) {
     staleWarningEl.style.display = "none";
     return;
@@ -793,6 +793,9 @@ function renderStaleWarning(updatedAtStr) {
     staleWarningEl.textContent =
       `⚠ 資料已經 ${Math.floor(daysSince)} 天沒有更新了(最後更新: ${formatTaiwanTime(updatedAtStr)}),` +
       `可能是排程沒有正常執行,建議去 GitHub Actions 檢查一下。`;
+  } else if (quotaLimited) {
+    staleWarningEl.style.display = "";
+    staleWarningEl.textContent = "⚠ FinMind API 額度已達上限：目前股價可能使用 Yahoo Finance 備援；法人、基本面與新聞等 FinMind 資料可能暫缺，請依各欄位實際數值判讀。";
   } else {
     staleWarningEl.style.display = "none";
   }
@@ -1147,8 +1150,8 @@ async function loadStock(stockId) {
   marginChart.timeScale().fitContent();
   valuationChart.timeScale().fitContent();
 
-  updatedAtEl.textContent = `資料更新: ${formatTaiwanTime(data.updated_at)}`;
-  renderStaleWarning(data.updated_at);
+  updatedAtEl.textContent = `資料更新: ${formatTaiwanTime(data.updated_at)}${data.price_as_of ? ` · 行情日期: ${data.price_as_of}` : ""}`;
+  renderStaleWarning(data.updated_at, data.finmind_quota_exhausted);
 }
 
 // --- 初始化與讀取 manifest 檔案的函式 ---
