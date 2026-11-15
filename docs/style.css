@@ -43,7 +43,6 @@ header {
   flex-wrap: wrap;
   gap: 18px;
   padding: 14px 24px;
-  border-top: 3px solid #3d6ca5;
   border-bottom: 1px solid var(--border);
   background: var(--panel);
 }
