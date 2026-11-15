@@ -121,12 +121,17 @@ class CoreTests(unittest.TestCase):
     def test_site_uses_wj_stock_lab_branding(self):
         html = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs" / "style.css").read_text(encoding="utf-8")
-        favicon = (ROOT / "docs" / "favicon.svg").read_text(encoding="utf-8")
         self.assertIn("<title>WJ Stock Lab | WJ Studio</title>", html)
         self.assertIn("Designed &amp; Developed by <strong>WJ Studio</strong>", html)
-        self.assertIn('class="brand-emblem"', html)
-        self.assertIn(".brand-lockup", css)
-        self.assertIn("WJ Stock Lab", favicon)
+        self.assertIn('class="brand-lockup"', html)
+        self.assertIn('class="brand-logo"', html)
+        self.assertIn('src="./logo.png"', html)
+        self.assertIn('href="./logo.png"', html)
+        self.assertIn(".brand-logo[hidden]", css)
+        self.assertIn("WJ × SAM COLLABORATIVE PROJECT", html)
+        self.assertNotIn("MARKET INTELLIGENCE", html)
+        self.assertNotIn("brand-emblem", html)
+        self.assertNotIn("INDEPENDENT RESEARCH PROJECT", html)
         self.assertNotIn("<h1>AI Stock</h1>", html)
 
     def test_no_secret_file_is_packaged(self):
