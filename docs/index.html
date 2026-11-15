@@ -7,17 +7,18 @@
   <title>WJ Stock Lab | WJ Studio</title>
   <meta name="description" content="WJ Stock Lab，由 WJ Studio 設計與開發的股票數據分析與技術研究平台。">
   <meta name="theme-color" content="#16263d">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <!-- Upload your actual PNG logo to docs/logo.png to activate both the favicon and header icon. -->
+  <link rel="icon" type="image/png" href="./logo.png">
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
 <body>
   <header>
-    <div class="brand-lockup" aria-label="WJ Stock Lab，WJ Studio 設計開發">
-      <div class="brand-emblem" aria-hidden="true">WJ</div>
+    <div class="brand-lockup" aria-label="WJ Stock Lab">
+      <!-- The image remains hidden until docs/logo.png is uploaded. No generated WJ placeholder. -->
+      <img class="brand-logo" src="./logo.png" alt="WJ Stock Lab Logo" onerror="this.hidden=true">
       <div class="brand-copy">
-        <div class="brand-eyebrow"><span class="brand-dot"></span> WJ STUDIO <span class="brand-divider">/</span> MARKET INTELLIGENCE</div>
         <h1>WJ <span class="brand-title-accent">Stock Lab</span></h1>
         <p class="brand-tagline">股票數據分析 · 技術研究平台</p>
       </div>
@@ -485,9 +486,8 @@
 
   <footer class="site-footer">
     <div class="footer-brand">
-      <span class="footer-brand-mark" aria-hidden="true">WJ</span>
       <span class="footer-credit">Designed &amp; Developed by <strong>WJ Studio</strong></span>
-      <span class="footer-project">WJ STOCK LAB · INDEPENDENT RESEARCH PROJECT</span>
+      <span class="footer-project">WJ STOCK LAB · WJ × SAM COLLABORATIVE PROJECT</span>
     </div>
     <p class="footer-disclaimer">資料來源: FinMind 與專案設定的可驗證外部資料 &middot; 僅供技術研究參考,非投資建議</p>
   </footer>
