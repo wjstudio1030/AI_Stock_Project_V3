@@ -1,0 +1,27 @@
+name: AI Stock Static CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify Python, unit tests and frontend syntax
+        run: |
+          python -m compileall -q scripts
+          python -m unittest discover -s tests -v
+          node --check docs/app.js
