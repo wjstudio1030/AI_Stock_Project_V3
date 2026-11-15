@@ -28,7 +28,7 @@ from config import (
 from data_fetcher import (
     get_stock_price, get_institutional_investors, get_margin_trading,
     get_valuation_ratios, get_financial_statements, get_balance_sheet, get_cash_flow,
-    get_stock_names, get_stock_news, get_market_index,
+    get_stock_names, get_stock_news, get_market_index, finmind_quota_exhausted,
 )
 from indicators import add_moving_averages, add_rsi_columns
 from analysis import generate_trend_narrative, compute_next_day_probability, compute_streak, get_latest_state
@@ -557,6 +557,7 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
         "stock_name": stock_name,
         "price_source": price_source,
         "price_as_of": full_df["date"].max().strftime("%Y-%m-%d"),
+        "finmind_quota_exhausted": finmind_quota_exhausted(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "price": price,
         "volume": volume,
