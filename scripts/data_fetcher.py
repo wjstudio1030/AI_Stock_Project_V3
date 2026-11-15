@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from datetime import date
+from datetime import date, timedelta
 
 import pandas as pd
 import requests
@@ -30,6 +30,16 @@ def _session() -> requests.Session:
 
 
 _SESSION = _session()
+_FINMIND_QUOTA_EXHAUSTED = False
+
+
+class FinMindQuotaExceeded(RuntimeError):
+    """FinMind reports HTTP 402 (quota exhausted), not an invalid stock list."""
+
+
+def finmind_quota_exhausted() -> bool:
+    return _FINMIND_QUOTA_EXHAUSTED
+
 
 
 def _auth_headers(token: str | None) -> dict[str, str]:
@@ -38,14 +48,23 @@ def _auth_headers(token: str | None) -> dict[str, str]:
 
 
 def _request(params: dict, token: str | None = None, timeout: int = 30) -> dict:
+    global _FINMIND_QUOTA_EXHAUSTED
+    if _FINMIND_QUOTA_EXHAUSTED:
+        raise FinMindQuotaExceeded("FinMind 本次執行的 API 額度已用盡；跳過後續 FinMind 請求")
     response = _SESSION.get(
         FINMIND_API_URL,
         params=params,
         headers=_auth_headers(token),
         timeout=timeout,
     )
+    if response.status_code in (402, 429):
+        _FINMIND_QUOTA_EXHAUSTED = True
+        raise FinMindQuotaExceeded(f"FinMind HTTP {response.status_code}：使用額度或速率達上限")
     response.raise_for_status()
     payload = response.json()
+    if payload.get("status") in (402, 429):
+        _FINMIND_QUOTA_EXHAUSTED = True
+        raise FinMindQuotaExceeded("FinMind API 回傳額度已達上限")
     if payload.get("status") != 200:
         raise RuntimeError(f"FinMind API 錯誤: {payload.get('msg', payload)}")
     return payload
@@ -67,13 +86,59 @@ def _fetch(dataset: str, data_id: str, start_date: str, end_date: str, token: st
     return df
 
 
+def _get_yahoo_stock_price(stock_id: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """Use Yahoo historical daily OHLCV only when FinMind cannot supply prices.
+
+    Yahoo's end argument is exclusive; Taiwan listed stocks use .TW and OTC .TWO.
+    Other FinMind-only datasets are never fabricated from Yahoo prices.
+    """
+    import yfinance as yf
+
+    end_exclusive = (date.fromisoformat(end_date) + timedelta(days=1)).isoformat()
+    errors = []
+    for suffix in (".TW", ".TWO"):
+        ticker = f"{stock_id}{suffix}"
+        try:
+            frame = yf.Ticker(ticker).history(
+                start=start_date, end=end_exclusive, interval="1d",
+                auto_adjust=False, actions=False,
+            )
+            if frame is None or frame.empty:
+                raise ValueError("Yahoo returned no daily records")
+            df = pd.DataFrame({
+                "date": pd.to_datetime(frame.index.date),
+                "open": pd.to_numeric(frame["Open"].to_numpy(), errors="coerce"),
+                "high": pd.to_numeric(frame["High"].to_numpy(), errors="coerce"),
+                "low": pd.to_numeric(frame["Low"].to_numpy(), errors="coerce"),
+                "close": pd.to_numeric(frame["Close"].to_numpy(), errors="coerce"),
+                "volume": pd.to_numeric(frame["Volume"].to_numpy(), errors="coerce"),
+            })
+            df = df.dropna(subset=["date", "close"]).sort_values("date").drop_duplicates("date").reset_index(drop=True)
+            if len(df) < 2:
+                raise ValueError("Too few valid daily price records")
+            df.attrs["source"] = f"Yahoo Finance ({ticker})"
+            print(f"  [備援行情] {ticker} 取得 {len(df)} 筆日線")
+            return df
+        except Exception as exc:
+            errors.append(f"{ticker}: {exc}")
+    raise RuntimeError("Yahoo 備援行情無法取得：" + "; ".join(errors))
+
+
 def get_stock_price(stock_id: str, start_date: str, end_date: str, token: str | None = None) -> pd.DataFrame:
-    df = _fetch("TaiwanStockPrice", stock_id, start_date, end_date, token)
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.rename(columns={"max": "high", "min": "low", "Trading_Volume": "volume"})
-    numeric = ["open", "high", "low", "close", "volume"]
-    df[numeric] = df[numeric].apply(pd.to_numeric, errors="coerce")
-    return df[["date", *numeric]].dropna(subset=["date", "close"]).sort_values("date").drop_duplicates("date").reset_index(drop=True)
+    try:
+        df = _fetch("TaiwanStockPrice", stock_id, start_date, end_date, token)
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.rename(columns={"max": "high", "min": "low", "Trading_Volume": "volume"})
+        numeric = ["open", "high", "low", "close", "volume"]
+        df[numeric] = df[numeric].apply(pd.to_numeric, errors="coerce")
+        df = df[["date", *numeric]].dropna(subset=["date", "close"]).sort_values("date").drop_duplicates("date").reset_index(drop=True)
+        if len(df) < 2:
+            raise ValueError("FinMind returned insufficient daily prices")
+        df.attrs["source"] = "FinMind"
+        return df
+    except Exception as exc:
+        print(f"  [備援行情] {stock_id} FinMind 失敗：{exc}；改用 Yahoo Finance")
+        return _get_yahoo_stock_price(stock_id, start_date, end_date)
 
 
 def get_stock_names(token: str | None = None) -> dict[str, str]:
@@ -211,6 +276,9 @@ def get_stock_news(stock_id: str, start_date: str, end_date: str, token: str | N
             records = payload.get("data", [])
             if records:
                 frames.append(pd.DataFrame(records))
+        except FinMindQuotaExceeded as exc:
+            print(f"    [新聞] {stock_id} FinMind 額度達上限，停止逐日請求: {exc}")
+            break
         except Exception as exc:
             print(f"    [新聞] {stock_id} {day_str} 抓取失敗: {exc}")
         time.sleep(0.05)
