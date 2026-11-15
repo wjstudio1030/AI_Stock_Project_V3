@@ -20,7 +20,7 @@ concurrency:
 jobs:
   build-and-predict:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
 
     env:
       FINMIND_TOKEN: ${{ secrets.FINMIND_TOKEN }}
@@ -29,7 +29,7 @@ jobs:
       TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
       TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      STOCK_LIST: ${{ vars.STOCK_LIST || '2408,2344,2337,4973,6770' }}
+      STOCK_LIST: "2330,2454,2317,2308,3711,1303,2881,2882,2891,2383,2408,3037,2412,2303,3017,3443,2382,2887,2885,6669"
       DRAM_DATA_URL: ${{ secrets.DRAM_DATA_URL }}
       DRAM_LATEST_DATE: ${{ vars.DRAM_LATEST_DATE }}
       DRAM_LATEST_8GB_PRICE: ${{ secrets.DRAM_LATEST_8GB_PRICE }}
@@ -72,24 +72,30 @@ jobs:
         run: python scripts/fetch_dram.py
 
       - name: Build clearly-labeled position proxy scores
+        continue-on-error: true
         run: python scripts/fetch_whales.py
 
       - name: Train independent per-stock XGBoost models
+        continue-on-error: true
         run: python scripts/train_xgb_v3.py
 
       - name: Generate current XGBoost predictions
+        continue-on-error: true
         run: python scripts/predict_today_v3.py
 
       - name: Generate structured news and quant reports
+        continue-on-error: true
         run: |
           python scripts/news_sentiment_ai_v3.py
           python scripts/strategy_grid_ai_v3.py
           python scripts/ai_analyst_v3.py
 
       - name: Run relative-risk alerts
+        continue-on-error: true
         run: python scripts/alert_system_v3.py
 
       - name: Generate deterministic signal fusion
+        continue-on-error: true
         run: python scripts/ultimate_judge_ai_v4.py
 
       - name: Inject model and report outputs into frontend JSON

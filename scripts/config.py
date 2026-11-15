@@ -27,7 +27,7 @@ def _csv_env(name: str, default: str) -> list[str]:
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
-STOCK_LIST = _csv_env("STOCK_LIST", "2408,2344,2337,4973,6770")
+STOCK_LIST = list(dict.fromkeys(_csv_env("STOCK_LIST", "2330,2454,2317,2308,3711,1303,2881,2882,2891,2383,2408,3037,2412,2303,3017,3443,2382,2887,2885,6669")))
 LOOKBACK_DAYS = int(os.getenv("LOOKBACK_DAYS", "250"))
 RSI_PERIODS = [6, 14]
 MA_WINDOWS = [5, 10, 20, 60]

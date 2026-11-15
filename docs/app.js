@@ -718,7 +718,7 @@ function renderOverview(data) {
   const stockName = data.stock_name || manifestStockNames[data.stock_id] || "";
   overviewStockTitleEl.textContent = stockName ? `${stockName} ${data.stock_id} 總覽` : `${data.stock_id} 總覽`;
   overviewUpdatedEl.textContent = data.updated_at
-    ? `資料更新: ${formatTaiwanTime(data.updated_at)}`
+    ? `資料更新: ${formatTaiwanTime(data.updated_at)}${data.price_as_of ? ` · 行情日期: ${data.price_as_of}` : ""}`
     : "";
 
   overviewCloseEl.textContent = overview.close != null ? overview.close.toFixed(2) : "-";
@@ -780,7 +780,7 @@ function renderOverview(data) {
   });
 }
 
-function renderStaleWarning(updatedAtStr) {
+function renderStaleWarning(updatedAtStr, quotaLimited = false) {
   if (!updatedAtStr) {
     staleWarningEl.style.display = "none";
     return;
@@ -793,6 +793,9 @@ function renderStaleWarning(updatedAtStr) {
     staleWarningEl.textContent =
       `⚠ 資料已經 ${Math.floor(daysSince)} 天沒有更新了(最後更新: ${formatTaiwanTime(updatedAtStr)}),` +
       `可能是排程沒有正常執行,建議去 GitHub Actions 檢查一下。`;
+  } else if (quotaLimited) {
+    staleWarningEl.style.display = "";
+    staleWarningEl.textContent = "⚠ FinMind API 額度已達上限：目前股價可能使用 Yahoo Finance 備援；法人、基本面與新聞等 FinMind 資料可能暫缺，請依各欄位實際數值判讀。";
   } else {
     staleWarningEl.style.display = "none";
   }
@@ -916,26 +919,30 @@ function renderSortedCompareTable() {
   let tbodyHTML = "";
   compareRows.forEach(data => {
     const ov = data.overview || {};
-    const priceStr = ov.close !== undefined ? ov.close.toFixed(2) : "-";
-    const rsiStr = ov.rsi14 !== undefined ? ov.rsi14 : "-";
-    const maStateStr = ov.ma_state || "盤整";
+    const formatNumber = (value) => value != null && Number.isFinite(Number(value)) ? Number(value).toFixed(2) : "-";
+    const priceStr = formatNumber(ov.close);
+    const rsiStr = ov.rsi14 != null ? ov.rsi14 : "-";
+    const maStateStr = ov.ma_state || "-";
+    const stockDisplayName = `${data.stock_id} ${data.stock_name || ""}${data.data_unavailable ? "（資料待更新）" : ""}`;
+    const rowClick = data.data_unavailable ? "" : `onclick="switchToStock('${data.stock_id}')"`;
+    const rowStyle = data.data_unavailable ? 'style="opacity:0.65;"' : 'style="cursor:pointer;"';
     
     // 漲跌幅顏色與符號 (套用 index.html 裡的 css)
     const changeClass = ov.change_pct > 0 ? 'txt-up' : (ov.change_pct < 0 ? 'txt-down' : '');
     const sign = ov.change_pct > 0 ? "+" : "";
-    const changeText = ov.change_pct !== undefined ? `<span class="${changeClass}">${sign}${ov.change_pct}%</span>` : "-";
+    const changeText = ov.change_pct != null ? `<span class="${changeClass}">${sign}${ov.change_pct}%</span>` : "-";
     
     if (isGlobal) {
-      tbodyHTML += `<tr style="cursor: pointer;" onclick="switchToStock('${data.stock_id}')" class="compare-row-hover">
-        <td>${data.stock_id} ${data.stock_name}</td>
+      tbodyHTML += `<tr ${rowStyle} ${rowClick} class="compare-row-hover">
+        <td>${stockDisplayName}</td>
         <td>${priceStr}</td>
         <td>${changeText}</td>
         <td>${rsiStr}</td>
         <td>${maStateStr}</td>
       </tr>`;
     } else {
-      const perStr = ov.per !== undefined ? ov.per.toFixed(2) : "-";
-      const pbrStr = ov.pbr !== undefined ? ov.pbr.toFixed(2) : "-";
+      const perStr = formatNumber(ov.per);
+      const pbrStr = formatNumber(ov.pbr);
       const probStr = ov.next_day_up_pct != null ? `<span class="txt-up">${ov.next_day_up_pct}%</span> / <span class="txt-down">${ov.next_day_down_pct}%</span>` : "資料不足";
       
       let foreignStr = "-";
@@ -945,8 +952,8 @@ function renderSortedCompareTable() {
           foreignStr = `<span class="${fCls}">${fSign}${ov.foreign_net_today}</span>`;
       }
       
-      tbodyHTML += `<tr style="cursor: pointer;" onclick="switchToStock('${data.stock_id}')" class="compare-row-hover">
-        <td>${data.stock_id} ${data.stock_name}</td>
+      tbodyHTML += `<tr ${rowStyle} ${rowClick} class="compare-row-hover">
+        <td>${stockDisplayName}</td>
         <td>${priceStr}</td>
         <td>${changeText}</td>
         <td>${foreignStr}</td>
@@ -996,9 +1003,16 @@ function setupCompareSorting() {
       }
       
       compareRows.sort((a, b) => {
-        const valA = a.overview[colKey] || 0;
-        const valB = b.overview[colKey] || 0;
-        return compareSortAsc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+        const aValue = colKey === "stock_id" ? a.stock_id : a.overview?.[colKey];
+        const bValue = colKey === "stock_id" ? b.stock_id : b.overview?.[colKey];
+        if (aValue == null && bValue == null) return 0;
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
+        const isNumeric = colKey !== "stock_id" && Number.isFinite(Number(aValue)) && Number.isFinite(Number(bValue));
+        const comparison = isNumeric
+          ? Number(aValue) - Number(bValue)
+          : String(aValue).localeCompare(String(bValue), "zh-Hant", { numeric: true });
+        return compareSortAsc ? comparison : -comparison;
       });
       
       renderSortedCompareTable();
@@ -1009,30 +1023,30 @@ function setupCompareSorting() {
 async function loadCompareTable(force = false) {
   if (compareDataLoaded && !force) return;
 
-  // 每次載入前，重新抓取一次 tbody 元素，顯示「載入中」
   const tbody = document.getElementById("compare-table-body");
   if (tbody) tbody.innerHTML = `<tr><td colspan="11">載入中...</td></tr>`;
-  
-  const rows = [];
-  const compareList = currentMarket === "TW" ? manifestStockIds : globalStockIds;
 
-  for (const id of compareList) {
+  const compareList = currentMarket === "TW" ? manifestStockIds : globalStockIds;
+  const stockNames = currentMarket === "TW" ? manifestStockNames : globalStockNames;
+  // A missing or temporarily unavailable quote must not remove a configured stock.
+  // Fetch all stocks concurrently so the 20-stock table does not wait serially on the CDN.
+  const rows = await Promise.all(compareList.map(async (id) => {
     try {
       const res = await fetch(`${DATA_BASE_URL}/${id}.json?t=${Date.now()}`);
-      if (!res.ok) continue;
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      rows.push(data);
-    } catch (e) {}
-  }
+      return { ...data, stock_id: id, stock_name: data.stock_name || stockNames[id] || id };
+    } catch (error) {
+      console.warn(`Unable to load comparison data for ${id}:`, error);
+      return { stock_id: id, stock_name: stockNames[id] || id, overview: {}, data_unavailable: true };
+    }
+  }));
 
   compareRows = rows;
-  
-  // 如果是強制重新載入(切換市場)，將排序恢復預設，避免錯亂
   if (force) {
-     compareSortCol = "stock_id";
-     compareSortAsc = true;
+    compareSortCol = "stock_id";
+    compareSortAsc = true;
   }
-  
   renderSortedCompareTable();
   compareDataLoaded = true;
 }
@@ -1136,8 +1150,8 @@ async function loadStock(stockId) {
   marginChart.timeScale().fitContent();
   valuationChart.timeScale().fitContent();
 
-  updatedAtEl.textContent = `資料更新: ${formatTaiwanTime(data.updated_at)}`;
-  renderStaleWarning(data.updated_at);
+  updatedAtEl.textContent = `資料更新: ${formatTaiwanTime(data.updated_at)}${data.price_as_of ? ` · 行情日期: ${data.price_as_of}` : ""}`;
+  renderStaleWarning(data.updated_at, data.finmind_quota_exhausted);
 }
 
 // --- 初始化與讀取 manifest 檔案的函式 ---
