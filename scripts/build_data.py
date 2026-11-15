@@ -165,6 +165,7 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
     start_date = (datetime.today() - timedelta(days=int(LOOKBACK_DAYS * 1.6))).strftime("%Y-%m-%d")
 
     full_df = get_stock_price(stock_id, analysis_start_date, end_date, token=token)
+    price_source = full_df.attrs.get("source", "unknown")
     full_df = add_moving_averages(full_df, windows=MA_WINDOWS)
     full_df = add_rsi_columns(full_df, periods=RSI_PERIODS)
     
@@ -554,6 +555,8 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
     return {
         "stock_id": stock_id,
         "stock_name": stock_name,
+        "price_source": price_source,
+        "price_as_of": full_df["date"].max().strftime("%Y-%m-%d"),
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "price": price,
         "volume": volume,
@@ -612,6 +615,7 @@ def main():
         refresh_v3_only(stock_ids)
         return
 
+    cached_manifest = _load_json_if_exists(os.path.join(OUTPUT_DIR_ABS, "manifest.json")) or {}
     token = os.environ.get("FINMIND_TOKEN", "")
     try:
         name_map = get_stock_names(token=token)
@@ -619,6 +623,8 @@ def main():
     except Exception as e:
         print(f"股票名稱對照表抓取失敗: {e}")
         name_map = {}
+    # Keep verified names from the previous manifest when the quota blocks TaiwanStockInfo.
+    name_map = {**cached_manifest.get("stock_names", {}), **name_map}
 
     try:
         market_start_date = (datetime.today() - timedelta(days=int(ANALYSIS_LOOKBACK_YEARS * 365))).strftime("%Y-%m-%d")
@@ -629,8 +635,12 @@ def main():
         print(f"大盤加權指數抓取失敗，ML 會使用缺失旗標/0 值: {e}")
         market_df = None
 
-    manifest = []
+    manifest = list(dict.fromkeys(stock_ids))  # Declared universe, even if a quote is temporarily missing.
     manifest_names = {}
+    for stock_id in manifest:
+        cached = _load_json_if_exists(os.path.join(OUTPUT_DIR_ABS, f"{stock_id}.json")) or {}
+        manifest_names[stock_id] = name_map.get(stock_id) or cached.get("stock_name") or stock_id
+    successes = []
     failures = []
     for stock_id in stock_ids:
         print(f"抓取並計算 {stock_id} ...")
@@ -648,8 +658,8 @@ def main():
             json.dump(data, f, ensure_ascii=False)
         os.replace(temp_path, out_path)
         print(f"✅ 已輸出: {out_path} ({len(data['price'])} 筆)")
-        manifest.append(stock_id)
-        manifest_names[stock_id] = stock_name
+        successes.append(stock_id)
+        manifest_names[stock_id] = stock_name or manifest_names[stock_id]
 
     # === 替換 scripts/build_data.py 最底下的 manifest 寫入邏輯 ===
     manifest_path = os.path.join(OUTPUT_DIR_ABS, "manifest.json")
@@ -666,7 +676,10 @@ def main():
     # 2. 只更新台股專屬欄位，保留原本的 global_stocks
     existing_manifest["stocks"] = manifest
     existing_manifest["stock_names"] = manifest_names
-    existing_manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
+    existing_manifest["last_attempt_at"] = datetime.now(timezone.utc).isoformat()
+    existing_manifest["failed_stocks"] = failures
+    if successes:
+        existing_manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
     existing_manifest["news_lookback_days"] = NEWS_LOOKBACK_DAYS
 
     # 3. 寫回檔案
@@ -676,8 +689,9 @@ def main():
     print(f"已輸出股票清單索引: {manifest_path}")
     
     # 錯誤攔截機制保持不變
-    if failures and len(failures) == len(stock_ids):
-        raise RuntimeError("所有股票資料建置皆失敗")
+    print(f"行情更新完成：{len(successes)}/{len(manifest)} 檔，失敗：{failures}")
+    if not successes:
+        raise RuntimeError("本次所有股票行情來源皆失敗；已保留舊資料與上次成功更新時間")
 
 
 if __name__ == "__main__":
