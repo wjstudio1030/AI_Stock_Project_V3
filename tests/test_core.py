@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 import re
 import sqlite3
 import sys
 import tempfile
 import unittest
+from unittest.mock import MagicMock, patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,6 +76,47 @@ class CoreTests(unittest.TestCase):
             finally:
                 db_manager.DB_PATH = original_path
                 db_manager._SCHEMA_READY = original_ready
+
+    def test_default_manifest_contains_exactly_the_requested_twenty_stocks(self):
+        from config import STOCK_LIST
+
+        expected = "2330,2454,2317,2308,3711,1303,2881,2882,2891,2383,2408,3037,2412,2303,3017,3443,2382,2887,2885,6669".split(",")
+        manifest = json.loads((ROOT / "docs" / "data" / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(STOCK_LIST, expected)
+        self.assertEqual(manifest["stocks"], expected)
+        self.assertEqual(len(set(manifest["stocks"])), 20)
+
+    def test_finmind_quota_breaker_does_not_repeat_requests(self):
+        import data_fetcher
+
+        response = MagicMock(status_code=402)
+        with patch.object(data_fetcher, "_FINMIND_QUOTA_EXHAUSTED", False), patch.object(data_fetcher._SESSION, "get", return_value=response) as request:
+            with self.assertRaises(data_fetcher.FinMindQuotaExceeded):
+                data_fetcher._request({"dataset": "TaiwanStockInfo"})
+            with self.assertRaises(data_fetcher.FinMindQuotaExceeded):
+                data_fetcher._request({"dataset": "TaiwanStockPrice", "data_id": "2330"})
+            self.assertEqual(request.call_count, 1)
+
+    def test_yahoo_daily_price_fallback_normalizes_ohlcv(self):
+        import pandas as pd
+        import data_fetcher
+
+        history = pd.DataFrame(
+            {"Open": [100, 102], "High": [104, 105], "Low": [98, 100],
+             "Close": [103, 104], "Volume": [10000, 12000]},
+            index=pd.date_range("2026-11-12", periods=2, tz="Asia/Taipei"),
+        )
+        yahoo_ticker = MagicMock()
+        yahoo_ticker.history.return_value = history
+        with patch.object(data_fetcher, "_fetch", side_effect=data_fetcher.FinMindQuotaExceeded("quota")):
+            with patch("yfinance.Ticker", return_value=yahoo_ticker) as yf_ticker:
+                frame = data_fetcher.get_stock_price("2330", "2026-11-01", "2026-11-13")
+        self.assertEqual(yf_ticker.call_args.args[0], "2330.TW")
+        self.assertEqual(len(frame), 2)
+        self.assertEqual(list(frame.columns), ["date", "open", "high", "low", "close", "volume"])
+        self.assertEqual(frame["date"].dt.strftime("%Y-%m-%d").iloc[0], "2026-11-12")
+        self.assertEqual(frame["close"].iloc[-1], 104)
+        self.assertIn("Yahoo Finance", frame.attrs["source"])
 
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
