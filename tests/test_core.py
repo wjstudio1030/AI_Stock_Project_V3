@@ -118,6 +118,17 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(frame["close"].iloc[-1], 104)
         self.assertIn("Yahoo Finance", frame.attrs["source"])
 
+    def test_site_uses_wj_stock_lab_branding(self):
+        html = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs" / "style.css").read_text(encoding="utf-8")
+        favicon = (ROOT / "docs" / "favicon.svg").read_text(encoding="utf-8")
+        self.assertIn("<title>WJ Stock Lab | WJ Studio</title>", html)
+        self.assertIn("Designed &amp; Developed by <strong>WJ Studio</strong>", html)
+        self.assertIn('class="brand-emblem"', html)
+        self.assertIn(".brand-lockup", css)
+        self.assertIn("WJ Stock Lab", favicon)
+        self.assertNotIn("<h1>AI Stock</h1>", html)
+
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
