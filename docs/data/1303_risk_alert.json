@@ -3,12 +3,10 @@
   "stock": "1303 南亞",
   "observation_date": "2026-11-18",
   "close": 253.5,
-  "foreign_z": -0.042,
-  "total_institutional_z": -0.446,
-  "news_sentiment_score": -1.0,
-  "triggered": true,
-  "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
-  ],
-  "generated_at": "2026-11-18T08:23:14.199133+00:00"
+  "foreign_z": -0.673,
+  "total_institutional_z": -0.646,
+  "news_sentiment_score": -0.07,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-18T08:28:15.690035+00:00"
 }

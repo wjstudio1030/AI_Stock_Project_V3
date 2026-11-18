@@ -3,10 +3,10 @@
   "stock": "2308 台達電",
   "observation_date": "2026-11-18",
   "close": 1060.0,
-  "foreign_z": 0.573,
-  "total_institutional_z": 0.034,
-  "news_sentiment_score": -0.2,
+  "foreign_z": -0.383,
+  "total_institutional_z": -0.05,
+  "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-18T08:23:14.189231+00:00"
+  "generated_at": "2026-11-18T08:28:15.680478+00:00"
 }
