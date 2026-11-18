@@ -9,6 +9,13 @@ on:
     # 3. 美股收盤結算：台灣時間 06:00，週二至週六 (UTC 22:00，對應美國週一至週五)
     - cron: "0 22 * * 1-5"
   workflow_dispatch:
+  # Re-run data generation after code/test fixes, without triggering on generated data commits.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update_data.yml'
+      - 'scripts/**'
+      - 'tests/**'
 
 permissions:
   contents: write
@@ -83,12 +90,17 @@ jobs:
         continue-on-error: true
         run: python scripts/predict_today_v3.py
 
-      - name: Generate structured news and quant reports
+      - name: Generate structured news sentiment reports
         continue-on-error: true
-        run: |
-          python scripts/news_sentiment_ai_v3.py
-          python scripts/strategy_grid_ai_v3.py
-          python scripts/ai_analyst_v3.py
+        run: python scripts/news_sentiment_ai_v3.py
+
+      - name: Generate grid strategy reports
+        continue-on-error: true
+        run: python scripts/strategy_grid_ai_v3.py
+
+      - name: Generate AI analyst reports
+        continue-on-error: true
+        run: python scripts/ai_analyst_v3.py
 
       - name: Run relative-risk alerts
         continue-on-error: true
