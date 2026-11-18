@@ -197,6 +197,34 @@ class CoreTests(unittest.TestCase):
         self.assertLess(workflow.index("Commit base market data before optional analyses"),
                         workflow.index("Generate structured news sentiment reports"))
 
+    def test_openai_failure_does_not_block_keyword_news_summary(self):
+        import news_sentiment_ai_v3
+
+        article = [{"id": 1, "date": "2026-11-17", "title": "公司公布新訂單", "source": "test"}]
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(news_sentiment_ai_v3, "DOCS_DATA_DIR", Path(tmp)):
+                with patch.object(news_sentiment_ai_v3, "fetch_recent_news", return_value=article):
+                    with patch.object(news_sentiment_ai_v3, "has_openai_key", return_value=True):
+                        with patch.object(news_sentiment_ai_v3, "structured_json", side_effect=TimeoutError("test")):
+                            report = news_sentiment_ai_v3.analyze_news_sentiment("2330")
+            self.assertEqual(report["analysis_method"], "keyword_fallback_api_error")
+            self.assertIn("關鍵字", report["market_vibe_summary"])
+            self.assertTrue((Path(tmp) / "2330_news_ai_sentiment.json").exists())
+
+    def test_openai_failure_does_not_block_quant_summary(self):
+        import ai_analyst_v3
+
+        input_data = {"XGBoost上漲機率": 51.0, "外資買賣超張": 0,
+                      "DRAM單日漲跌%": 0.0, "觀測日期": "2026-11-17", "股票": "2330"}
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(ai_analyst_v3, "DOCS_DATA_DIR", Path(tmp)):
+                with patch.object(ai_analyst_v3, "get_latest_quant_data", return_value=input_data):
+                    with patch.object(ai_analyst_v3, "has_openai_key", return_value=True):
+                        with patch.object(ai_analyst_v3, "structured_json", side_effect=TimeoutError("test")):
+                            result = ai_analyst_v3.generate_ai_report("2330")
+            self.assertEqual(result["analysis_method"], "deterministic_fallback_api_error")
+            self.assertTrue((Path(tmp) / "2330_ai_report.json").exists())
+
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
