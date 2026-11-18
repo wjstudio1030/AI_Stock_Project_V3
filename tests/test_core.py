@@ -158,7 +158,7 @@ class CoreTests(unittest.TestCase):
 
     def test_frontend_staleness_uses_actual_quote_day(self):
         js = (ROOT / "docs" / "app.js").read_text(encoding="utf-8")
-        self.assertIn("renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of)", js)
+        self.assertIn("renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of, data.retained_section_dates)", js)
         self.assertIn("priceAsOf", js)
 
     def test_news_analysis_reuses_snapshot_without_refetching_finmind(self):
