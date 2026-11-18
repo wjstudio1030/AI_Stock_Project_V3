@@ -65,3 +65,12 @@ python -m http.server 8000 --directory docs
 - 財報、法人與新聞仍主要依賴 FinMind 的使用額度；Yahoo 備援**僅保證行情欄位的可用性，不代表所有 20 檔的進階分析資料一定能完整刷新**。部分進階步驟設定為可降級，以確保已成功擷取的股價能被儲存。
 
 更新後可用 `python -m unittest discover -s tests -v`、`node --check docs/app.js` 檢查，並至 Actions 手動執行 Daily Pipeline 檢查新行情與額度狀態。台灣股市休市日通常會沿用最近交易日的行情日期。
+
+## FinMind 額度耗盡時的資料完整性
+
+當 FinMind 回應額度限制（HTTP 402/429），每日股價可使用 Yahoo Finance 備援，
+但不會以虛構的零值補足法人、融資、估值或財報。前端若暫時缺少非價格資料，
+會保留上次已成功抓取的數值，並在個股 JSON 的 `retained_section_dates` 記錄各欄位
+最後取得的時間；網站上方會顯示資料沿用警告。這些資料不是當日即時數值，
+也不應拿來當作最新籌碼資訊。若完全沒有舊資料，該欄位顯示缺失，而非假裝為 0。
+`_unified.csv` 對未取得的法人和融資數值會輸出空白，不會填入零買賣量。
