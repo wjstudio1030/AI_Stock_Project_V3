@@ -780,22 +780,19 @@ function renderOverview(data) {
   });
 }
 
-function renderStaleWarning(updatedAtStr, quotaLimited = false) {
-  if (!updatedAtStr) {
-    staleWarningEl.style.display = "none";
-    return;
-  }
-  const updated = new Date(updatedAtStr);
-  const daysSince = (Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24);
+function renderStaleWarning(updatedAtStr, quotaLimited = false, priceAsOf = null) {
+  // Updated-at marks JSON generation, NOT the last trading session. Detect truly old prices.
+  const observedAt = priceAsOf ? new Date(`${priceAsOf}T23:59:59+08:00`) : new Date(updatedAtStr);
+  const daysSince = (Date.now() - observedAt.getTime()) / (1000 * 60 * 60 * 24);
 
-  if (daysSince > STALE_WARNING_DAYS) {
+  if (Number.isFinite(daysSince) && daysSince > STALE_WARNING_DAYS) {
     staleWarningEl.style.display = "";
-    staleWarningEl.textContent =
-      `⚠ 資料已經 ${Math.floor(daysSince)} 天沒有更新了(最後更新: ${formatTaiwanTime(updatedAtStr)}),` +
-      `可能是排程沒有正常執行,建議去 GitHub Actions 檢查一下。`;
+    staleWarningEl.textContent = priceAsOf
+      ? `⚠ 行情停留在 ${priceAsOf}，已超過 ${Math.floor(daysSince)} 天未取得較新的交易日資料；請檢查 GitHub Actions 與行情來源。`
+      : `⚠ 資料已超過 ${Math.floor(daysSince)} 天未更新（最後更新：${formatTaiwanTime(updatedAtStr)}）；請檢查 GitHub Actions。`;
   } else if (quotaLimited) {
     staleWarningEl.style.display = "";
-    staleWarningEl.textContent = "⚠ FinMind API 額度已達上限：目前股價可能使用 Yahoo Finance 備援；法人、基本面與新聞等 FinMind 資料可能暫缺，請依各欄位實際數值判讀。";
+    staleWarningEl.textContent = "⚠ FinMind API 額度已達上限：股價可能改用 Yahoo Finance 備援；法人、基本面與新聞等 FinMind 資料可能暫缺。";
   } else {
     staleWarningEl.style.display = "none";
   }
@@ -1151,7 +1148,7 @@ async function loadStock(stockId) {
   valuationChart.timeScale().fitContent();
 
   updatedAtEl.textContent = `資料更新: ${formatTaiwanTime(data.updated_at)}${data.price_as_of ? ` · 行情日期: ${data.price_as_of}` : ""}`;
-  renderStaleWarning(data.updated_at, data.finmind_quota_exhausted);
+  renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of);
 }
 
 // --- 初始化與讀取 manifest 檔案的函式 ---
