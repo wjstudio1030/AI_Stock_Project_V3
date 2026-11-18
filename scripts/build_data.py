@@ -43,6 +43,7 @@ from prediction_tracker import (
     load_log, save_log, resolve_pending, add_new_prediction, compute_track_record, analyze_errors,
 )
 from db_manager import upsert_dataframe, get_db_connection, init_database
+from data_retention import retain_optional_sections
 
 OUTPUT_DIR_ABS = os.path.join(REPO_ROOT, OUTPUT_DIR)
 
@@ -264,7 +265,9 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
         else:
             daily_news = {"total": 0, "positive_count": 0, "negative_count": 0, "neutral_count": 0, "articles": []}
         existing_daily = next((entry for entry in sentiment_log if entry.get("date") == latest_trade_date), None)
-        if daily_news.get("total", 0) > 0 or existing_daily is None:
+        if news_df.empty and finmind_quota_exhausted():
+            print(f"  [新聞情緒] {latest_trade_date} 資料來源額度不足，未把未知當成中性新聞")
+        elif daily_news.get("total", 0) > 0 or existing_daily is None:
             sentiment_log = news_sentiment_add_daily_entry(sentiment_log, latest_trade_date, daily_news)
             news_sentiment_save_log(sentiment_log_path, sentiment_log)
         else:
@@ -471,17 +474,17 @@ def build_one(stock_id: str, token: str = None, stock_name: str = None, market_d
             })
             export_df = export_df.join(inst_export[["外資", "投信", "自營商", "三大法人合計(張)"]], how="left")
         else:
-            export_df["外資"] = 0
-            export_df["投信"] = 0
-            export_df["自營商"] = 0
-            export_df["三大法人合計(張)"] = 0
+            export_df["外資"] = float("nan")
+            export_df["投信"] = float("nan")
+            export_df["自營商"] = float("nan")
+            export_df["三大法人合計(張)"] = float("nan")
             
         if margin_df is not None and not margin_df.empty:
             margin_export = margin_df.copy().set_index("date")
             margin_export["融資增減(張)"] = (margin_export["margin_buy"] - margin_export["margin_sell"]) / 1000
             export_df = export_df.join(margin_export[["融資增減(張)"]], how="left")
         else:
-            export_df["融資增減(張)"] = 0
+            export_df["融資增減(張)"] = float("nan")
 
         export_cols = [
             'close', 'volume', '外資', '投信', '自營商', '三大法人合計(張)', '融資增減(張)',
@@ -648,6 +651,14 @@ def main():
         stock_name = name_map.get(stock_id)
         try:
             data = build_one(stock_id, token=token, stock_name=stock_name, market_df=market_df)
+            previous = _load_json_if_exists(os.path.join(OUTPUT_DIR_ABS, f"{stock_id}.json")) or {}
+            data = retain_optional_sections(
+                data, previous,
+                provider_unavailable=finmind_quota_exhausted()
+                or str(data.get("price_source", "")).startswith("Yahoo Finance"),
+            )
+            if data["retained_section_dates"]:
+                print(f"  ⚠️ [{stock_id}] 沿用已驗證資料並保留來源日期: {data['retained_section_dates']}")
         except Exception as e:
             failures.append(stock_id)
             print(f"❌ 跳過 {stock_id}: {e}")
