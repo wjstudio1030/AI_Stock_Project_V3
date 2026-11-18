@@ -225,6 +225,56 @@ class CoreTests(unittest.TestCase):
             self.assertEqual(result["analysis_method"], "deterministic_fallback_api_error")
             self.assertTrue((Path(tmp) / "2330_ai_report.json").exists())
 
+    def test_quota_retains_last_known_nonprice_data_with_provenance(self):
+        from data_retention import retain_optional_sections
+
+        previous = {
+            "updated_at": "2026-11-17T05:00:00+00:00",
+            "overview": {"close": 100.0, "per": 12.0, "foreign_net_today": 500, "news_positive": 2},
+            "institutional": {"total_net": [{"time": "2026-11-17", "value": 500}]},
+            "margin": {"margin_balance": [{"time": "2026-11-17", "value": 1}]},
+            "valuation": {"PER": [{"time": "2026-11-17", "value": 12}]},
+            "fundamentals": {"quarters": [{"date": "2026-09-30", "eps": 3.0}]},
+            "news": {"articles": [{"date": "2026-11-17", "title": "verified"}], "total": 1},
+        }
+        current = {
+            "price_as_of": "2026-11-18",
+            "price": [{"time": "2026-11-18", "close": 105}],
+            "overview": {"close": 105.0, "per": None, "foreign_net_today": None, "news_positive": 0},
+            "institutional": {"total_net": []},
+            "margin": {"margin_balance": []},
+            "valuation": {"PER": []},
+            "fundamentals": {"quarters": []},
+            "news": {"articles": [], "total": 0},
+        }
+        result = retain_optional_sections(current, previous, provider_unavailable=True)
+        self.assertEqual(result["price_as_of"], "2026-11-18")
+        self.assertEqual(result["overview"]["close"], 105.0)
+        self.assertEqual(result["overview"]["per"], 12.0)
+        self.assertEqual(result["overview"]["foreign_net_today"], 500)
+        self.assertEqual(result["overview"]["news_positive"], 2)
+        self.assertEqual(set(result["retained_section_dates"]),
+                         {"institutional", "margin", "valuation", "fundamentals", "news"})
+        self.assertEqual(result["retained_section_dates"]["news"], previous["updated_at"])
+        self.assertEqual(current["news"]["total"], 0)  # input must not be mutated
+
+    def test_retained_section_provenance_does_not_become_false_new_date(self):
+        from data_retention import retain_optional_sections
+
+        previous = {
+            "updated_at": "2026-11-18T10:00:00+00:00",
+            "retained_section_dates": {"news": "2026-11-14T10:00:00+00:00"},
+            "news": {"articles": [{"title": "older verified"}]},
+            "overview": {"news_positive": 1},
+        }
+        current = {"price_as_of": "2026-11-18", "news": {"articles": []}, "overview": {"news_positive": 0}}
+        result = retain_optional_sections(current, previous, provider_unavailable=True)
+        self.assertEqual(result["retained_section_dates"]["news"], "2026-11-14T10:00:00+00:00")
+
+    def test_frontend_identifies_reused_fundamental_data(self):
+        js = (ROOT / "docs" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("data.retained_section_dates", js)
+
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
