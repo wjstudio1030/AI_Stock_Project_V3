@@ -75,6 +75,21 @@ jobs:
       - name: Refresh market, fundamentals, news, and base frontend data
         run: python scripts/build_data.py
 
+      # Publish fresh quotes before optional ML/AI calls that may be slow or rate-limited.
+      # The final commit step below separately publishes later model/report results.
+      - name: Commit base market data before optional analyses
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data data_db
+          if git diff --cached --quiet; then
+            echo "No base price changes"
+          else
+            git commit -m "chore(data): refresh market quotes [skip ci]"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
       - name: Import verified DRAM data when configured
         run: python scripts/fetch_dram.py
 
@@ -92,6 +107,7 @@ jobs:
 
       - name: Generate structured news sentiment reports
         continue-on-error: true
+        timeout-minutes: 15
         run: python scripts/news_sentiment_ai_v3.py
 
       - name: Generate grid strategy reports
