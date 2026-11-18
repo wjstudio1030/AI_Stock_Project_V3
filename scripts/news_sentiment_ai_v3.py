@@ -12,22 +12,54 @@ from config import DOCS_DATA_DIR, STOCK_LIST
 from data_fetcher import get_stock_news
 from news_analysis import classify_news_title
 from openai_utils import has_openai_key, structured_json
-from project_data import save_json, stock_label
+from project_data import load_json, save_json, stock_label
 
 
 def fetch_recent_news(stock_id: str, days: int = 10, limit: int = 15) -> list[dict]:
-    end = datetime.today().strftime("%Y-%m-%d")
-    start = (datetime.today() - timedelta(days=days)).strftime("%Y-%m-%d")
+    """Reuse news already fetched by build_data instead of spending the same FinMind quota twice.
+
+    Standalone runs with no base JSON still fall back to the FinMind news source.
+    An explicitly empty cached news list is treated as unavailable, not as permission
+    to repeat API requests that likely already exceeded the provider quota.
+    """
+    latest = datetime.today()
+    cutoff = (latest - timedelta(days=days)).date()
+    base = load_json(DOCS_DATA_DIR / f"{stock_id}.json", {}) or {}
+    cached_articles = (base.get("news") or {}).get("articles")
+    if isinstance(cached_articles, list):
+        records = []
+        for article in cached_articles:
+            if not isinstance(article, dict):
+                continue
+            observed = pd.to_datetime(article.get("date"), errors="coerce")
+            if pd.isna(observed) or observed.date() < cutoff:
+                continue
+            title = str(article.get("title") or "").strip()
+            if not title:
+                continue
+            records.append({
+                "id": len(records) + 1,
+                "date": observed.strftime("%Y-%m-%d"),
+                "title": title,
+                "source": str(article.get("source") or ""),
+            })
+            if len(records) >= limit:
+                break
+        return records
+
+    print(f"  [{stock_id}] 無基礎新聞快照，獨立執行才向 FinMind 補抓")
+    end = latest.strftime("%Y-%m-%d")
+    start = (latest - timedelta(days=days)).strftime("%Y-%m-%d")
     df = get_stock_news(stock_id, start, end)
-    records = []
-    for idx, row in df.head(limit).reset_index(drop=True).iterrows():
-        records.append({
+    return [
+        {
             "id": idx + 1,
             "date": pd.Timestamp(row["date"]).strftime("%Y-%m-%d"),
             "title": str(row["title"]),
             "source": str(row.get("source") or ""),
-        })
-    return records
+        }
+        for idx, (_, row) in enumerate(df.head(limit).iterrows())
+    ]
 
 
 def _fallback(stock_id: str, articles: list[dict]) -> dict:
