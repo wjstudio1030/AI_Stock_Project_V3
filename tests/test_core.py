@@ -191,6 +191,12 @@ class CoreTests(unittest.TestCase):
                 with patch.object(news_sentiment_ai_v3, "get_stock_news", side_effect=AssertionError("must not refetch")):
                     self.assertEqual(news_sentiment_ai_v3.fetch_recent_news("2330"), [])
 
+    def test_pipeline_commits_base_market_data_before_optional_ai(self):
+        workflow = (ROOT / ".github" / "workflows" / "update_data.yml").read_text(encoding="utf-8")
+        self.assertIn("Commit base market data before optional analyses", workflow)
+        self.assertLess(workflow.index("Commit base market data before optional analyses"),
+                        workflow.index("Generate structured news sentiment reports"))
+
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
