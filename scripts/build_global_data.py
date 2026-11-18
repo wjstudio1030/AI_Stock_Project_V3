@@ -221,10 +221,16 @@ def update_manifest(success_tickers):
         except Exception:
             existing_manifest = {}
 
-    # 2. 只更新全球股專屬欄位，保留原本的 stocks
-    existing_manifest["global_stocks"] = success_tickers
+    # Retain previously available global tickers when a quote source is temporarily down.
+    # Do not mark old prices as freshly fetched if the entire refresh failed.
+    previous = set(existing_manifest.get("global_stocks", []))
+    seen = set(success_tickers) | previous
+    existing_manifest["global_stocks"] = [ticker for ticker in GLOBAL_STOCKS if ticker in seen]
     existing_manifest["global_stock_names"] = GLOBAL_STOCKS
-    existing_manifest["global_updated_at"] = datetime.now(timezone.utc).isoformat()
+    existing_manifest["global_failed_stocks"] = [ticker for ticker in GLOBAL_STOCKS if ticker not in success_tickers]
+    existing_manifest["global_last_attempt_at"] = datetime.now(timezone.utc).isoformat()
+    if success_tickers:
+        existing_manifest["global_updated_at"] = datetime.now(timezone.utc).isoformat()
 
     # 3. 寫回檔案
     with open(manifest_path, "w", encoding="utf-8") as f:
