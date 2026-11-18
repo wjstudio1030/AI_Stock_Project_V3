@@ -780,7 +780,7 @@ function renderOverview(data) {
   });
 }
 
-function renderStaleWarning(updatedAtStr, quotaLimited = false, priceAsOf = null) {
+function renderStaleWarning(updatedAtStr, quotaLimited = false, priceAsOf = null, retainedDates = {}) {
   // Updated-at marks JSON generation, NOT the last trading session. Detect truly old prices.
   const observedAt = priceAsOf ? new Date(`${priceAsOf}T23:59:59+08:00`) : new Date(updatedAtStr);
   const daysSince = (Date.now() - observedAt.getTime()) / (1000 * 60 * 60 * 24);
@@ -790,6 +790,13 @@ function renderStaleWarning(updatedAtStr, quotaLimited = false, priceAsOf = null
     staleWarningEl.textContent = priceAsOf
       ? `⚠ 行情停留在 ${priceAsOf}，已超過 ${Math.floor(daysSince)} 天未取得較新的交易日資料；請檢查 GitHub Actions 與行情來源。`
       : `⚠ 資料已超過 ${Math.floor(daysSince)} 天未更新（最後更新：${formatTaiwanTime(updatedAtStr)}）；請檢查 GitHub Actions。`;
+  } else if (Object.keys(retainedDates || {}).length) {
+    const labels = { institutional: "法人", margin: "融資融券", valuation: "本益比／淨值比", fundamentals: "財報", news: "新聞" };
+    const sections = Object.entries(retainedDates).map(([key, timestamp]) =>
+      `${labels[key] || key}（資料取得時間：${String(timestamp).slice(0, 10)}）`
+    ).join("、");
+    staleWarningEl.style.display = "";
+    staleWarningEl.textContent = `⚠ 部分 FinMind 資料暫時無法更新：${sections}。股價仍按行情日期更新；上述項目沿用上次有效數據，並非本次即時抓取。`;
   } else if (quotaLimited) {
     staleWarningEl.style.display = "";
     staleWarningEl.textContent = "⚠ FinMind API 額度已達上限：股價可能改用 Yahoo Finance 備援；法人、基本面與新聞等 FinMind 資料可能暫缺。";
@@ -1148,7 +1155,7 @@ async function loadStock(stockId) {
   valuationChart.timeScale().fitContent();
 
   updatedAtEl.textContent = `資料更新: ${formatTaiwanTime(data.updated_at)}${data.price_as_of ? ` · 行情日期: ${data.price_as_of}` : ""}`;
-  renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of);
+  renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of, data.retained_section_dates);
 }
 
 // --- 初始化與讀取 manifest 檔案的函式 ---
