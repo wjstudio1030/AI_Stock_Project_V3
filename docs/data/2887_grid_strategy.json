@@ -1,0 +1,31 @@
+{
+  "stock": "2887 台新新光金",
+  "stock_id": "2887",
+  "date": "2026-11-18",
+  "current_price": 37.1,
+  "wave_start": {
+    "date": "2026-05-28",
+    "price": 23.0
+  },
+  "wave_peak": {
+    "date": "2026-09-16",
+    "price": 44.4
+  },
+  "wave_summary": "波段由 23.00 上升至 44.40，目前收盤 37.10。",
+  "grid_defense_lines": {
+    "level_382": "36.23 元",
+    "level_500": "33.70 元",
+    "level_618": "31.17 元"
+  },
+  "grid_prices": {
+    "level_382_price": 36.23,
+    "level_500_price": 33.7,
+    "level_618_price": 31.17
+  },
+  "hit_level": "none",
+  "strike_status": "尚未抵達回吐防線",
+  "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
+  "xgb_up_probability": 54.4,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-11-18T08:22:06.497520+00:00"
+}

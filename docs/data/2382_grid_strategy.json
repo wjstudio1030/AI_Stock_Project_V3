@@ -1,0 +1,31 @@
+{
+  "stock": "2382 廣達",
+  "stock_id": "2382",
+  "date": "2026-11-18",
+  "current_price": 265.0,
+  "wave_start": {
+    "date": "2026-05-28",
+    "price": 308.5
+  },
+  "wave_peak": {
+    "date": "2026-06-03",
+    "price": 417.0
+  },
+  "wave_summary": "波段由 308.50 上升至 417.00，目前收盤 265.00。",
+  "grid_defense_lines": {
+    "level_382": "375.55 元",
+    "level_500": "362.75 元",
+    "level_618": "349.95 元"
+  },
+  "grid_prices": {
+    "level_382_price": 375.55,
+    "level_500_price": 362.75,
+    "level_618_price": 349.95
+  },
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
+  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
+  "xgb_up_probability": 55.4,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-11-18T08:22:06.490948+00:00"
+}

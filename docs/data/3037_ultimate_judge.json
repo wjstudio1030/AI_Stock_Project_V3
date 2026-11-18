@@ -1,0 +1,18 @@
+{
+  "stock_id": "3037",
+  "observation_date": "2026-11-18",
+  "ultimate_up_probability": 71.1,
+  "ultimate_down_probability": 28.9,
+  "adjustment_logic": "XGBoost 基準 65.1%；新聞調整 +1.0%；網格調整 +5.0%；風險警報調整 +0.0%",
+  "components": {
+    "xgb_base_probability": 65.1,
+    "news_sentiment_score": 0.2,
+    "news_adjustment": 1.0,
+    "grid_hit_level": "level_618",
+    "grid_adjustment": 5.0,
+    "risk_adjustment": 0.0,
+    "risk_cap_applied": false
+  },
+  "calculation_method": "deterministic_weighted_fusion_v1",
+  "generated_at": "2026-11-18T08:23:17.892278+00:00"
+}

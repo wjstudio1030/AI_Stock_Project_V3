@@ -1,0 +1,31 @@
+{
+  "stock": "3037 欣興",
+  "stock_id": "3037",
+  "date": "2026-11-18",
+  "current_price": 662.0,
+  "wave_start": {
+    "date": "2026-07-29",
+    "price": 688.0
+  },
+  "wave_peak": {
+    "date": "2026-10-05",
+    "price": 1325.0
+  },
+  "wave_summary": "波段由 688.00 上升至 1325.00，目前收盤 662.00。",
+  "grid_defense_lines": {
+    "level_382": "1081.67 元",
+    "level_500": "1006.50 元",
+    "level_618": "931.33 元"
+  },
+  "grid_prices": {
+    "level_382_price": 1081.67,
+    "level_500_price": 1006.5,
+    "level_618_price": 931.33
+  },
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
+  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
+  "xgb_up_probability": 65.1,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-11-18T08:22:06.459981+00:00"
+}

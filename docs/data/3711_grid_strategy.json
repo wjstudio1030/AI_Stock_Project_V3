@@ -1,0 +1,31 @@
+{
+  "stock": "3711 日月光投控",
+  "stock_id": "3711",
+  "date": "2026-11-18",
+  "current_price": 548.0,
+  "wave_start": {
+    "date": "2026-07-29",
+    "price": 499.0
+  },
+  "wave_peak": {
+    "date": "2026-10-12",
+    "price": 762.0
+  },
+  "wave_summary": "波段由 499.00 上升至 762.00，目前收盤 548.00。",
+  "grid_defense_lines": {
+    "level_382": "661.53 元",
+    "level_500": "630.50 元",
+    "level_618": "599.47 元"
+  },
+  "grid_prices": {
+    "level_382_price": 661.53,
+    "level_500_price": 630.5,
+    "level_618_price": 599.47
+  },
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
+  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
+  "xgb_up_probability": 58.3,
+  "calculation_method": "deterministic_fibonacci_retracement",
+  "generated_at": "2026-11-18T08:22:06.416486+00:00"
+}

@@ -1,31 +1,31 @@
 {
   "stock": "2308 台達電",
   "stock_id": "2308",
-  "date": "2026-08-07",
-  "current_price": 1650.0,
+  "date": "2026-11-18",
+  "current_price": 1060.0,
   "wave_start": {
-    "date": "2026-02-05",
-    "price": 1150.0
+    "date": "2026-07-29",
+    "price": 1495.0
   },
   "wave_peak": {
-    "date": "2026-05-27",
-    "price": 2520.0
+    "date": "2026-10-06",
+    "price": 2050.0
   },
-  "wave_summary": "波段由 1150.00 上升至 2520.00，目前收盤 1650.00。",
+  "wave_summary": "波段由 1495.00 上升至 2050.00，目前收盤 1060.00。",
   "grid_defense_lines": {
-    "level_382": "1996.66 元",
-    "level_500": "1835.00 元",
-    "level_618": "1673.34 元"
+    "level_382": "1837.99 元",
+    "level_500": "1772.50 元",
+    "level_618": "1707.01 元"
   },
   "grid_prices": {
-    "level_382_price": 1996.66,
-    "level_500_price": 1835.0,
-    "level_618_price": 1673.34
+    "level_382_price": 1837.99,
+    "level_500_price": 1772.5,
+    "level_618_price": 1707.01
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
-  "xgb_up_probability": 63.6,
+  "xgb_up_probability": 63.0,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-09T17:49:42.551049+00:00"
+  "generated_at": "2026-11-18T08:22:06.410349+00:00"
 }

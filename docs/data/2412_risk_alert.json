@@ -1,0 +1,12 @@
+{
+  "stock_id": "2412",
+  "stock": "2412 中華電",
+  "observation_date": "2026-11-18",
+  "close": 164.5,
+  "foreign_z": -1.112,
+  "total_institutional_z": -1.761,
+  "news_sentiment_score": 0.6,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-18T08:23:17.186406+00:00"
+}

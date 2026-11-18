@@ -1,31 +1,31 @@
 {
   "stock": "2330 台積電",
   "stock_id": "2330",
-  "date": "2026-08-07",
-  "current_price": 2370.0,
+  "date": "2026-11-18",
+  "current_price": 2175.0,
   "wave_start": {
-    "date": "2026-03-31",
-    "price": 1760.0
+    "date": "2026-07-29",
+    "price": 2200.0
   },
   "wave_peak": {
-    "date": "2026-06-22",
-    "price": 2510.0
+    "date": "2026-10-06",
+    "price": 2585.0
   },
-  "wave_summary": "波段由 1760.00 上升至 2510.00，目前收盤 2370.00。",
+  "wave_summary": "波段由 2200.00 上升至 2585.00，目前收盤 2175.00。",
   "grid_defense_lines": {
-    "level_382": "2223.50 元",
-    "level_500": "2135.00 元",
-    "level_618": "2046.50 元"
+    "level_382": "2437.93 元",
+    "level_500": "2392.50 元",
+    "level_618": "2347.07 元"
   },
   "grid_prices": {
-    "level_382_price": 2223.5,
-    "level_500_price": 2135.0,
-    "level_618_price": 2046.5
+    "level_382_price": 2437.93,
+    "level_500_price": 2392.5,
+    "level_618_price": 2347.07
   },
-  "hit_level": "none",
-  "strike_status": "尚未抵達回吐防線",
-  "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 50.3,
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
+  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
+  "xgb_up_probability": 60.1,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-08-09T17:49:42.505686+00:00"
+  "generated_at": "2026-11-18T08:22:06.374365+00:00"
 }
