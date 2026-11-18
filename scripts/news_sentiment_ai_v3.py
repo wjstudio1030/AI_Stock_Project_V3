@@ -62,7 +62,7 @@ def fetch_recent_news(stock_id: str, days: int = 10, limit: int = 15) -> list[di
     ]
 
 
-def _fallback(stock_id: str, articles: list[dict]) -> dict:
+def _fallback(stock_id: str, articles: list[dict], reason: str = "未設定 OpenAI API") -> dict:
     analyses = []
     scores = []
     for article in articles:
@@ -73,13 +73,13 @@ def _fallback(stock_id: str, articles: list[dict]) -> dict:
             "id": article["id"],
             "title": article["title"],
             "score": score,
-            "ai_comment": "未設定 OpenAI；使用關鍵字備援",
+            "ai_comment": f"{reason}；使用關鍵字備援",
         })
     overall = round(sum(scores) / len(scores), 2) if scores else 0.0
     return {
         "stock_id": stock_id,
         "overall_sentiment_score": overall,
-        "market_vibe_summary": "未設定 OpenAI API，以下為關鍵字法備援，不能視為深度語意分析。",
+        "market_vibe_summary": f"{reason}，以下為關鍵字法備援，不能視為深度語意分析。",
         "article_analysis": analyses,
         "analysis_method": "keyword_fallback",
     }
@@ -126,14 +126,19 @@ def analyze_news_sentiment(stock_id: str) -> dict | None:
             "辨識否定、利多出盡、利空出盡與同時含正負資訊的標題；不要因誇張字眼直接給極端分數。"
         )
         user = f"標的：{stock_label(stock_id)}。請分析：\n{json.dumps(articles, ensure_ascii=False)}"
-        result = structured_json(
-            schema_name="stock_news_sentiment",
-            schema=schema,
-            system_prompt=system,
-            user_prompt=user,
-            temperature=0.15,
-        )
-        result["analysis_method"] = "openai_structured_output"
+        try:
+            result = structured_json(
+                schema_name="stock_news_sentiment",
+                schema=schema,
+                system_prompt=system,
+                user_prompt=user,
+                temperature=0.15,
+            )
+            result["analysis_method"] = "openai_structured_output"
+        except Exception as exc:
+            print(f"⚠️ [{stock_id}] OpenAI 新聞分析無法使用，改用關鍵字備援：{exc}")
+            result = _fallback(stock_id, articles, "OpenAI API 暫時無法使用")
+            result["analysis_method"] = "keyword_fallback_api_error"
 
     result["stock_id"] = stock_id
     result["generated_at"] = datetime.now(timezone.utc).isoformat()
