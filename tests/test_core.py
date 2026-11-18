@@ -161,6 +161,70 @@ class CoreTests(unittest.TestCase):
         self.assertIn("renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of)", js)
         self.assertIn("priceAsOf", js)
 
+    def test_news_analysis_reuses_snapshot_without_refetching_finmind(self):
+        import news_sentiment_ai_v3
+        from datetime import datetime
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            today = datetime.today().strftime("%Y-%m-%d")
+            (root / "2330.json").write_text(
+                json.dumps({"news": {"articles": [
+                    {"date": today + " 11:08", "title": "台積電測試新聞", "source": "verified test"},
+                ]}}, ensure_ascii=False), encoding="utf-8",
+            )
+            with patch.object(news_sentiment_ai_v3, "DOCS_DATA_DIR", root):
+                with patch.object(news_sentiment_ai_v3, "get_stock_news", side_effect=AssertionError("must reuse cache")):
+                    articles = news_sentiment_ai_v3.fetch_recent_news("2330", days=7)
+            self.assertEqual(len(articles), 1)
+            self.assertEqual(articles[0]["title"], "台積電測試新聞")
+
+    def test_news_analysis_does_not_retry_empty_cached_news(self):
+        import news_sentiment_ai_v3
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "2330.json").write_text(
+                json.dumps({"news": {"articles": []}}), encoding="utf-8",
+            )
+            with patch.object(news_sentiment_ai_v3, "DOCS_DATA_DIR", root):
+                with patch.object(news_sentiment_ai_v3, "get_stock_news", side_effect=AssertionError("must not refetch")):
+                    self.assertEqual(news_sentiment_ai_v3.fetch_recent_news("2330"), [])
+
+    def test_pipeline_commits_base_market_data_before_optional_ai(self):
+        workflow = (ROOT / ".github" / "workflows" / "update_data.yml").read_text(encoding="utf-8")
+        self.assertIn("Commit base market data before optional analyses", workflow)
+        self.assertLess(workflow.index("Commit base market data before optional analyses"),
+                        workflow.index("Generate structured news sentiment reports"))
+
+    def test_openai_failure_does_not_block_keyword_news_summary(self):
+        import news_sentiment_ai_v3
+
+        article = [{"id": 1, "date": "2026-11-17", "title": "公司公布新訂單", "source": "test"}]
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(news_sentiment_ai_v3, "DOCS_DATA_DIR", Path(tmp)):
+                with patch.object(news_sentiment_ai_v3, "fetch_recent_news", return_value=article):
+                    with patch.object(news_sentiment_ai_v3, "has_openai_key", return_value=True):
+                        with patch.object(news_sentiment_ai_v3, "structured_json", side_effect=TimeoutError("test")):
+                            report = news_sentiment_ai_v3.analyze_news_sentiment("2330")
+            self.assertEqual(report["analysis_method"], "keyword_fallback_api_error")
+            self.assertIn("關鍵字", report["market_vibe_summary"])
+            self.assertTrue((Path(tmp) / "2330_news_ai_sentiment.json").exists())
+
+    def test_openai_failure_does_not_block_quant_summary(self):
+        import ai_analyst_v3
+
+        input_data = {"XGBoost上漲機率": 51.0, "外資買賣超張": 0,
+                      "DRAM單日漲跌%": 0.0, "觀測日期": "2026-11-17", "股票": "2330"}
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(ai_analyst_v3, "DOCS_DATA_DIR", Path(tmp)):
+                with patch.object(ai_analyst_v3, "get_latest_quant_data", return_value=input_data):
+                    with patch.object(ai_analyst_v3, "has_openai_key", return_value=True):
+                        with patch.object(ai_analyst_v3, "structured_json", side_effect=TimeoutError("test")):
+                            result = ai_analyst_v3.generate_ai_report("2330")
+            self.assertEqual(result["analysis_method"], "deterministic_fallback_api_error")
+            self.assertTrue((Path(tmp) / "2330_ai_report.json").exists())
+
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
         example = (ROOT / ".env.example").read_text(encoding="utf-8")

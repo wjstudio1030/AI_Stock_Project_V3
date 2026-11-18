@@ -34,7 +34,9 @@ def structured_json(
         from openai import OpenAI
     except ImportError as exc:
         raise RuntimeError("尚未安裝 openai 套件，請執行 pip install -r requirements.txt") from exc
-    client = OpenAI(api_key=key)
+    # Bound external service latency; these reports are optional to the quote pipeline.
+    # Avoid long automatic retries across dozens of tickers in a scheduled run.
+    client = OpenAI(api_key=key, timeout=20.0, max_retries=0)
     response = client.chat.completions.create(
         model=OPENAI_MODEL,
         messages=[

@@ -104,17 +104,22 @@ def generate_ai_report(stock_id: str) -> dict:
             "required": ["date", "stock", "trend_rating", "quant_summary", "action_advice", "risk_warning"],
             "additionalProperties": False,
         }
-        result = structured_json(
-            schema_name="stock_quant_report",
-            schema=schema,
-            system_prompt=(
-                "你是台股量化研究報告編輯。只能解讀輸入數值，不得創造不存在的資料，"
-                "不得把驗證準確率稱為未來保證，也不得提供保證獲利或命令式投資建議。"
-            ),
-            user_prompt=json.dumps(data, ensure_ascii=False),
-            temperature=0.2,
-        )
-        result["analysis_method"] = "openai_structured_output"
+        try:
+            result = structured_json(
+                schema_name="stock_quant_report",
+                schema=schema,
+                system_prompt=(
+                    "你是台股量化研究報告編輯。只能解讀輸入數值，不得創造不存在的資料，"
+                    "不得把驗證準確率稱為未來保證，也不得提供保證獲利或命令式投資建議。"
+                ),
+                user_prompt=json.dumps(data, ensure_ascii=False),
+                temperature=0.2,
+            )
+            result["analysis_method"] = "openai_structured_output"
+        except Exception as exc:
+            print(f"⚠️ [{stock_id}] OpenAI 量化報告無法使用，改採確定性數據摘要：{exc}")
+            result = _fallback(data)
+            result["analysis_method"] = "deterministic_fallback_api_error"
 
     result["generated_at"] = datetime.now(timezone.utc).isoformat()
     out = DOCS_DATA_DIR / f"{stock_id}_ai_report.json"
