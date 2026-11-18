@@ -3,10 +3,10 @@
   "stock": "2382 廣達",
   "observation_date": "2026-11-18",
   "close": 265.0,
-  "foreign_z": 0.125,
-  "total_institutional_z": 0.398,
-  "news_sentiment_score": -0.3,
+  "foreign_z": -1.237,
+  "total_institutional_z": 0.074,
+  "news_sentiment_score": 0.03,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-18T08:41:33.568646+00:00"
+  "generated_at": "2026-11-18T16:49:26.540272+00:00"
 }

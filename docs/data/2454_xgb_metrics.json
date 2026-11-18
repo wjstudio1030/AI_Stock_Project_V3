@@ -1,8 +1,8 @@
 {
   "stock_id": "2454",
-  "accuracy_pct": 55.0,
-  "balanced_accuracy_pct": 53.7,
-  "log_loss": 0.6816,
+  "accuracy_pct": 58.33,
+  "balanced_accuracy_pct": 57.41,
+  "log_loss": 0.6792,
   "holdout_days": 60,
   "train_samples": 1180,
   "total_samples": 1240,

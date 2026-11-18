@@ -3,10 +3,12 @@
   "stock": "3443 創意",
   "observation_date": "2026-11-18",
   "close": 6665.0,
-  "foreign_z": -0.906,
-  "total_institutional_z": -1.377,
-  "news_sentiment_score": -0.2,
-  "triggered": false,
-  "alerts": [],
-  "generated_at": "2026-11-18T08:41:33.562250+00:00"
+  "foreign_z": -0.805,
+  "total_institutional_z": -0.905,
+  "news_sentiment_score": -1.0,
+  "triggered": true,
+  "alerts": [
+    "新聞情緒偏極端負面（-1.00）"
+  ],
+  "generated_at": "2026-11-18T16:49:25.930509+00:00"
 }

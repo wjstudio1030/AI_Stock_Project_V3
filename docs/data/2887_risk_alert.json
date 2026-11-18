@@ -2,11 +2,11 @@
   "stock_id": "2887",
   "stock": "2887 台新新光金",
   "observation_date": "2026-11-18",
-  "close": 37.099998474121094,
-  "foreign_z": 0.99,
-  "total_institutional_z": 0.256,
-  "news_sentiment_score": 0.2,
+  "close": 37.1,
+  "foreign_z": -1.552,
+  "total_institutional_z": -2.213,
+  "news_sentiment_score": -0.3,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-18T08:41:33.576348+00:00"
+  "generated_at": "2026-11-18T16:49:26.547419+00:00"
 }

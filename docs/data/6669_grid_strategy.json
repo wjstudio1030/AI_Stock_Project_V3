@@ -5,27 +5,27 @@
   "current_price": 1475.0,
   "wave_start": {
     "date": "2026-06-26",
-    "price": 1434.89599609375
+    "price": 4280.0
   },
   "wave_peak": {
     "date": "2026-09-01",
-    "price": 2614.997314453125
+    "price": 7800.0
   },
-  "wave_summary": "波段由 1434.90 上升至 2615.00，目前收盤 1475.00。",
+  "wave_summary": "波段由 4280.00 上升至 7800.00，目前收盤 1475.00。",
   "grid_defense_lines": {
-    "level_382": "2164.20 元",
-    "level_500": "2024.95 元",
-    "level_618": "1885.69 元"
+    "level_382": "6455.36 元",
+    "level_500": "6040.00 元",
+    "level_618": "5624.64 元"
   },
   "grid_prices": {
-    "level_382_price": 2164.2,
-    "level_500_price": 2024.95,
-    "level_618_price": 1885.69
+    "level_382_price": 6455.36,
+    "level_500_price": 6040.0,
+    "level_618_price": 5624.64
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
-  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
-  "xgb_up_probability": 61.1,
+  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
+  "xgb_up_probability": 49.9,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-18T08:40:25.131251+00:00"
+  "generated_at": "2026-11-18T16:48:20.865361+00:00"
 }

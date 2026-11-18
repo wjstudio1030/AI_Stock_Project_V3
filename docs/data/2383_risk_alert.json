@@ -3,10 +3,10 @@
   "stock": "2383 台光電",
   "observation_date": "2026-11-18",
   "close": 3465.0,
-  "foreign_z": 2.852,
-  "total_institutional_z": 2.717,
-  "news_sentiment_score": -0.3,
+  "foreign_z": 0.003,
+  "total_institutional_z": -0.013,
+  "news_sentiment_score": -0.13,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-18T08:41:33.517896+00:00"
+  "generated_at": "2026-11-18T16:49:25.889388+00:00"
 }

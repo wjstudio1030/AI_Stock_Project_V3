@@ -3,10 +3,10 @@
   "stock": "2317 鴻海",
   "observation_date": "2026-11-18",
   "close": 221.0,
-  "foreign_z": -0.123,
-  "total_institutional_z": 0.114,
-  "news_sentiment_score": -0.2,
+  "foreign_z": -0.432,
+  "total_institutional_z": -0.226,
+  "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-18T08:41:33.470762+00:00"
+  "generated_at": "2026-11-18T16:49:25.185705+00:00"
 }
