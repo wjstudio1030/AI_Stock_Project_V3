@@ -126,13 +126,40 @@ class CoreTests(unittest.TestCase):
         self.assertIn('class="brand-lockup"', html)
         self.assertIn('class="brand-logo"', html)
         self.assertIn('src="./logo.png"', html)
-        self.assertIn('href="./logo.png"', html)
+        # The favicon may add a cache-busting query string, but must load the real logo.
+        self.assertRegex(html, r'<link\s+rel="icon"[^>]*href="\./logo\.png(?:\?[^"]*)?"')
+        self.assertTrue((ROOT / "docs" / "logo.png").is_file())
         self.assertIn(".brand-logo[hidden]", css)
         self.assertIn("WJ × SAM COLLABORATIVE PROJECT", html)
         self.assertNotIn("MARKET INTELLIGENCE", html)
         self.assertNotIn("brand-emblem", html)
         self.assertNotIn("INDEPENDENT RESEARCH PROJECT", html)
         self.assertNotIn("<h1>AI Stock</h1>", html)
+
+    def test_global_manifest_keeps_known_stocks_when_quote_provider_is_unavailable(self):
+        import build_global_data
+
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest_path = Path(tmp) / "manifest.json"
+            manifest_path.write_text(
+                json.dumps({
+                    "stocks": ["2330"],
+                    "global_stocks": ["^TWII", "^SOX"],
+                    "global_updated_at": "2026-11-15T00:00:00+00:00",
+                }), encoding="utf-8",
+            )
+            with patch.object(build_global_data, "OUTPUT_DIR_ABS", tmp):
+                build_global_data.update_manifest([])
+            result = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(result["stocks"], ["2330"])
+            self.assertEqual(result["global_stocks"], ["^TWII", "^SOX"])
+            self.assertEqual(result["global_updated_at"], "2026-11-15T00:00:00+00:00")
+            self.assertIn("^TWII", result["global_failed_stocks"])
+
+    def test_frontend_staleness_uses_actual_quote_day(self):
+        js = (ROOT / "docs" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of)", js)
+        self.assertIn("priceAsOf", js)
 
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
