@@ -161,6 +161,36 @@ class CoreTests(unittest.TestCase):
         self.assertIn("renderStaleWarning(data.updated_at, data.finmind_quota_exhausted, data.price_as_of)", js)
         self.assertIn("priceAsOf", js)
 
+    def test_news_analysis_reuses_snapshot_without_refetching_finmind(self):
+        import news_sentiment_ai_v3
+        from datetime import datetime
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            today = datetime.today().strftime("%Y-%m-%d")
+            (root / "2330.json").write_text(
+                json.dumps({"news": {"articles": [
+                    {"date": today + " 11:08", "title": "台積電測試新聞", "source": "verified test"},
+                ]}}, ensure_ascii=False), encoding="utf-8",
+            )
+            with patch.object(news_sentiment_ai_v3, "DOCS_DATA_DIR", root):
+                with patch.object(news_sentiment_ai_v3, "get_stock_news", side_effect=AssertionError("must reuse cache")):
+                    articles = news_sentiment_ai_v3.fetch_recent_news("2330", days=7)
+            self.assertEqual(len(articles), 1)
+            self.assertEqual(articles[0]["title"], "台積電測試新聞")
+
+    def test_news_analysis_does_not_retry_empty_cached_news(self):
+        import news_sentiment_ai_v3
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "2330.json").write_text(
+                json.dumps({"news": {"articles": []}}), encoding="utf-8",
+            )
+            with patch.object(news_sentiment_ai_v3, "DOCS_DATA_DIR", root):
+                with patch.object(news_sentiment_ai_v3, "get_stock_news", side_effect=AssertionError("must not refetch")):
+                    self.assertEqual(news_sentiment_ai_v3.fetch_recent_news("2330"), [])
+
     def test_no_secret_file_is_packaged(self):
         self.assertFalse((ROOT / ".env").exists())
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
