@@ -1,99 +1,99 @@
 {
   "stock_id": "2882",
-  "overall_sentiment_score": 0.0,
-  "market_vibe_summary": "OpenAI API 暫時無法使用，以下為關鍵字法備援，不能視為深度語意分析。",
+  "overall_sentiment_score": 0.8,
+  "market_vibe_summary": "整體市場對國泰金的情緒偏向正面，因為近期獲得多項獎項及穩健的獲利表現，顯示出公司在金融市場中的強勁表現與未來潛力。",
   "article_analysis": [
     {
       "id": 1,
       "title": "國泰金登COP31 舉辦圓桌會議| 金融要聞| 產經 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.7,
+      "ai_comment": "參與COP31顯示國泰金在氣候金融方面的積極參與，對品牌形象及未來發展有正面影響。"
     },
     {
       "id": 2,
       "title": "國泰金雙面進擊 奪健康企業公民獎 - 經濟日報",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "獲得健康企業公民獎提升公司形象，顯示其社會責任感，對未來業務發展有利。"
     },
     {
       "id": 3,
       "title": "國泰金雙面進擊 奪健康企業公民獎 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "同上，強調公司在健康與社會責任方面的努力，增強市場信心。"
     },
     {
       "id": 4,
       "title": "國泰金控榮獲2026 CHR健康企業公民獎 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "再次強調獲獎事宜，進一步提升品牌形象，對未來業務發展有正面影響。"
     },
     {
       "id": 5,
       "title": "國泰金控COP31安塔利亞國際圓桌會議 共探引導氣候金融與自然資本落地 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.7,
+      "ai_comment": "參與國際會議顯示公司在全球金融議題上的影響力，對未來發展有正面影響。"
     },
     {
       "id": 6,
       "title": "國泰金控COP31安塔利亞國際圓桌會議共探引導氣候金融與自然資本落地| 金融要聞| 產經 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.7,
+      "ai_comment": "同上，強調國際參與，增強市場對其未來發展的信心。"
     },
     {
       "id": 7,
       "title": "國泰金出擊 培養青年思辨力 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.6,
+      "ai_comment": "關注青年教育的努力有助於提升公司形象，對未來業務發展有正面影響。"
     },
     {
       "id": 8,
       "title": "國泰金出擊培養青年思辨力| 金融要聞| 產經 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.6,
+      "ai_comment": "同上，強調社會責任感，對品牌形象有正面影響。"
     },
     {
       "id": 9,
       "title": "國泰金出擊 培養青年思辨力 - 經濟日報",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.6,
+      "ai_comment": "同上，進一步強調公司在社會責任方面的努力。"
     },
     {
       "id": 10,
       "title": "2882 國泰金 - 【國泰金(2882)盤後解析】投信主力聯手，土洋對作放量 ... - 股市爆料同學會 - CMoney",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.5,
+      "ai_comment": "市場對國泰金的交易活躍度提升，顯示出投資者的關注，但需進一步觀察後續表現。"
     },
     {
       "id": 11,
       "title": "金融股明顯抗跌！投信進貨「這4檔」2.6萬張 投65.65億元連13天敲進國泰金 - FTNN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.7,
+      "ai_comment": "投信持續進貨顯示市場對國泰金的信心，對未來股價有支持作用。"
     },
     {
       "id": 12,
       "title": "中信金、國泰金 獲利動能穩健 - 中時新聞網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "獲利動能穩健顯示公司基本面良好，對未來股價有正面影響。"
     },
     {
       "id": 13,
       "title": "中信金、國泰金獲利動能穩健- 日報 - 工商時報",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "同上，進一步強調公司獲利能力，對市場預期有正面影響。"
     },
     {
       "id": 14,
       "title": "台股震盪照樣賺！國泰金10月淨賺90.9億 前10月獲利1,144億超越去年全年 - 聚財網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "強勁的獲利表現超越市場預期，對股價有強烈的正面推動作用。"
     },
     {
       "id": 15,
       "title": "台股震盪照樣賺！國泰金10月淨賺90.9億 前10月獲利1,144億超越去年全年 - Yahoo新聞",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "同上，進一步強調公司獲利能力，對市場預期有強烈的正面影響。"
     }
   ],
-  "analysis_method": "keyword_fallback_api_error",
-  "generated_at": "2026-11-18T22:19:20.712234+00:00"
+  "analysis_method": "openai_structured_output",
+  "generated_at": "2026-11-19T02:57:03.420995+00:00"
 }
