@@ -1,31 +1,31 @@
 {
   "stock": "2891 中信金",
   "stock_id": "2891",
-  "date": "2026-11-18",
-  "current_price": 73.4,
+  "date": "2026-11-19",
+  "current_price": 73.1,
   "wave_start": {
-    "date": "2026-05-27",
-    "price": 59.2
+    "date": "2026-05-28",
+    "price": 59.3
   },
   "wave_peak": {
     "date": "2026-11-13",
     "price": 78.7
   },
-  "wave_summary": "波段由 59.20 上升至 78.70，目前收盤 73.40。",
+  "wave_summary": "波段由 59.30 上升至 78.70，目前收盤 73.10。",
   "grid_defense_lines": {
-    "level_382": "71.25 元",
-    "level_500": "68.95 元",
-    "level_618": "66.65 元"
+    "level_382": "71.29 元",
+    "level_500": "69.00 元",
+    "level_618": "66.71 元"
   },
   "grid_prices": {
-    "level_382_price": 71.25,
-    "level_500_price": 68.95,
-    "level_618_price": 66.65
+    "level_382_price": 71.29,
+    "level_500_price": 69.0,
+    "level_618_price": 66.71
   },
   "hit_level": "none",
   "strike_status": "尚未抵達回吐防線",
   "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 41.6,
+  "xgb_up_probability": 45.5,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-19T02:59:25.180636+00:00"
+  "generated_at": "2026-11-19T16:50:43.422195+00:00"
 }

@@ -1,14 +1,14 @@
 {
   "stock_id": "1303",
   "stock": "1303 南亞",
-  "observation_date": "2026-11-18",
-  "close": 253.5,
-  "foreign_z": -0.673,
-  "total_institutional_z": -0.646,
-  "news_sentiment_score": -1.0,
+  "observation_date": "2026-11-19",
+  "close": 228.5,
+  "foreign_z": -0.229,
+  "total_institutional_z": -0.766,
+  "news_sentiment_score": -0.8,
   "triggered": true,
   "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
+    "新聞情緒偏極端負面（-0.80）"
   ],
-  "generated_at": "2026-11-19T03:00:21.134324+00:00"
+  "generated_at": "2026-11-19T16:51:49.895500+00:00"
 }
