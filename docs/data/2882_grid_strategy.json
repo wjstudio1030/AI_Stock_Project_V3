@@ -1,31 +1,31 @@
 {
   "stock": "2882 國泰金",
   "stock_id": "2882",
-  "date": "2026-11-19",
-  "current_price": 103.5,
+  "date": "2026-11-20",
+  "current_price": 96.9,
   "wave_start": {
-    "date": "2026-05-28",
-    "price": 84.8
+    "date": "2026-05-29",
+    "price": 85.7
   },
   "wave_peak": {
     "date": "2026-10-29",
     "price": 116.5
   },
-  "wave_summary": "波段由 84.80 上升至 116.50，目前收盤 103.50。",
+  "wave_summary": "波段由 85.70 上升至 116.50，目前收盤 96.90。",
   "grid_defense_lines": {
-    "level_382": "104.39 元",
-    "level_500": "100.65 元",
-    "level_618": "96.91 元"
+    "level_382": "104.73 元",
+    "level_500": "101.10 元",
+    "level_618": "97.47 元"
   },
   "grid_prices": {
-    "level_382_price": 104.39,
-    "level_500_price": 100.65,
-    "level_618_price": 96.91
+    "level_382_price": 104.73,
+    "level_500_price": 101.1,
+    "level_618_price": 97.47
   },
-  "hit_level": "level_382",
-  "strike_status": "進入 38.2% 第一防線",
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 51.7,
+  "xgb_up_probability": 57.7,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-20T02:52:06.715056+00:00"
+  "generated_at": "2026-11-20T16:26:01.283787+00:00"
 }

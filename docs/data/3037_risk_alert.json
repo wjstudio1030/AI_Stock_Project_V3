@@ -1,14 +1,14 @@
 {
   "stock_id": "3037",
   "stock": "3037 欣興",
-  "observation_date": "2026-11-19",
-  "close": 596.0,
-  "foreign_z": -0.499,
-  "total_institutional_z": -0.625,
+  "observation_date": "2026-11-20",
+  "close": 537.0,
+  "foreign_z": 0.081,
+  "total_institutional_z": 0.721,
   "news_sentiment_score": -1.0,
   "triggered": true,
   "alerts": [
     "新聞情緒偏極端負面（-1.00）"
   ],
-  "generated_at": "2026-11-20T02:53:16.323197+00:00"
+  "generated_at": "2026-11-20T16:27:27.808262+00:00"
 }

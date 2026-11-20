@@ -1,14 +1,12 @@
 {
   "stock_id": "2303",
   "stock": "2303 聯電",
-  "observation_date": "2026-11-19",
-  "close": 88.2,
-  "foreign_z": 0.84,
-  "total_institutional_z": 0.501,
-  "news_sentiment_score": -1.0,
-  "triggered": true,
-  "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
-  ],
-  "generated_at": "2026-11-20T02:53:17.083240+00:00"
+  "observation_date": "2026-11-20",
+  "close": 80.3,
+  "foreign_z": 2.566,
+  "total_institutional_z": 1.427,
+  "news_sentiment_score": -0.3,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-20T16:27:28.283929+00:00"
 }

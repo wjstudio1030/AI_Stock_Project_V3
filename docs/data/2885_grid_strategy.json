@@ -1,31 +1,31 @@
 {
   "stock": "2885 元大金",
   "stock_id": "2885",
-  "date": "2026-11-19",
-  "current_price": 63.2,
+  "date": "2026-11-20",
+  "current_price": 59.3,
   "wave_start": {
-    "date": "2026-05-28",
-    "price": 59.1
+    "date": "2026-06-01",
+    "price": 59.2
   },
   "wave_peak": {
     "date": "2026-10-29",
     "price": 73.4
   },
-  "wave_summary": "波段由 59.10 上升至 73.40，目前收盤 63.20。",
+  "wave_summary": "波段由 59.20 上升至 73.40，目前收盤 59.30。",
   "grid_defense_lines": {
-    "level_382": "67.94 元",
-    "level_500": "66.25 元",
-    "level_618": "64.56 元"
+    "level_382": "67.98 元",
+    "level_500": "66.30 元",
+    "level_618": "64.62 元"
   },
   "grid_prices": {
-    "level_382_price": 67.94,
-    "level_500_price": 66.25,
-    "level_618_price": 64.56
+    "level_382_price": 67.98,
+    "level_500_price": 66.3,
+    "level_618_price": 64.62
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 46.0,
+  "xgb_up_probability": 57.6,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-20T02:52:06.867895+00:00"
+  "generated_at": "2026-11-20T16:26:01.376541+00:00"
 }

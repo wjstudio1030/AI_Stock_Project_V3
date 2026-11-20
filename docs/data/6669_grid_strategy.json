@@ -1,8 +1,8 @@
 {
   "stock": "6669 緯穎",
   "stock_id": "6669",
-  "date": "2026-11-19",
-  "current_price": 1410.0,
+  "date": "2026-11-20",
+  "current_price": 1325.0,
   "wave_start": {
     "date": "2026-06-26",
     "price": 4280.0
@@ -11,7 +11,7 @@
     "date": "2026-09-01",
     "price": 7800.0
   },
-  "wave_summary": "波段由 4280.00 上升至 7800.00，目前收盤 1410.00。",
+  "wave_summary": "波段由 4280.00 上升至 7800.00，目前收盤 1325.00。",
   "grid_defense_lines": {
     "level_382": "6455.36 元",
     "level_500": "6040.00 元",
@@ -24,8 +24,8 @@
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
-  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 43.2,
+  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
+  "xgb_up_probability": 64.1,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-20T02:52:06.882190+00:00"
+  "generated_at": "2026-11-20T16:26:01.384437+00:00"
 }

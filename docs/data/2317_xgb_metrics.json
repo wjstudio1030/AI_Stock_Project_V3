@@ -1,13 +1,13 @@
 {
   "stock_id": "2317",
-  "accuracy_pct": 55.0,
-  "balanced_accuracy_pct": 54.24,
-  "log_loss": 0.7288,
+  "accuracy_pct": 53.33,
+  "balanced_accuracy_pct": 52.46,
+  "log_loss": 0.7308,
   "holdout_days": 60,
-  "train_samples": 1179,
-  "total_samples": 1239,
-  "train_through": "2026-08-20",
-  "holdout_start": "2026-08-21",
-  "holdout_end": "2026-11-18",
+  "train_samples": 1180,
+  "total_samples": 1240,
+  "train_through": "2026-08-21",
+  "holdout_start": "2026-08-24",
+  "holdout_end": "2026-11-19",
   "model_path": "/home/runner/work/AI_Stock_Project_V3/AI_Stock_Project_V3/data_db/models/xgb_2317.pkl"
 }

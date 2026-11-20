@@ -1,12 +1,12 @@
 {
   "stock_id": "3711",
   "stock": "3711 日月光投控",
-  "observation_date": "2026-11-19",
-  "close": 504.0,
-  "foreign_z": -0.655,
-  "total_institutional_z": -0.714,
-  "news_sentiment_score": -0.2,
+  "observation_date": "2026-11-20",
+  "close": 457.0,
+  "foreign_z": -0.076,
+  "total_institutional_z": -0.158,
+  "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-20T02:53:14.942668+00:00"
+  "generated_at": "2026-11-20T16:27:26.346897+00:00"
 }
