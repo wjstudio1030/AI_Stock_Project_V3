@@ -2,12 +2,12 @@
   "stock_id": "3017",
   "observation_date": "2026-11-20",
   "close": 2205.0,
-  "up_probability": 63.0,
-  "down_probability": 37.0,
+  "up_probability": 65.7,
+  "down_probability": 34.3,
   "model_validation": {
     "accuracy_pct": 48.33,
     "balanced_accuracy_pct": 50.0,
-    "log_loss": 0.7114,
+    "log_loss": 0.712,
     "holdout_days": 60,
     "train_samples": 1133,
     "total_samples": 1193,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-11-19"
   },
   "model_trained_through": "2026-11-19",
-  "generated_at": "2026-11-20T21:57:27.152526+00:00",
+  "generated_at": "2026-11-21T02:56:46.749981+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 26.2786,
     "2.技術_KD值(D)": 39.7269,

@@ -2,7 +2,7 @@
   "stock_id": "1303",
   "accuracy_pct": 50.0,
   "balanced_accuracy_pct": 50.39,
-  "log_loss": 0.735,
+  "log_loss": 0.7344,
   "holdout_days": 60,
   "train_samples": 1133,
   "total_samples": 1193,

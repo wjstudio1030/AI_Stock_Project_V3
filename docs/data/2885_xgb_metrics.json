@@ -2,7 +2,7 @@
   "stock_id": "2885",
   "accuracy_pct": 40.0,
   "balanced_accuracy_pct": 38.38,
-  "log_loss": 0.7729,
+  "log_loss": 0.7738,
   "holdout_days": 60,
   "train_samples": 1133,
   "total_samples": 1193,
