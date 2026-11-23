@@ -1,31 +1,31 @@
 {
   "stock": "2882 國泰金",
   "stock_id": "2882",
-  "date": "2026-11-20",
-  "current_price": 96.9,
+  "date": "2026-11-23",
+  "current_price": 95.0,
   "wave_start": {
-    "date": "2026-05-29",
-    "price": 85.7
+    "date": "2026-06-01",
+    "price": 88.2
   },
   "wave_peak": {
     "date": "2026-10-29",
     "price": 116.5
   },
-  "wave_summary": "波段由 85.70 上升至 116.50，目前收盤 96.90。",
+  "wave_summary": "波段由 88.20 上升至 116.50，目前收盤 95.00。",
   "grid_defense_lines": {
-    "level_382": "104.73 元",
-    "level_500": "101.10 元",
-    "level_618": "97.47 元"
+    "level_382": "105.69 元",
+    "level_500": "102.35 元",
+    "level_618": "99.01 元"
   },
   "grid_prices": {
-    "level_382_price": 104.73,
-    "level_500_price": 101.1,
-    "level_618_price": 97.47
+    "level_382_price": 105.69,
+    "level_500_price": 102.35,
+    "level_618_price": 99.01
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 57.7,
+  "xgb_up_probability": 56.8,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-21T03:00:36.215673+00:00"
+  "generated_at": "2026-11-23T19:33:30.611908+00:00"
 }

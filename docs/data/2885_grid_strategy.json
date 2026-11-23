@@ -1,8 +1,8 @@
 {
   "stock": "2885 元大金",
   "stock_id": "2885",
-  "date": "2026-11-20",
-  "current_price": 59.3,
+  "date": "2026-11-23",
+  "current_price": 58.4,
   "wave_start": {
     "date": "2026-06-01",
     "price": 59.2
@@ -11,7 +11,7 @@
     "date": "2026-10-29",
     "price": 73.4
   },
-  "wave_summary": "波段由 59.20 上升至 73.40，目前收盤 59.30。",
+  "wave_summary": "波段由 59.20 上升至 73.40，目前收盤 58.40。",
   "grid_defense_lines": {
     "level_382": "67.98 元",
     "level_500": "66.30 元",
@@ -24,8 +24,8 @@
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
-  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 57.2,
+  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
+  "xgb_up_probability": 70.3,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-21T03:00:36.355272+00:00"
+  "generated_at": "2026-11-23T19:33:30.695307+00:00"
 }

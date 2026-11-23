@@ -1,12 +1,12 @@
 {
   "stock_id": "2382",
   "stock": "2382 廣達",
-  "observation_date": "2026-11-20",
-  "close": 252.0,
-  "foreign_z": 0.364,
-  "total_institutional_z": 0.282,
+  "observation_date": "2026-11-23",
+  "close": 257.0,
+  "foreign_z": -0.404,
+  "total_institutional_z": -0.155,
   "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-21T03:01:54.745194+00:00"
+  "generated_at": "2026-11-23T19:35:11.185710+00:00"
 }

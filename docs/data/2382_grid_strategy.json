@@ -1,31 +1,31 @@
 {
   "stock": "2382 廣達",
   "stock_id": "2382",
-  "date": "2026-11-20",
-  "current_price": 252.0,
+  "date": "2026-11-23",
+  "current_price": 257.0,
   "wave_start": {
-    "date": "2026-05-29",
-    "price": 339.0
+    "date": "2026-07-30",
+    "price": 279.0
   },
   "wave_peak": {
-    "date": "2026-06-03",
-    "price": 417.0
+    "date": "2026-09-07",
+    "price": 347.5
   },
-  "wave_summary": "波段由 339.00 上升至 417.00，目前收盤 252.00。",
+  "wave_summary": "波段由 279.00 上升至 347.50，目前收盤 257.00。",
   "grid_defense_lines": {
-    "level_382": "387.20 元",
-    "level_500": "378.00 元",
-    "level_618": "368.80 元"
+    "level_382": "321.33 元",
+    "level_500": "313.25 元",
+    "level_618": "305.17 元"
   },
   "grid_prices": {
-    "level_382_price": 387.2,
-    "level_500_price": 378.0,
-    "level_618_price": 368.8
+    "level_382_price": 321.33,
+    "level_500_price": 313.25,
+    "level_618_price": 305.17
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
-  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 59.5,
+  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
+  "xgb_up_probability": 70.1,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-21T03:00:36.328270+00:00"
+  "generated_at": "2026-11-23T19:33:30.680455+00:00"
 }

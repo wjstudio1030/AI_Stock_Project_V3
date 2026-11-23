@@ -1,31 +1,31 @@
 {
   "stock": "2891 中信金",
   "stock_id": "2891",
-  "date": "2026-11-20",
-  "current_price": 68.0,
+  "date": "2026-11-23",
+  "current_price": 63.8,
   "wave_start": {
-    "date": "2026-05-29",
-    "price": 60.5
+    "date": "2026-07-20",
+    "price": 61.5
   },
   "wave_peak": {
     "date": "2026-11-13",
     "price": 78.7
   },
-  "wave_summary": "波段由 60.50 上升至 78.70，目前收盤 68.00。",
+  "wave_summary": "波段由 61.50 上升至 78.70，目前收盤 63.80。",
   "grid_defense_lines": {
-    "level_382": "71.75 元",
-    "level_500": "69.60 元",
-    "level_618": "67.45 元"
+    "level_382": "72.13 元",
+    "level_500": "70.10 元",
+    "level_618": "68.07 元"
   },
   "grid_prices": {
-    "level_382_price": 71.75,
-    "level_500_price": 69.6,
-    "level_618_price": 67.45
+    "level_382_price": 72.13,
+    "level_500_price": 70.1,
+    "level_618_price": 68.07
   },
-  "hit_level": "level_500",
-  "strike_status": "進入 50.0% 中期防線",
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 47.7,
+  "xgb_up_probability": 35.2,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-21T03:00:36.228451+00:00"
+  "generated_at": "2026-11-23T19:33:30.619340+00:00"
 }

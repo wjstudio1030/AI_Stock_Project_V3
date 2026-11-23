@@ -1,31 +1,31 @@
 {
   "stock": "2881 富邦金",
   "stock_id": "2881",
-  "date": "2026-11-20",
-  "current_price": 136.5,
+  "date": "2026-11-23",
+  "current_price": 130.5,
   "wave_start": {
-    "date": "2026-05-29",
-    "price": 110.0
+    "date": "2026-06-01",
+    "price": 110.5
   },
   "wave_peak": {
     "date": "2026-10-27",
     "price": 162.0
   },
-  "wave_summary": "波段由 110.00 上升至 162.00，目前收盤 136.50。",
+  "wave_summary": "波段由 110.50 上升至 162.00，目前收盤 130.50。",
   "grid_defense_lines": {
-    "level_382": "142.14 元",
-    "level_500": "136.00 元",
-    "level_618": "129.86 元"
+    "level_382": "142.33 元",
+    "level_500": "136.25 元",
+    "level_618": "130.17 元"
   },
   "grid_prices": {
-    "level_382_price": 142.14,
-    "level_500_price": 136.0,
-    "level_618_price": 129.86
+    "level_382_price": 142.33,
+    "level_500_price": 136.25,
+    "level_618_price": 130.17
   },
-  "hit_level": "level_382",
-  "strike_status": "進入 38.2% 第一防線",
+  "hit_level": "level_500",
+  "strike_status": "進入 50.0% 中期防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 48.4,
+  "xgb_up_probability": 38.6,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-21T03:00:36.203042+00:00"
+  "generated_at": "2026-11-23T19:33:30.604204+00:00"
 }

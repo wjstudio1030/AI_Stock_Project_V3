@@ -1,12 +1,12 @@
 {
   "stock_id": "2881",
   "stock": "2881 富邦金",
-  "observation_date": "2026-11-20",
-  "close": 136.5,
-  "foreign_z": -0.346,
-  "total_institutional_z": -0.807,
-  "news_sentiment_score": 0.2,
+  "observation_date": "2026-11-23",
+  "close": 130.5,
+  "foreign_z": -0.085,
+  "total_institutional_z": -1.12,
+  "news_sentiment_score": -0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-21T03:01:52.242640+00:00"
+  "generated_at": "2026-11-23T19:35:09.068165+00:00"
 }

@@ -1,8 +1,8 @@
 {
   "stock": "3443 創意",
   "stock_id": "3443",
-  "date": "2026-11-20",
-  "current_price": 5400.0,
+  "date": "2026-11-23",
+  "current_price": 5120.0,
   "wave_start": {
     "date": "2026-07-29",
     "price": 3295.0
@@ -11,7 +11,7 @@
     "date": "2026-11-13",
     "price": 8610.0
   },
-  "wave_summary": "波段由 3295.00 上升至 8610.00，目前收盤 5400.00。",
+  "wave_summary": "波段由 3295.00 上升至 8610.00，目前收盤 5120.00。",
   "grid_defense_lines": {
     "level_382": "6579.67 元",
     "level_500": "5952.50 元",
@@ -22,10 +22,10 @@
     "level_500_price": 5952.5,
     "level_618_price": 5325.33
   },
-  "hit_level": "level_500",
-  "strike_status": "進入 50.0% 中期防線",
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 55.2,
+  "xgb_up_probability": 51.3,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-21T03:00:36.316194+00:00"
+  "generated_at": "2026-11-23T19:33:30.673167+00:00"
 }
