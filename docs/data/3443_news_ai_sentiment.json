@@ -1,99 +1,99 @@
 {
   "stock_id": "3443",
-  "overall_sentiment_score": -0.07,
-  "market_vibe_summary": "OpenAI API 暫時無法使用，以下為關鍵字法備援，不能視為深度語意分析。",
+  "overall_sentiment_score": -0.7,
+  "market_vibe_summary": "市場對創意的情緒偏向負面，因為公司被列入處置名單，且近期股價大幅下跌，造成投資者信心受挫。",
   "article_analysis": [
     {
       "id": 1,
       "title": "台股5檔抓去關！「前股后」創意跌太兇列處置 明起關到12/1 - TVBS",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "此標題指出創意因股價大幅下跌被列入處置，情緒明顯偏向負面。"
     },
     {
       "id": 2,
       "title": "台股5檔抓去關！「前股后」創意跌太兇列處置 明起關到12/1 - TVBS新聞",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "與第一條新聞相似，強調創意的負面處境，情緒持平。"
     },
     {
       "id": 3,
       "title": "3443 創意 - 快訊／5檔「抓去關」新名單明起處置到12／1 - 股市爆料同學會 - CMoney",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.7,
+      "ai_comment": "再次提到創意被列入處置，情緒偏向負面。"
     },
     {
       "id": 4,
       "title": "創意等7檔 11/25打入處置 - 聚財網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.7,
+      "ai_comment": "強調創意被處置的消息，情緒持平。"
     },
     {
       "id": 5,
       "title": "今天漲停也沒用！創意：明天「抓去關」 - 自由財經",
-      "score": 0.5,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.9,
+      "ai_comment": "此標題表達了對創意未來的悲觀預期，情緒非常負面。"
     },
     {
       "id": 6,
       "title": "今天漲停也沒用！創意：明天「抓去關」 - 自由時報",
-      "score": 0.5,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.9,
+      "ai_comment": "與前一條相似，強調即使漲停也無法改變處置的事實，情緒非常負面。"
     },
     {
       "id": 7,
       "title": "創意等7檔 11/25打入處置 - 自由時報",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.7,
+      "ai_comment": "再次強調創意被處置，情緒持平。"
     },
     {
       "id": 8,
       "title": "創意等7檔 11/25打入處置 - 自由財經",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.7,
+      "ai_comment": "重申創意的處置情況，情緒持平。"
     },
     {
       "id": 9,
       "title": "增5檔抓去關！「前股后」創意6天跌3成被關 - 三立新聞",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "提到創意股價大幅下跌，情緒偏向負面。"
     },
     {
       "id": 10,
       "title": "增5檔抓去關！「前股后」創意6天跌3成被關 - 三立新聞",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "與前一條相似，情緒持平。"
     },
     {
       "id": 11,
       "title": "《半導體》注意股：創意 近5日跌33.94% - 富聯網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.7,
+      "ai_comment": "報導創意近期的跌幅，情緒偏向負面。"
     },
     {
       "id": 12,
       "title": "鉅額違約交割遍地開花愛普、創意、景碩、金像電翻車1.78億元- 上市櫃 - 旺得富理財網",
-      "score": -0.5,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "提到創意的違約交割事件，情緒偏向負面。"
     },
     {
       "id": 13,
       "title": "愛普*、創意等5檔電子股爆違約交割，總金額達1.9億元-財經焦點情報站 - CMoney投資網誌",
-      "score": -0.5,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "強調創意的違約交割，情緒偏向負面。"
     },
     {
       "id": 14,
       "title": "3443 創意 - 【11/23 產業即時新聞】電子上游-IP/ASIC 族群震盪拉鋸，創意跌停重挫拖累、世芯逆勢強彈- 股市爆料同學會 - CMoney",
-      "score": -0.5,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.8,
+      "ai_comment": "報導創意的跌停情況，情緒偏向負面。"
     },
     {
       "id": 15,
       "title": "3443 創意 - 創意跌停一張賠54萬川湖重奪股后寶座- 股市爆料同學會 - CMoney",
-      "score": -0.5,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": -0.9,
+      "ai_comment": "強調創意的跌停及投資者損失，情緒非常負面。"
     }
   ],
-  "analysis_method": "keyword_fallback_api_error",
-  "generated_at": "2026-11-24T19:08:16.678760+00:00"
+  "analysis_method": "openai_structured_output",
+  "generated_at": "2026-11-24T23:42:24.207587+00:00"
 }

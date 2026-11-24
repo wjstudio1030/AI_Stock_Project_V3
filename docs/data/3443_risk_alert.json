@@ -5,8 +5,10 @@
   "close": 5630.0,
   "foreign_z": -0.158,
   "total_institutional_z": -0.518,
-  "news_sentiment_score": -0.07,
-  "triggered": false,
-  "alerts": [],
-  "generated_at": "2026-11-24T19:10:40.836811+00:00"
+  "news_sentiment_score": -0.7,
+  "triggered": true,
+  "alerts": [
+    "新聞情緒偏極端負面（-0.70）"
+  ],
+  "generated_at": "2026-11-24T23:44:34.776311+00:00"
 }
