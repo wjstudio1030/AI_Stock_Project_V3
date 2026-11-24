@@ -1,12 +1,12 @@
 {
   "stock_id": "3017",
   "stock": "3017 奇鋐",
-  "observation_date": "2026-11-23",
-  "close": 2365.0,
-  "foreign_z": 0.202,
-  "total_institutional_z": -0.373,
-  "news_sentiment_score": 0.5,
+  "observation_date": "2026-11-24",
+  "close": 2600.0,
+  "foreign_z": 0.166,
+  "total_institutional_z": -0.209,
+  "news_sentiment_score": 1.0,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-24T05:49:30.583601+00:00"
+  "generated_at": "2026-11-24T19:10:40.828453+00:00"
 }

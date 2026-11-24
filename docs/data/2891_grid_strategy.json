@@ -1,8 +1,8 @@
 {
   "stock": "2891 中信金",
   "stock_id": "2891",
-  "date": "2026-11-23",
-  "current_price": 63.8,
+  "date": "2026-11-24",
+  "current_price": 69.9,
   "wave_start": {
     "date": "2026-07-20",
     "price": 61.5
@@ -11,7 +11,7 @@
     "date": "2026-11-13",
     "price": 78.7
   },
-  "wave_summary": "波段由 61.50 上升至 78.70，目前收盤 63.80。",
+  "wave_summary": "波段由 61.50 上升至 78.70，目前收盤 69.90。",
   "grid_defense_lines": {
     "level_382": "72.13 元",
     "level_500": "70.10 元",
@@ -22,10 +22,10 @@
     "level_500_price": 70.1,
     "level_618_price": 68.07
   },
-  "hit_level": "level_618",
-  "strike_status": "進入 61.8% 最後防線",
+  "hit_level": "level_500",
+  "strike_status": "進入 50.0% 中期防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 35.5,
+  "xgb_up_probability": 37.9,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-24T05:48:16.782526+00:00"
+  "generated_at": "2026-11-24T19:09:24.688772+00:00"
 }

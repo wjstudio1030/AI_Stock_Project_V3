@@ -1,12 +1,12 @@
 {
   "stock_id": "2891",
   "stock": "2891 中信金",
-  "observation_date": "2026-11-23",
-  "close": 63.8,
-  "foreign_z": -0.093,
-  "total_institutional_z": -1.18,
-  "news_sentiment_score": 0.5,
+  "observation_date": "2026-11-24",
+  "close": 69.9,
+  "foreign_z": 0.563,
+  "total_institutional_z": -0.634,
+  "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-24T05:49:30.528935+00:00"
+  "generated_at": "2026-11-24T19:10:40.119972+00:00"
 }

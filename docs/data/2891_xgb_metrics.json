@@ -1,13 +1,13 @@
 {
   "stock_id": "2891",
-  "accuracy_pct": 56.67,
-  "balanced_accuracy_pct": 56.33,
-  "log_loss": 0.6649,
+  "accuracy_pct": 55.0,
+  "balanced_accuracy_pct": 53.51,
+  "log_loss": 0.6762,
   "holdout_days": 60,
-  "train_samples": 1131,
-  "total_samples": 1191,
-  "train_through": "2026-08-24",
-  "holdout_start": "2026-08-25",
-  "holdout_end": "2026-11-20",
+  "train_samples": 1132,
+  "total_samples": 1192,
+  "train_through": "2026-08-25",
+  "holdout_start": "2026-08-26",
+  "holdout_end": "2026-11-23",
   "model_path": "/home/runner/work/AI_Stock_Project_V3/AI_Stock_Project_V3/data_db/models/xgb_2891.pkl"
 }

@@ -1,14 +1,12 @@
 {
   "stock_id": "3443",
   "stock": "3443 創意",
-  "observation_date": "2026-11-23",
-  "close": 5120.0,
-  "foreign_z": 3.263,
-  "total_institutional_z": 1.31,
-  "news_sentiment_score": -1.0,
-  "triggered": true,
-  "alerts": [
-    "新聞情緒偏極端負面（-1.00）"
-  ],
-  "generated_at": "2026-11-24T05:49:30.591833+00:00"
+  "observation_date": "2026-11-24",
+  "close": 5630.0,
+  "foreign_z": -0.158,
+  "total_institutional_z": -0.518,
+  "news_sentiment_score": -0.07,
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-24T19:10:40.836811+00:00"
 }

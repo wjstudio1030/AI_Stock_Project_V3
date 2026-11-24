@@ -1,12 +1,12 @@
 {
   "stock_id": "2885",
   "stock": "2885 元大金",
-  "observation_date": "2026-11-23",
-  "close": 58.4,
-  "foreign_z": -1.088,
-  "total_institutional_z": -1.018,
+  "observation_date": "2026-11-24",
+  "close": 64.2,
+  "foreign_z": -0.287,
+  "total_institutional_z": -0.168,
   "news_sentiment_score": 0.2,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-24T05:49:31.917865+00:00"
+  "generated_at": "2026-11-24T19:10:41.385196+00:00"
 }

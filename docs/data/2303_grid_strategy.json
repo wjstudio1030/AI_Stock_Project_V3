@@ -1,8 +1,8 @@
 {
   "stock": "2303 聯電",
   "stock_id": "2303",
-  "date": "2026-11-23",
-  "current_price": 88.3,
+  "date": "2026-11-24",
+  "current_price": 97.1,
   "wave_start": {
     "date": "2026-06-10",
     "price": 118.5
@@ -11,7 +11,7 @@
     "date": "2026-06-25",
     "price": 178.5
   },
-  "wave_summary": "波段由 118.50 上升至 178.50，目前收盤 88.30。",
+  "wave_summary": "波段由 118.50 上升至 178.50，目前收盤 97.10。",
   "grid_defense_lines": {
     "level_382": "155.58 元",
     "level_500": "148.50 元",
@@ -25,7 +25,7 @@
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
-  "xgb_up_probability": 63.1,
+  "xgb_up_probability": 64.2,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-24T05:48:16.855737+00:00"
+  "generated_at": "2026-11-24T19:09:24.778308+00:00"
 }

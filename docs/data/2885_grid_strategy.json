@@ -1,31 +1,31 @@
 {
   "stock": "2885 元大金",
   "stock_id": "2885",
-  "date": "2026-11-23",
-  "current_price": 58.4,
+  "date": "2026-11-24",
+  "current_price": 64.2,
   "wave_start": {
-    "date": "2026-06-01",
-    "price": 59.2
+    "date": "2026-06-02",
+    "price": 59.6
   },
   "wave_peak": {
     "date": "2026-10-29",
     "price": 73.4
   },
-  "wave_summary": "波段由 59.20 上升至 73.40，目前收盤 58.40。",
+  "wave_summary": "波段由 59.60 上升至 73.40，目前收盤 64.20。",
   "grid_defense_lines": {
-    "level_382": "67.98 元",
-    "level_500": "66.30 元",
-    "level_618": "64.62 元"
+    "level_382": "68.13 元",
+    "level_500": "66.50 元",
+    "level_618": "64.87 元"
   },
   "grid_prices": {
-    "level_382_price": 67.98,
-    "level_500_price": 66.3,
-    "level_618_price": 64.62
+    "level_382_price": 68.13,
+    "level_500_price": 66.5,
+    "level_618_price": 64.87
   },
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
-  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
-  "xgb_up_probability": 70.6,
+  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
+  "xgb_up_probability": 44.8,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-24T05:48:16.926834+00:00"
+  "generated_at": "2026-11-24T19:09:24.852660+00:00"
 }
