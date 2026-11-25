@@ -1,31 +1,31 @@
 {
   "stock": "2882 國泰金",
   "stock_id": "2882",
-  "date": "2026-11-24",
-  "current_price": 104.5,
+  "date": "2026-11-25",
+  "current_price": 100.5,
   "wave_start": {
-    "date": "2026-06-02",
-    "price": 89.2
+    "date": "2026-06-03",
+    "price": 91.8
   },
   "wave_peak": {
     "date": "2026-10-29",
     "price": 116.5
   },
-  "wave_summary": "波段由 89.20 上升至 116.50，目前收盤 104.50。",
+  "wave_summary": "波段由 91.80 上升至 116.50，目前收盤 100.50。",
   "grid_defense_lines": {
-    "level_382": "106.07 元",
-    "level_500": "102.85 元",
-    "level_618": "99.63 元"
+    "level_382": "107.06 元",
+    "level_500": "104.15 元",
+    "level_618": "101.24 元"
   },
   "grid_prices": {
-    "level_382_price": 106.07,
-    "level_500_price": 102.85,
-    "level_618_price": 99.63
+    "level_382_price": 107.06,
+    "level_500_price": 104.15,
+    "level_618_price": 101.24
   },
-  "hit_level": "level_382",
-  "strike_status": "進入 38.2% 第一防線",
-  "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 54.8,
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
+  "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
+  "xgb_up_probability": 61.7,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-25T04:49:00.680023+00:00"
+  "generated_at": "2026-11-25T18:14:39.548117+00:00"
 }

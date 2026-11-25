@@ -1,14 +1,14 @@
 {
   "stock_id": "2454",
   "stock": "2454 聯發科",
-  "observation_date": "2026-11-24",
-  "close": 4050.0,
-  "foreign_z": 0.449,
-  "total_institutional_z": 0.312,
-  "news_sentiment_score": -0.8,
+  "observation_date": "2026-11-25",
+  "close": 3645.0,
+  "foreign_z": -1.284,
+  "total_institutional_z": -1.278,
+  "news_sentiment_score": -1.0,
   "triggered": true,
   "alerts": [
-    "新聞情緒偏極端負面（-0.80）"
+    "新聞情緒偏極端負面（-1.00）"
   ],
-  "generated_at": "2026-11-25T04:50:23.319268+00:00"
+  "generated_at": "2026-11-25T18:15:50.866685+00:00"
 }

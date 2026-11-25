@@ -1,8 +1,8 @@
 {
   "stock": "2383 台光電",
   "stock_id": "2383",
-  "date": "2026-11-24",
-  "current_price": 3395.0,
+  "date": "2026-11-25",
+  "current_price": 3355.0,
   "wave_start": {
     "date": "2026-07-29",
     "price": 4100.0
@@ -11,7 +11,7 @@
     "date": "2026-08-17",
     "price": 6350.0
   },
-  "wave_summary": "波段由 4100.00 上升至 6350.00，目前收盤 3395.00。",
+  "wave_summary": "波段由 4100.00 上升至 6350.00，目前收盤 3355.00。",
   "grid_defense_lines": {
     "level_382": "5490.50 元",
     "level_500": "5225.00 元",
@@ -25,7 +25,7 @@
   "hit_level": "level_618",
   "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 50.9,
+  "xgb_up_probability": 32.5,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-25T04:49:00.713973+00:00"
+  "generated_at": "2026-11-25T18:14:39.561526+00:00"
 }

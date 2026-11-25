@@ -1,31 +1,31 @@
 {
   "stock": "2887 台新新光金",
   "stock_id": "2887",
-  "date": "2026-11-24",
-  "current_price": 36.3,
+  "date": "2026-11-25",
+  "current_price": 34.0,
   "wave_start": {
-    "date": "2026-06-02",
-    "price": 26.1
+    "date": "2026-06-08",
+    "price": 27.75
   },
   "wave_peak": {
     "date": "2026-09-16",
     "price": 44.4
   },
-  "wave_summary": "波段由 26.10 上升至 44.40，目前收盤 36.30。",
+  "wave_summary": "波段由 27.75 上升至 44.40，目前收盤 34.00。",
   "grid_defense_lines": {
-    "level_382": "37.41 元",
-    "level_500": "35.25 元",
-    "level_618": "33.09 元"
+    "level_382": "38.04 元",
+    "level_500": "36.08 元",
+    "level_618": "34.11 元"
   },
   "grid_prices": {
-    "level_382_price": 37.41,
-    "level_500_price": 35.25,
-    "level_618_price": 33.09
+    "level_382_price": 38.04,
+    "level_500_price": 36.08,
+    "level_618_price": 34.11
   },
-  "hit_level": "level_382",
-  "strike_status": "進入 38.2% 第一防線",
+  "hit_level": "level_618",
+  "strike_status": "進入 61.8% 最後防線",
   "ai_execution_order": "雖已進入防線，但量化機率未確認，等待止跌訊號，不搶反彈。",
-  "xgb_up_probability": 55.4,
+  "xgb_up_probability": 50.0,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-25T04:49:00.804503+00:00"
+  "generated_at": "2026-11-25T18:14:39.617861+00:00"
 }
