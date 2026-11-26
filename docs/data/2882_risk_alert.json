@@ -1,12 +1,12 @@
 {
   "stock_id": "2882",
   "stock": "2882 國泰金",
-  "observation_date": "2026-11-25",
-  "close": 100.5,
-  "foreign_z": 1.991,
-  "total_institutional_z": -0.835,
-  "news_sentiment_score": -0.2,
+  "observation_date": "2026-11-26",
+  "close": 104.5,
+  "foreign_z": 3.246,
+  "total_institutional_z": 0.079,
+  "news_sentiment_score": 0.1,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-26T03:58:48.164994+00:00"
+  "generated_at": "2026-11-26T17:59:11.755187+00:00"
 }

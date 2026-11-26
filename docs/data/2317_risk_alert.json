@@ -1,15 +1,12 @@
 {
   "stock_id": "2317",
   "stock": "2317 鴻海",
-  "observation_date": "2026-11-25",
-  "close": 206.5,
-  "foreign_z": -2.584,
-  "total_institutional_z": -2.751,
+  "observation_date": "2026-11-26",
+  "close": 216.5,
+  "foreign_z": 1.114,
+  "total_institutional_z": 1.198,
   "news_sentiment_score": 0.2,
-  "triggered": true,
-  "alerts": [
-    "外資賣超達自身近60日極端值（z=-2.58）",
-    "三大法人合計賣超達自身近60日極端值（z=-2.75）"
-  ],
-  "generated_at": "2026-11-26T03:58:45.929506+00:00"
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-26T17:59:11.707298+00:00"
 }

@@ -1,31 +1,31 @@
 {
   "stock": "2412 中華電",
   "stock_id": "2412",
-  "date": "2026-11-25",
-  "current_price": 163.5,
+  "date": "2026-11-26",
+  "current_price": 166.5,
   "wave_start": {
     "date": "2026-07-14",
     "price": 133.0
   },
   "wave_peak": {
-    "date": "2026-11-19",
-    "price": 166.0
+    "date": "2026-11-26",
+    "price": 166.5
   },
-  "wave_summary": "波段由 133.00 上升至 166.00，目前收盤 163.50。",
+  "wave_summary": "波段由 133.00 上升至 166.50，目前收盤 166.50。",
   "grid_defense_lines": {
-    "level_382": "153.39 元",
-    "level_500": "149.50 元",
-    "level_618": "145.61 元"
+    "level_382": "153.70 元",
+    "level_500": "149.75 元",
+    "level_618": "145.80 元"
   },
   "grid_prices": {
-    "level_382_price": 153.39,
-    "level_500_price": 149.5,
-    "level_618_price": 145.61
+    "level_382_price": 153.7,
+    "level_500_price": 149.75,
+    "level_618_price": 145.8
   },
   "hit_level": "none",
   "strike_status": "尚未抵達回吐防線",
   "ai_execution_order": "價格尚未回吐至防線，維持觀望，禁止因短線上漲追價。",
-  "xgb_up_probability": 44.3,
+  "xgb_up_probability": 43.5,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-26T03:57:36.319172+00:00"
+  "generated_at": "2026-11-26T17:57:54.644842+00:00"
 }

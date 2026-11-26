@@ -1,8 +1,8 @@
 {
   "stock": "3017 奇鋐",
   "stock_id": "3017",
-  "date": "2026-11-25",
-  "current_price": 2545.0,
+  "date": "2026-11-26",
+  "current_price": 2795.0,
   "wave_start": {
     "date": "2026-07-29",
     "price": 2095.0
@@ -11,7 +11,7 @@
     "date": "2026-10-06",
     "price": 3685.0
   },
-  "wave_summary": "波段由 2095.00 上升至 3685.00，目前收盤 2545.00。",
+  "wave_summary": "波段由 2095.00 上升至 3685.00，目前收盤 2795.00。",
   "grid_defense_lines": {
     "level_382": "3077.62 元",
     "level_500": "2890.00 元",
@@ -22,10 +22,10 @@
     "level_500_price": 2890.0,
     "level_618_price": 2702.38
   },
-  "hit_level": "level_618",
-  "strike_status": "進入 61.8% 最後防線",
+  "hit_level": "level_500",
+  "strike_status": "進入 50.0% 中期防線",
   "ai_execution_order": "已進入防線且量化機率偏多，只能分批、小部位承接並設定停損。",
-  "xgb_up_probability": 65.2,
+  "xgb_up_probability": 62.5,
   "calculation_method": "deterministic_fibonacci_retracement",
-  "generated_at": "2026-11-26T03:57:36.339130+00:00"
+  "generated_at": "2026-11-26T17:57:54.673771+00:00"
 }

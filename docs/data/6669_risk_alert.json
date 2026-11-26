@@ -1,12 +1,12 @@
 {
   "stock_id": "6669",
   "stock": "6669 緯穎",
-  "observation_date": "2026-11-25",
-  "close": 1430.0,
-  "foreign_z": -0.597,
-  "total_institutional_z": 0.506,
+  "observation_date": "2026-11-26",
+  "close": 1570.0,
+  "foreign_z": -0.59,
+  "total_institutional_z": 0.582,
   "news_sentiment_score": 0.8,
   "triggered": false,
   "alerts": [],
-  "generated_at": "2026-11-26T03:58:50.888018+00:00"
+  "generated_at": "2026-11-26T17:59:13.401564+00:00"
 }
