@@ -5,10 +5,10 @@
   "close": 165.5,
   "foreign_z": -4.549,
   "total_institutional_z": -1.353,
-  "news_sentiment_score": 0.3,
+  "news_sentiment_score": 0.2,
   "triggered": true,
   "alerts": [
     "外資賣超達自身近60日極端值（z=-4.55）"
   ],
-  "generated_at": "2026-11-27T17:44:32.082842+00:00"
+  "generated_at": "2026-11-27T23:01:12.316501+00:00"
 }
