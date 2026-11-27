@@ -1,14 +1,14 @@
 {
   "stock_id": "2412",
   "stock": "2412 中華電",
-  "observation_date": "2026-11-26",
-  "close": 166.5,
-  "foreign_z": -3.586,
-  "total_institutional_z": 0.89,
-  "news_sentiment_score": 0.5,
+  "observation_date": "2026-11-27",
+  "close": 165.5,
+  "foreign_z": -4.549,
+  "total_institutional_z": -1.353,
+  "news_sentiment_score": 0.3,
   "triggered": true,
   "alerts": [
-    "外資賣超達自身近60日極端值（z=-3.59）"
+    "外資賣超達自身近60日極端值（z=-4.55）"
   ],
-  "generated_at": "2026-11-27T04:01:01.581116+00:00"
+  "generated_at": "2026-11-27T17:44:32.082842+00:00"
 }

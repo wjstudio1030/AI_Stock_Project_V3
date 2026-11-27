@@ -1,15 +1,12 @@
 {
   "stock_id": "2383",
   "stock": "2383 台光電",
-  "observation_date": "2026-11-26",
-  "close": 3660.0,
-  "foreign_z": -3.503,
-  "total_institutional_z": -2.832,
+  "observation_date": "2026-11-27",
+  "close": 3605.0,
+  "foreign_z": 0.12,
+  "total_institutional_z": 0.328,
   "news_sentiment_score": 0.8,
-  "triggered": true,
-  "alerts": [
-    "外資賣超達自身近60日極端值（z=-3.50）",
-    "三大法人合計賣超達自身近60日極端值（z=-2.83）"
-  ],
-  "generated_at": "2026-11-27T04:01:01.086036+00:00"
+  "triggered": false,
+  "alerts": [],
+  "generated_at": "2026-11-27T17:44:32.065531+00:00"
 }
