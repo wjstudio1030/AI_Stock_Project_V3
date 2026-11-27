@@ -7,7 +7,7 @@
   "model_validation": {
     "accuracy_pct": 41.67,
     "balanced_accuracy_pct": 48.08,
-    "log_loss": 0.7964,
+    "log_loss": 0.7974,
     "holdout_days": 60,
     "train_samples": 1132,
     "total_samples": 1192,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-11-25"
   },
   "model_trained_through": "2026-11-25",
-  "generated_at": "2026-11-26T23:14:58.903208+00:00",
+  "generated_at": "2026-11-27T03:54:34.917470+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 50.0857,
     "2.技術_KD值(D)": 52.523,

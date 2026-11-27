@@ -2,8 +2,8 @@
   "stock_id": "1303",
   "observation_date": "2026-11-26",
   "close": 244.0,
-  "up_probability": 55.3,
-  "down_probability": 44.7,
+  "up_probability": 55.5,
+  "down_probability": 44.5,
   "model_validation": {
     "accuracy_pct": 45.0,
     "balanced_accuracy_pct": 45.44,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-11-25"
   },
   "model_trained_through": "2026-11-25",
-  "generated_at": "2026-11-26T23:14:58.669973+00:00",
+  "generated_at": "2026-11-27T03:54:34.743084+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 33.2555,
     "2.技術_KD值(D)": 30.3738,

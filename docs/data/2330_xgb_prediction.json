@@ -5,9 +5,9 @@
   "up_probability": 36.8,
   "down_probability": 63.2,
   "model_validation": {
-    "accuracy_pct": 56.67,
-    "balanced_accuracy_pct": 59.72,
-    "log_loss": 0.6795,
+    "accuracy_pct": 58.33,
+    "balanced_accuracy_pct": 61.81,
+    "log_loss": 0.6761,
     "holdout_days": 60,
     "train_samples": 1180,
     "total_samples": 1240,
@@ -16,7 +16,7 @@
     "holdout_end": "2026-11-25"
   },
   "model_trained_through": "2026-11-25",
-  "generated_at": "2026-11-26T23:14:58.502636+00:00",
+  "generated_at": "2026-11-27T03:54:34.615569+00:00",
   "feature_snapshot": {
     "1.技術_KD值(K)": 40.6326,
     "2.技術_KD值(D)": 37.884,
