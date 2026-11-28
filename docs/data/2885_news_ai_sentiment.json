@@ -1,99 +1,87 @@
 {
   "stock_id": "2885",
-  "overall_sentiment_score": 0.0,
-  "market_vibe_summary": "OpenAI API 暫時無法使用，以下為關鍵字法備援，不能視為深度語意分析。",
+  "overall_sentiment_score": 0.8,
+  "market_vibe_summary": "整體市場對元大金的情緒偏向正面，主要受到公司獲獎及外資進貨的影響，顯示出市場對其未來表現的信心。",
   "article_analysis": [
     {
       "id": 1,
       "title": "元大金發行115年度第二次無擔保普通公司債，合計42億元(補充) - 台視全球資訊網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.2,
+      "ai_comment": "發行公司債可能會增加負債，但若資金運用得當，未來獲利可望提升，影響中性偏正面。"
     },
     {
       "id": 2,
       "title": "元大金控集團囊括TCSA 11項大獎 連8年獲百大永續典範企業肯定 - 中央社 CNA",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "獲得多項獎項顯示公司在永續經營方面的努力，對品牌形象及市場信心有正面影響。"
     },
     {
       "id": 3,
       "title": "元大金連七年摘BSI永續信任領航獎深化氣候治理、金融力驅動淨零轉型| 金融要聞| 產經 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "持續獲獎顯示公司在永續發展上的努力，對未來發展及投資者信心有正面影響。"
     },
     {
       "id": 4,
       "title": "元大金連七年摘BSI永續信任領航獎 深化氣候治理、金融力驅動淨零轉型 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "同上，強調公司在氣候治理上的努力，進一步提升市場對其的信任。"
     },
     {
       "id": 5,
       "title": "元大金連7年摘BSI永續信任領航獎 深化氣候治理 金融力驅動淨零轉型 - 中央社 CNA",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "同上，持續獲獎有助於提升公司形象及市場預期。"
     },
     {
       "id": 6,
       "title": "1表看》國泰金、中信金、元大金誰最香？法人揭6檔金融股明年獲利：2檔列投資首選- 上市櫃 - 旺得富理財網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.7,
+      "ai_comment": "分析報告中提到元大金為投資首選之一，顯示市場對其未來獲利的期待。"
     },
     {
       "id": 7,
       "title": "元大金(2885) 今日股價與討論 - 股市爆料同學會 - CMoney",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.5,
+      "ai_comment": "討論內容中性，未提供明確的正面或負面資訊。"
     },
     {
       "id": 8,
       "title": "元大金3度獲北市職場性別平等認證金質獎 深耕友善環境 - 中央社 CNA",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "獲得性別平等獎項有助於提升公司形象，對未來吸引人才及投資者有正面影響。"
     },
     {
       "id": 9,
       "title": "2885 元大金- 元大金控獲頒健康企業公民獎首獎以健康力驅動金融力- 股市爆料同學會 - CMoney",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "獲得健康企業獎項顯示公司在企業社會責任上的努力，對品牌形象有正面影響。"
     },
     {
       "id": 10,
       "title": "元大金控獲頒健康企業公民獎首獎 以健康力驅動金融力 - UDN",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "同上，強調公司在健康與社會責任上的表現，對市場信心有正面影響。"
     },
     {
       "id": 11,
       "title": "元大金控獲頒健康企業公民獎首獎 以健康力驅動金融力 - 經濟日報",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.8,
+      "ai_comment": "同上，持續獲獎有助於提升公司形象及市場預期。"
     },
     {
       "id": 12,
       "title": "金融股相對抗跌！外資進貨「這4檔」12.4萬張 投58.03億元連2週敲進元大金 - Yahoo股市",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "外資持續進貨顯示對元大金的信心，對股價有正面支持。"
     },
     {
       "id": 13,
       "title": "金融股相對抗跌！外資進貨「這4檔」12.4萬張 投58.03億元連2週敲進元大金 - FTNN 新聞網",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
-    },
-    {
-      "id": 14,
-      "title": "2885 元大金- 季度 EPS 快報 - 股市爆料同學會 - CMoney",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
-    },
-    {
-      "id": 15,
-      "title": "以健康力驅動金融力 元大金控獲頒健康企業公民獎首獎 - 中央社 CNA",
-      "score": 0.0,
-      "ai_comment": "OpenAI API 暫時無法使用；使用關鍵字備援"
+      "score": 0.9,
+      "ai_comment": "同上，外資進貨的消息對市場情緒有強烈的正面影響。"
     }
   ],
-  "analysis_method": "keyword_fallback_api_error",
-  "generated_at": "2026-11-27T22:59:23.582442+00:00"
+  "analysis_method": "openai_structured_output",
+  "generated_at": "2026-11-28T03:46:12.078077+00:00"
 }

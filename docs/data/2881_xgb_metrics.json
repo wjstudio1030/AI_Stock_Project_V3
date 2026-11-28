@@ -1,8 +1,8 @@
 {
   "stock_id": "2881",
-  "accuracy_pct": 43.33,
-  "balanced_accuracy_pct": 41.4,
-  "log_loss": 0.7369,
+  "accuracy_pct": 45.0,
+  "balanced_accuracy_pct": 42.87,
+  "log_loss": 0.737,
   "holdout_days": 60,
   "train_samples": 1133,
   "total_samples": 1193,
